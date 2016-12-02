@@ -1,0 +1,35 @@
+<apex:page ShowHeader="false" sidebar="false" standardStylesheets="false">
+
+
+    <!-- <apex:includeScript value="https://code.jquery.com/jquery-1.9.1.min.js"/> -->
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"/>
+    <!-- custom scripts -->
+        
+    <script>
+    
+        $j = jQuery.noConflict();
+        var homeUrl;
+
+                        
+        $j(document).ready(function() {
+            try {
+                if(('{!$User.UIThemeDisplayed}' == 'Theme4t' || '{!$User.UIThemeDisplayed}' == 'Theme4d' ))  {
+                 // running in mobile                
+                    homeUrl = '/apex/ClientSearch';
+                    var s = window.location.href;
+                    if (s.indexOf('home') > -1) {
+                        window.top.location.href = homeUrl ;
+                    }
+                } else { //desktop
+                    // do nothing
+                }
+            } catch (e) {
+                console.log('@@@@ error ..  ' + e.message);
+                alert(e.message);
+            }                                     
+
+        });
+    
+    </script>
+
+</apex:page>

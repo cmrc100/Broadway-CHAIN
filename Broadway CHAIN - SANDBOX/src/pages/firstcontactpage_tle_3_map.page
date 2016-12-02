@@ -1,0 +1,81 @@
+<apex:page controller="FirstContact" extensions="StreetContactMapUtility" tabStyle="Account">
+    
+    <apex:form >
+        <apex:pageMessages />
+        <apex:pageBlock title="First Contact: Add Timeline event info" mode="edit" id="thePageBlock">
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!save}" value="Save and exit"/>
+                <apex:commandButton action="{!saveAndAddFlow}" value="Save and Add Flow"/>
+                <apex:commandButton action="{!cancel}" value="Do NOT save and Exit" immediate="true"/>
+                &nbsp;&nbsp;
+            </apex:pageBlockButtons>           
+           
+            <apex:pageBlockSection title="Timeline event (initial contact) Information" columns="2" id="thePageBlockSection">
+                <apex:inputField value="{!timeLineEvent.Date__c}" required="true"/>
+                <apex:inputField value="{!timeLineEvent.Encounter_Type__c}" required="true"/>
+                <apex:inputField value="{!timeLineEvent.Event__c}" required="true"/>
+                <apex:inputField value="{!timeLineEvent.Street_site_borough__c}" required="true"/>
+                <apex:inputField value="{!timeLineEvent.Borough_Street_Site__c}" required="true" id="streetsite"/>
+                
+                <apex:inputField value="{!timeLineEvent.Time_of_contact__c}" required="true"/>
+                <apex:inputField value="{!timeLineEvent.Other_site__c}" />
+                
+                <apex:inputField value="{!timeLineEvent.Hotspot__c}"/>
+                <apex:inputField value="{!timeLineEvent.Hidden_hotspot_type__c}"/>
+                <apex:inputField value="{!timelineEvent.Hotspot_closure__c}" />
+                <apex:inputField id="notes" value="{!timeLineEvent.Notes__c}"/>
+                <apex:outputText value=""/>
+                                
+                <apex:inputField value="{!timeLineEvent.Project_Team__c}" />
+                <apex:inputField value="{!timeLineEvent.Activity__c}" />
+
+                <apex:inputField value="{!timelineEvent.NSNO_Action__c}" required="true"/>
+                <apex:inputField value="{!timelineEvent.Unable_to_refer_Other_reasons__c}"/>
+                <apex:inputField value="{!timelineEvent.Initial_contact_alternative_to_NSNO__c}" required="true"/>
+                <apex:inputField value="{!timelineEvent.Initial_contact_advice_and_signposting__c}" />
+            </apex:pageBlockSection>   
+                
+            <apex:pageBlockSection title="Activity and Notes" columns="2" id="thePageBlockSection2">
+                
+                <apex:inputField value="{!timeLineEvent.Work_Carried_Out_1__c}" />
+                <apex:inputField value="{!timeLineEvent.Intel_Count__c}" />
+                <apex:inputField value="{!timeLineEvent.Work_Carried_Out_2__c}" />
+                <apex:inputField value="{!timeLineEvent.Work_Carried_Out_3__c}" />
+                <apex:inputField value="{!timelineEvent.Ice_Joint_Shift__c}" />
+                <apex:inputField value="{!timelineEvent.Police_Joint_Shift__c}" />
+                <apex:inputField value="{!timelineEvent.Operation_Encompass__c}" />
+                <apex:inputField value="{!timeLineEvent.Other_Work_Carried_Out__c}" />
+                <apex:inputField value="{!timeLineEvent.Referral_telephone_website_reference__c}" />
+
+                <apex:inputField value="{!timeLineEvent.On_behalf_of__c}" />
+                <apex:inputField value="{!timeLineEvent.On_behalf_of_project_team__c}" />                                                                             
+                                
+                <apex:inputField value="{!timeLineEvent.Private_Notes_Thames_Reach__c}" />
+                <apex:inputField value="{!timeLineEvent.Private_Notes_SPEAR_Outreach__c}" />
+                <apex:inputField value="{!timeLineEvent.Private_Notes_Westminster_SPOT__c}" />
+                <apex:inputField value="{!timeLineEvent.Private_notes_St_Mungo_s__c}" />
+                <apex:inputField value="{!timeLineEvent.Private_notes_CSTM__c}" />
+                <apex:inputField value="{!timeLineEvent.Private_notes_Passage__c}" />
+                <apex:inputField value="{!timeLineEvent.Private_notes_WLDC__c}" />
+                        
+                </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="Mapping fields - DO NOT CHANGE" columns="2" id="thePageBlockSection3">
+                <apex:inputField value="{!timeLineEvent.Location_URL__c}" />
+                <apex:inputField value="{!timeLineEvent.Borough_from_map__c}" />
+                <apex:inputField value="{!timeLineEvent.Area__c}" />
+                <apex:inputField value="{!timeLineEvent.Count_Patch__c}" />
+                <apex:inputField value="{!timeLineEvent.Latitude_Longitude__c}" />
+                <apex:inputField value="{!timeLineEvent.SNT_Ward__c}" />
+                <apex:inputField value="{!timeLineEvent.Postcode__c}" />
+                <apex:inputField value="{!timeLineEvent.Ward__c}" />    
+            </apex:pageBlockSection>
+                  
+</apex:pageBlock>
+</apex:form>
+    
+    <script type="text/javascript">
+        var search = new query();
+        search.go();
+    </script>
+</apex:page>

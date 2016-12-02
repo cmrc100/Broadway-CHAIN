@@ -1,0 +1,678 @@
+<apex:page controller="CustomReportController" id="page" >
+
+    <apex:stylesheet value="/sCSS/25.0/sprites/1342034628000/Theme3/default/gc/versioning.css" />
+    <apex:stylesheet value="/sCSS/25.0/sprites/1342034628000/Theme3/default/gc/extended.css" />
+    
+    <apex:outputPanel id="opMsgs">
+        <apex:PageMessages />
+    </apex:outputPanel>
+    
+    <!-- Adding styles required for searching popup  -->
+    <style>
+        .popupBackground {
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 998;
+            position: absolute;
+        }
+        .popupPanel {
+            border: solid 1px;
+            background-color: white;
+            left: 50%;
+            width: 200px;
+            margin-left: -100px;
+            top: 50%;
+            height: 50px;
+            margin-top: -25px;
+            z-index: 999;
+            position: fixed;
+        }
+    </style>
+
+    <!-- "Searching" popup whenever we are waiting for the page to return from a Search  -->
+    <apex:actionStatus id="processingStatus" stopText="" >
+        <apex:facet name="start">
+            <div>
+                <div class="popupBackground" />
+                <div class="popupPanel">
+                    <table border="0" width="100%" height="100%">
+                        <tr>
+                            <td align="center" style="font-family: Calibri; font-size: 13px; font-weight: normal;"><b>Processing... Please Wait</b></td>
+                        </tr>
+                        <tr>
+                            <td align="center"><img src="/img/loading.gif"/></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </apex:facet>
+    </apex:actionStatus>
+    
+    <apex:tabPanel switchType="client" value="{!tabOpt}" id="theTabPanel">
+    <apex:tab label="Report Configuration" name="reportConfig" id="configTab">
+            <apex:form id="frmMain">
+    <apex:pageBlock title="Select Objects"> 
+
+
+            <apex:pageblocksection id="pbObjects" columns="2">   
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Master Object" for="masterObject" />
+                    <apex:actionRegion >                
+                    <apex:selectList id="masterObject" value="{!sobjectParentName}" size="1" rendered="true" label="Master Object ">
+                        <apex:actionsupport event="onchange" action="{!populateParentSobjectFields}" rerender="frmMain, opFilters, condIndex, filterIndex, opMsgs" status="processingStatus" >                                
+                             
+                        </apex:actionSupport>
+                        <apex:selectOptions value="{!PrimaryObjects}"/>     
+                    </apex:selectlist> 
+                    </apex:actionRegion>           
+                </apex:pageBlockSectionItem>               
+              
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Single Object" for="singleObject" />
+                    <apex:actionRegion >
+                    <apex:selectList id="singleObject" value="{!sobjectSingleName}" size="1" rendered="true" label="Single Object ">
+
+                        <apex:actionsupport event="onchange" action="{!populateParentSobjectFields}" rerender="frmMain, opFilters, condIndex, filterIndex, opMsgs" status="processingStatus" >                                
+                          
+                        </apex:actionSupport> 
+                        <apex:selectOptions value="{!AllObjects}"/>     
+              
+                    </apex:selectlist>   
+                    </apex:actionRegion>           
+                </apex:pageBlockSectionItem>
+                
+              
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Child Object" for="childObject" />
+                    <apex:actionRegion >
+                    <apex:selectList id="childObject" value="{!sobjectChildName}" size="1" rendered="true" label="Child Object ">
+                    
+                        <apex:actionsupport event="onchange" action="{!populateChildSobjectFields}" rerender="frmMain, opFilters2, condIndex2, filterIndex2, opMsgs" status="processingStatus" >                                
+                            
+                        </apex:actionSupport>
+                        <apex:selectOptions value="{!SecondaryObjects}"/>     
+                    </apex:selectlist>    
+                    </apex:actionRegion>           
+                </apex:pageBlockSectionItem>
+                    
+                <br></br>
+     
+                <br></br>
+               
+                <apex:inputCheckbox id="parentFilter" value="{!filterParentByChild}" immediate="false" label="Filter Parent By Child Criteria " title="Ensures only Parent records which have child records matching the child filters are returned" />                
+            </apex:pageblocksection>
+
+
+
+    </apex:pageBlock>   
+
+        <apex:pageBlock title="Master Object Filters">
+
+            <apex:pageblockbuttons id="btnsSearch" location="bottom">
+
+                <apex:commandButton value="Add Filter" action="{!addFilter}" rerender="frmMain, opMsgs" status="processingStatus" />
+
+            </apex:pageblockbuttons>            
+
+            <apex:outputPanel id="opLogic">
+                <apex:outputPanel >
+                    <apex:pageBlockSection >
+                        Current Filter logic : {!sSoql}
+                    </apex:pageBlockSection>
+                </apex:outputPanel>
+            </apex:outputPanel>
+            
+
+            <apex:variable var="condIndex" value="{!0}" id="condIndex"/>
+            <apex:variable var="filterIndex" value="{!0}" id="filterIndex"/>
+
+            <apex:pageblocksection id="pbFilters" columns="5">    
+
+                <apex:repeat value="{!sobjectFieldFilters}" var="filter">
+
+                    <apex:pageBlockSectionitem id="field">
+                        <apex:actionRegion >
+                            <apex:outputPanel id="opFilters">
+                                <apex:variable var="condIndex" value="{!condIndex+1}"/>
+                                {!TEXT(condIndex)}.&nbsp;
+                                <apex:selectList value="{!filter.fieldName}" size="1">
+                                      <apex:actionsupport event="onchange" action="{!refreshFilter}" rerender="opColumns, opOperator,opValue, opLogic ,opMsgs" status="processingStatus" > 
+                                      </apex:actionSupport>                                   
+                                      <apex:selectOptions value="{!sobjectFieldOptions}"/>
+         
+                                </apex:selectlist>
+                            </apex:outputPanel>
+                        </apex:actionRegion>
+                    </apex:pageBlockSectionitem>
+
+                    <apex:pageBlockSectionitem id="operator">
+                        <apex:outputPanel id="opOperator">
+                            <apex:selectList value="{!filter.operator}" size="1" rendered="{!sobjectFieldMap[filter.fieldName].fieldType == 'STRING'}">
+                                <apex:actionsupport event="onchange" action="{!refreshFilter}" rerender="opValue, opLogic" />                                
+                                <apex:selectOptions value="{!stringOperators}"/>     
+                            </apex:selectlist>                        
+
+                            <apex:selectList value="{!filter.operator}" size="1" rendered="{!sobjectFieldMap[filter.fieldName].fieldType == 'BOOLEAN'}">
+                                <apex:actionsupport event="onchange" action="{!refreshFilter}" rerender="opValue, opLogic" />                                
+                                <apex:selectOptions value="{!booleanOperators}"/>     
+                            </apex:selectlist>   
+
+                            <apex:selectList value="{!filter.operator}" size="1" rendered="{!sobjectFieldMap[filter.fieldName].fieldType == 'PICKLIST' || sobjectFieldMap[filter.fieldName].fieldType == 'MULTIPICKLIST'}">
+                                <apex:actionsupport event="onchange" action="{!refreshpicklistFilter}" rerender="opValue, opLogic, opMsgs" >                                
+                                    <apex:param id="picklistInput1" value="{!filter.fieldName}" assignTo="{!currentField}" name="currentField"/>
+                                    <apex:param id="picklistInput2" value="{!sobjectParentName}" assignTo="{!currentContext}" name="currentContext"/> 
+                                </apex:actionSupport>  
+                                <apex:selectOptions value="{!picklistOperators}"/>     
+                            </apex:selectlist>
+
+                            <apex:selectList value="{!filter.operator}" size="1" rendered="{!sobjectFieldMap[filter.fieldName].fieldType == 'DATE' || sobjectFieldMap[filter.fieldName].fieldType == 'DATETIME'}">
+                                <apex:actionsupport event="onchange" action="{!refreshFilter}" rerender="opValue, opLogic" />                                
+                                <apex:selectOptions value="{!dateOperators}"/>     
+                            </apex:selectlist>
+                                                                                
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+
+
+                    <apex:pageBlockSectionitem id="value">
+                        <apex:outputPanel id="opValue">
+                            <apex:outputpanel rendered="{!ISBLANK(filter.fieldName)==false && (filter.operator != '=null' && filter.fieldType != '!=null')}"> 
+                            
+                            
+                                <!-- boolean type -->
+                                <apex:outputpanel rendered="{!sobjectFieldMap[filter.fieldName].fieldType == 'BOOLEAN'}">
+                                    <apex:inputCheckbox value="{!filter.fieldValue}">
+                                        <apex:actionSupport event="onchange" action="{!refreshFilter}" reRender="opLogic, opAndOr" />
+                                    </apex:inputCheckbox>
+                                </apex:outputpanel>
+
+                                <!-- picklist type -->
+                                <apex:outputpanel rendered="{!sobjectFieldMap[filter.fieldName].fieldType == 'PICKLIST' || sobjectFieldMap[filter.fieldName].fieldType == 'MULTIPICKLIST'}">
+                                    <apex:selectList value="{!filter.fieldValue}" size="1" >
+                                        <apex:actionSupport event="onchange" action="{!refreshFilter}" reRender="opLogic, opAndOr" />                                
+                                        <apex:selectOptions value="{!sobjectFieldMap[filter.fieldName].picklistValues}"/>     
+                                    </apex:selectlist>
+                                    
+                                </apex:outputpanel>
+
+                                <!-- string type -->
+                                <apex:outputpanel rendered="{!sobjectFieldMap[filter.fieldName].fieldType == 'STRING'}">                              
+                                    <apex:inputText value="{!filter.fieldValue}" >
+                                        <apex:actionSupport event="onchange" action="{!refreshFilter}" reRender="opLogic" />     
+                                    </apex:inputText>
+                                </apex:outputpanel>
+
+                                <!-- date type -->
+                                <apex:outputpanel rendered="{!sobjectFieldMap[filter.fieldName].fieldType == 'DATE' || sobjectFieldMap[filter.fieldName].fieldType == 'DATETIME'}">                              
+                                    <apex:inputText id="sampleDateField" value="{!filter.fieldValue}" onfocus="DatePicker.pickDate(true, '{!$Component.sampleDateField}', false);">
+                                        <c:DatePickerComponent dateFieldId="{!$Component.sampleDateField}" />   
+                                        <apex:actionSupport event="onchange" action="{!refreshFilter}" reRender="opLogic, opMsgs" />
+                                    </apex:inputText> 
+                                    or
+                                    <apex:selectList value="{!filter.fieldDateLiteral}" size="1" >
+                                        <apex:actionSupport event="onchange" action="{!refreshFilter}" reRender="opLogic,sampleDateField" />                                
+                                        <apex:selectOptions value="{!dateLiterals}"/>     
+                                    </apex:selectlist>                                    
+                                </apex:outputpanel>
+                            
+                            </apex:outputPanel>  
+                        
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+
+                    <apex:pageBlockSectionitem id="andor">
+                        <apex:outputPanel id="opAndOr">
+                            <apex:selectRadio layout="lineDirection" value="{!filter.andOr}">
+                                <apex:selectOptions value="{!AndOr}"/>
+                                <!-- <apex:actionsupport event="onchange" action="{!addAndOr}"/> -->
+                                <apex:actionSupport event="onchange" action="{!refreshFilter}" reRender="opLogic, opAndOr" />                                
+                            </apex:selectRadio>                        
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+
+
+                    <apex:pageBlockSectionitem id="remove">
+                        <apex:outputPanel id="opRemove">
+                            <apex:variable var="filterIndex" value="{!filterIndex+1}" />
+                            <apex:commandLink action="{!removeFilter}" rerender="frmMain, opFilters" status="processingStatus"  >
+                                <apex:param name="ob" assignTo="{!filterIndexToRemove}" value="{!condIndex - 1}"/>
+                                 <apex:param id="filterIndex1" value="{!sobjectParentName}" assignTo="{!currentContext}" name="currentContext"/> 
+                                Remove
+                            </apex:commandLink>                         
+                        
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+
+
+                </apex:repeat>
+      
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        
+        
+        
+<!-- End of Primary Object Filter section -->
+
+
+
+        <apex:pageBlock title="Child Object Filters">
+
+            <apex:pageblockbuttons id="btnsSearch2" location="bottom">
+                <apex:commandButton value="Add Filter" action="{!addChildFilter}"  rerender="frmMain, opMsgs" status="processingStatus" />
+            </apex:pageblockbuttons>            
+
+            <apex:outputPanel id="opLogic2">
+                <apex:outputPanel >
+                    <apex:pageBlockSection >
+                        Current Filter logic : {!sSoqlChild}
+                    </apex:pageBlockSection>
+                </apex:outputPanel>
+            </apex:outputPanel>
+            
+            <apex:variable var="condIndex2" value="{!0}"/>
+            <apex:variable var="filterIndex2" value="{!0}"/>
+            <apex:pageblocksection id="pbFilters2" columns="5">    
+                
+                <apex:repeat value="{!sobjectChildFieldFilters}" var="filter">
+
+                    <apex:pageBlockSectionitem id="field2">
+                        <apex:actionRegion >
+                            <apex:outputPanel id="opFilters2">
+                                <apex:variable var="condIndex2" value="{!condIndex2+1}"/>
+                                {!TEXT(condIndex2)}.&nbsp;
+                                <apex:selectList value="{!filter.fieldName}" size="1">
+                                    <apex:actionsupport event="onchange" action="{!refreshFilter}" rerender="opOperator2,opValue2, opLogic2" status="processingStatus" />
+                                    
+                                    <apex:selectOptions value="{!sobjectChildFieldOptions}"/>
+         
+                                </apex:selectlist>
+                            </apex:outputPanel>
+                        </apex:actionRegion>
+                    </apex:pageBlockSectionitem>
+
+                    <apex:pageBlockSectionitem id="operator2">
+                    <apex:actionRegion >
+                        <apex:outputPanel id="opOperator2">
+                            <apex:selectList value="{!filter.operator}" size="1" rendered="{!sobjectChildFieldMap[filter.fieldName].fieldType == 'STRING'}">
+                                <apex:actionsupport event="onchange" action="{!refreshFilter}" rerender="opValue2, opLogic2" status="processingStatus"/>                                
+                                <apex:selectOptions value="{!stringOperators}"/>     
+                            </apex:selectlist>                        
+
+                            <apex:selectList value="{!filter.operator}" size="1" rendered="{!sobjectChildFieldMap[filter.fieldName].fieldType == 'BOOLEAN'}">
+                                <apex:actionsupport event="onchange" action="{!refreshFilter}" rerender="opValue2, opLogic2" status="processingStatus"/>                                
+                                <apex:selectOptions value="{!booleanOperators}"/>     
+                            </apex:selectlist>   
+
+                            <apex:selectList value="{!filter.operator}" size="1" rendered="{!sobjectChildFieldMap[filter.fieldName].fieldType == 'PICKLIST' || sobjectChildFieldMap[filter.fieldName].fieldType == 'MULTIPICKLIST'}">
+                                <apex:actionsupport event="onchange" action="{!refreshpicklistFilter}" rerender="opValue2, opLogic2, opMsgs" status="processingStatus">                                
+                                    <apex:param id="picklistInput1" value="{!filter.fieldName}" assignTo="{!currentField}" name="currentField"/>
+                                    <apex:param id="picklistInput2" value="{!sobjectChildName}" assignTo="{!currentContext}" name="currentContext"/> 
+                                </apex:actionSupport>                                
+                                <apex:selectOptions value="{!picklistOperators}"/>     
+                            </apex:selectlist>
+
+                            <apex:selectList value="{!filter.operator}" size="1" rendered="{!sobjectChildFieldMap[filter.fieldName].fieldType == 'DATE' || sobjectChildFieldMap[filter.fieldName].fieldType == 'DATETIME'}">
+                                <apex:actionsupport event="onchange" action="{!refreshFilter}" rerender="opValue2, opLogic2" status="processingStatus"/>                                
+                                <apex:selectOptions value="{!dateOperators}"/>     
+                            </apex:selectlist>
+                                                                                
+                        </apex:outputPanel>
+                    </apex:actionRegion>
+                    </apex:pageBlockSectionItem>
+
+
+                    <apex:pageBlockSectionitem id="value2">
+                    <apex:actionRegion >
+                        <apex:outputPanel id="opValue2">
+                            <apex:outputpanel rendered="{!ISBLANK(filter.fieldName)==false && (filter.operator != '=null' && filter.fieldType != '!=null')}"> 
+                            
+                            
+                                <!-- boolean type -->
+                                <apex:outputpanel rendered="{!sobjectChildFieldMap[filter.fieldName].fieldType == 'BOOLEAN'}">
+                                    <apex:inputCheckbox value="{!filter.fieldValue}">
+                                        <apex:actionSupport event="onchange" action="{!refreshFilter}" reRender="opLogic2" />
+                                    </apex:inputCheckbox>
+                                </apex:outputpanel>
+
+                                <!-- picklist type -->
+                                <apex:outputpanel rendered="{!sobjectChildFieldMap[filter.fieldName].fieldType == 'PICKLIST' || sobjectChildFieldMap[filter.fieldName].fieldType == 'MULTIPICKLIST'}">
+                                    <apex:selectList value="{!filter.fieldValue}" size="1" >
+                                        <apex:actionSupport event="onchange" action="{!refreshFilter}" reRender="opLogic2" />                                
+                                        <apex:selectOptions value="{!sobjectChildFieldMap[filter.fieldName].picklistValues}"/>     
+                                    </apex:selectlist>
+                                </apex:outputpanel>
+
+                                <!-- string type -->
+                                <apex:outputpanel rendered="{!sobjectChildFieldMap[filter.fieldName].fieldType == 'STRING'}">                              
+                                    <apex:inputText value="{!filter.fieldValue}" >
+                                        <apex:actionSupport event="onchange" action="{!refreshFilter}" reRender="opLogic2" />     
+                                    </apex:inputText>
+                                </apex:outputpanel>
+
+                                <!-- date type -->
+                                <apex:outputpanel rendered="{!sobjectChildFieldMap[filter.fieldName].fieldType == 'DATE' || sobjectChildFieldMap[filter.fieldName].fieldType == 'DATETIME'}">                              
+                                    <apex:inputText id="sampleDateField2" value="{!filter.fieldValue}" onfocus="DatePicker.pickDate(true, '{!$Component.sampleDateField2}', false);">
+                                        <c:DatePickerComponent dateFieldId="{!$Component.sampleDateField2}" />   
+                                        <apex:actionSupport event="onchange" action="{!refreshFilter}" reRender="opLogic2, opMsgs" />
+                                    </apex:inputText> 
+                                    or
+                                    <apex:selectList value="{!filter.fieldDateLiteral}" size="1" >
+                                        <apex:actionSupport event="onchange" action="{!refreshFilter}" reRender="opLogic2,sampleDateField2" />                                
+                                        <apex:selectOptions value="{!dateLiterals}"/>     
+                                    </apex:selectlist>                                    
+                                </apex:outputpanel>
+                                
+                            
+                            </apex:outputPanel>  
+                        
+                        </apex:outputPanel>
+                    </apex:actionRegion>
+                    </apex:pageBlockSectionItem>
+
+                    <apex:pageBlockSectionitem id="andor2">
+                    <apex:actionRegion >
+                        <apex:outputPanel id="opAndOr2">
+                            <apex:selectRadio layout="lineDirection" value="{!filter.andOr}">
+                                <apex:selectOptions value="{!AndOr}"/>
+                                <!-- <apex:actionsupport event="onchange" action="{!addAndOr}"/> -->
+                                <apex:actionSupport event="onchange" action="{!refreshFilter}" reRender="opLogic2, opAndOr2" />                                
+                            </apex:selectRadio>                        
+                        </apex:outputPanel>
+                    </apex:actionRegion>
+                    </apex:pageBlockSectionItem>
+
+
+                    <apex:pageBlockSectionitem id="remove2">
+                    <apex:actionRegion >
+                        <apex:outputPanel id="opRemove">
+                            <apex:variable var="filterIndex2" value="{!filterIndex2+1}" />
+                            <apex:commandLink action="{!removeFilter}" rerender="frmMain, opFilters2" status="processingStatus"  >
+                                <apex:param name="ob" assignTo="{!filterIndexToRemove}" value="{!condIndex2 - 1}"/>
+                                <apex:param id="filterIndex2" value="{!sobjectChildName}" assignTo="{!currentContext}" name="currentContext"/> 
+                                Remove
+                            </apex:commandLink>                         
+                        
+                        </apex:outputPanel>
+                    </apex:actionRegion>
+                    </apex:pageBlockSectionItem>
+
+
+                </apex:repeat>        
+            </apex:pageBlockSection>            
+        
+                
+        </apex:pageBlock>    
+            <apex:outputPanel id="opColumns">
+                <apex:outputpanel rendered="{!ISBLANK(sobjectParentName)==false }"> 
+               
+                    <apex:pageBlock title="Select Columns to Query"> 
+                        <apex:pageBlockSection columns="2">
+                            <apex:pageBlockSectionItem >
+                            <b>{!sobjectParentName}</b>                            
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:pageBlockSectionItem >
+                            <b>{!sobjectChildName}</b>                            
+                            </apex:pageBlockSectionItem>
+                            
+                        </apex:pageBlockSection>
+                        
+                        <apex:pageBlockSection columns="2" >
+
+                            <apex:pageBlockSectionItem labelTitle="{!sobjectParentName} Columns">                                
+    
+                                <c:MultiselectPicklist leftLabel="{!sobjectParentName} Field Selection "
+                                leftOptions="{!sobjectFieldOptions}"
+                                rightLabel="Selected Columns"
+                                rightOptions="{!selectedParentFields}"
+                                size="14"
+                                width="150px"/>  
+
+<!--                            
+                                <apex:selectList value="{!fieldSelection}" multiselect="true" size="12" >
+                                    <apex:selectOptions value="{!sobjectFieldOptions}"/>
+                                </apex:selectList><br/>   
+-->                           
+                            </apex:pageBlockSectionItem>
+
+
+                            <apex:pageBlockSectionItem labelTitle="{!sobjectChildName} Columns">
+
+                                <c:MultiselectPicklist leftLabel="{!sobjectChildName} Field Selection "
+                                leftOptions="{!sobjectChildFieldOptions}"
+                                rightLabel="Selected Columns"
+                                rightOptions="{!selectedChildFields}"
+                                size="14"
+                                width="150px"/>  
+
+<!--
+                                <apex:selectList value="{!fieldChildSelection}" multiselect="true" size="12" >
+                                    <apex:selectOptions value="{!sobjectChildFieldOptions}"/>
+                                </apex:selectList><br/> 
+-->
+
+                            </apex:pageBlockSectionItem>
+                        </apex:pageBlockSection>                              
+                        
+                        <apex:pageblockbuttons id="btnsSearch" location="bottom">
+                        
+                           <apex:commandButton value="Search" action="{!searchSobject}" status="processingStatus" rerender="frmMain, opResults, opPagination, opMsgs, theTabPanel"  />
+                           <apex:commandButton value="Save Filter" action="{!saveFilter}"   />
+                            <apex:commandButton value="Clear Filters and Reset" action="{!clearFilters}"  status="processingStatus" rerender="frmMain, opFilters, opFilters2, opMsgs, opResults" />
+                     
+                        </apex:pageblockbuttons>              
+                        
+                        
+                    
+                    </apex:pageBlock>
+                    
+                </apex:outputPanel>
+            </apex:outputPanel>                                     
+        </apex:form>
+        
+        </apex:tab>
+        <apex:tab label="Query Results" name="queryResults" id="resultsTab">
+        <apex:form >         
+        <apex:pageBlock title="{!sobjectParentName} Records Found" >
+
+ 
+            <apex:pageblockbuttons id="btnExport" location="bottom">
+               <apex:commandButton value="Export CSV" action="{!exportCSV}"  />
+               <apex:commandButton value="Export CSV With Child Details" action="{!exportCSV}"  />
+               <apex:commandButton value="Add Second Child Fllter" action="{!addSecondFilter}"  />
+            </apex:pageblockbuttons>   
+            <apex:pageBlockSection columns="1">    
+                <apex:outputPanel >                    
+                    <apex:outputPanel id="opResults">
+                        <apex:pageBlockTable value="{!Sobjects}" var="obj"  >
+                            <apex:repeat value="{!fieldSelection}" var="fld">
+                                <apex:column value="{!obj[fld]}"/>
+                            </apex:repeat>
+                        </apex:pageBlockTable>
+                    </apex:outputPanel>
+                </apex:outputPanel>   
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection columns="1" rendered="{!secondChild}">
+                <apex:selectList value="{!sobjectChildName}" size="1" rendered="true" label="Filter Results by Child Object ">
+                
+                    <apex:actionsupport event="onchange" action="{!populateChildSobjectFields}" rerender="frmMain, pbFilters3, opFilters3, condIndex3, filterIndex3, opMsgs" status="processingStatus" >                                
+                        
+                    </apex:actionSupport>
+                    <apex:selectOptions value="{!childObjectNames}"/>     
+                </apex:selectlist> 
+            </apex:pageBlockSection>
+
+
+            <apex:variable var="condIndex3" value="{!0}"/>
+            <apex:variable var="filterIndex3" value="{!0}"/>
+            <apex:pageblocksection id="pbFilters3" columns="4">    
+                
+                <apex:repeat value="{!sobjectChildFieldFilters2}" var="filter">
+
+                    <apex:pageBlockSectionitem id="field3">
+                        <apex:actionRegion >
+                            <apex:outputPanel id="opFilters3">
+                                <apex:variable var="condIndex3" value="{!condIndex3+1}"/>
+                                <!-- {!TEXT(condIndex3)}.&nbsp; -->
+                                <apex:selectList value="{!filter.fieldName}" size="1">
+                                    <apex:actionsupport event="onchange" action="{!refreshFilter}" rerender="opOperator3,opValue3, opLogic3" status="processingStatus" />
+                                    
+                                    <apex:selectOptions value="{!sobjectChildFieldOptions}"/>
+         
+                                </apex:selectlist>
+                            </apex:outputPanel>
+                        </apex:actionRegion>
+                    </apex:pageBlockSectionitem>
+
+                    <apex:pageBlockSectionitem id="operator3">
+                        <apex:outputPanel id="opOperator3">
+                            <apex:selectList value="{!filter.operator}" size="1" rendered="{!sobjectChildFieldMap[filter.fieldName].fieldType == 'STRING'}">
+                                <apex:actionsupport event="onchange" action="{!refreshFilter}" rerender="opValue3, opLogic3" status="processingStatus"/>                                
+                                <apex:selectOptions value="{!stringOperators}"/>     
+                            </apex:selectlist>                        
+
+                            <apex:selectList value="{!filter.operator}" size="1" rendered="{!sobjectChildFieldMap[filter.fieldName].fieldType == 'BOOLEAN'}">
+                                <apex:actionsupport event="onchange" action="{!refreshFilter}" rerender="opValue3, opLogic3" status="processingStatus"/>                                
+                                <apex:selectOptions value="{!booleanOperators}"/>     
+                            </apex:selectlist>   
+
+                            <apex:selectList value="{!filter.operator}" size="1" rendered="{!sobjectChildFieldMap[filter.fieldName].fieldType == 'PICKLIST' || sobjectChildFieldMap[filter.fieldName].fieldType == 'MULTIPICKLIST'}">
+                                <apex:actionsupport event="onchange" action="{!refreshpicklistFilter}" rerender="opValue2, opLogic2, opMsgs" status="processingStatus">                                
+                                    <apex:param id="picklistInput1" value="{!filter.fieldName}" assignTo="{!currentField}" name="currentField"/>
+                                    <apex:param id="picklistInput2" value="{!sobjectChildName}" assignTo="{!currentContext}" name="currentContext"/> 
+                                </apex:actionSupport>                                
+                                <apex:selectOptions value="{!picklistOperators}"/>     
+                            </apex:selectlist>
+
+                            <apex:selectList value="{!filter.operator}" size="1" rendered="{!sobjectChildFieldMap[filter.fieldName].fieldType == 'DATE' || sobjectChildFieldMap[filter.fieldName].fieldType == 'DATETIME'}">
+                                <apex:actionsupport event="onchange" action="{!refreshFilter}" rerender="opValue3, opLogic3" status="processingStatus"/>                                
+                                <apex:selectOptions value="{!dateOperators}"/>     
+                            </apex:selectlist>
+                                                                                
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+
+
+                    <apex:pageBlockSectionitem id="value3">
+                        <apex:outputPanel id="opValue3">
+                            <apex:outputpanel rendered="{!ISBLANK(filter.fieldName)==false && (filter.operator != '=null' && filter.fieldType != '!=null')}"> 
+                            
+                            
+                                <!-- boolean type -->
+                                <apex:outputpanel rendered="{!sobjectChildFieldMap[filter.fieldName].fieldType == 'BOOLEAN'}">
+                                    <apex:inputCheckbox value="{!filter.fieldValue}">
+                                        <apex:actionSupport event="onchange" action="{!refreshFilter}" reRender="opLogic3" />
+                                    </apex:inputCheckbox>
+                                </apex:outputpanel>
+
+                                <!-- picklist type -->
+                                <apex:outputpanel rendered="{!sobjectChildFieldMap[filter.fieldName].fieldType == 'PICKLIST' || sobjectChildFieldMap[filter.fieldName].fieldType == 'MULTIPICKLIST'}">
+                                    <apex:selectList value="{!filter.fieldValue}" size="1" >
+                                        <apex:actionSupport event="onchange" action="{!refreshFilter}" reRender="opLogic3" />                                
+                                        <apex:selectOptions value="{!sobjectChildFieldMap[filter.fieldName].picklistValues}"/>     
+                                    </apex:selectlist>
+                                </apex:outputpanel>
+
+                                <!-- string type -->
+                                <apex:outputpanel rendered="{!sobjectChildFieldMap[filter.fieldName].fieldType == 'STRING'}">                              
+                                    <apex:inputText value="{!filter.fieldValue}" >
+                                        <apex:actionSupport event="onchange" action="{!refreshFilter}" reRender="opLogic2" />     
+                                    </apex:inputText>
+                                </apex:outputpanel>
+
+                                <!-- date type -->
+                                <apex:outputpanel rendered="{!sobjectChildFieldMap[filter.fieldName].fieldType == 'DATE' || sobjectChildFieldMap[filter.fieldName].fieldType == 'DATETIME'}">                              
+                                    <apex:inputText id="sampleDateField3" value="{!filter.fieldValue}" onfocus="DatePicker.pickDate(true, '{!$Component.sampleDateField2}', false);">
+                                        <c:DatePickerComponent dateFieldId="{!$Component.sampleDateField3}" />   
+                                        <apex:actionSupport event="onchange" action="{!refreshFilter}" reRender="opLogic3, opMsgs" />
+                                    </apex:inputText> 
+                                    or
+                                    <apex:selectList value="{!filter.fieldDateLiteral}" size="1" >
+                                        <apex:actionSupport event="onchange" action="{!refreshFilter}" reRender="opLogic3,sampleDateField3" />                                
+                                        <apex:selectOptions value="{!dateLiterals}"/>     
+                                    </apex:selectlist>                                    
+                                </apex:outputpanel>
+                                
+                            
+                            </apex:outputPanel>  
+                        
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:commandButton action="{!applySecondFilter}" status="processingStatus" reRender="opResults, opPagination" value="Apply Filter" />
+<!--
+                    <apex:pageBlockSectionitem id="andor3">
+                        <apex:outputPanel id="opAndOr3">
+                            <apex:selectRadio layout="lineDirection" value="{!filter.andOr}">
+                                <apex:selectOptions value="{!AndOr}"/>
+   
+                                <apex:actionSupport event="onchange" action="{!refreshFilter}" reRender="opLogic3, opAndOr3" />                                
+                            </apex:selectRadio>                        
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+
+
+                    <apex:pageBlockSectionitem id="remove3">
+                        <apex:outputPanel id="opRemove">
+                            <apex:variable var="filterIndex3" value="{!filterIndex3+1}" />
+                            <apex:commandLink action="{!removeFilter}" rerender="frmMain, opFilters2" status="processingStatus"  >
+                                <apex:param name="ob" assignTo="{!filterIndexToRemove}" value="{!condIndex3 - 1}"/>
+                                <apex:param id="filterIndex3" value="{!sobjectChildName}" assignTo="{!currentContext}" name="currentContext"/> 
+                                Remove
+                            </apex:commandLink>                         
+                        
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+-->
+
+                </apex:repeat>        
+            </apex:pageBlockSection>            
+        
+
+
+
+
+
+
+            <apex:pageBlockSection columns="1">
+                <apex:pageBlocksectionitem >
+                <apex:outputPanel id="opPagination">
+                <apex:outputPanel >
+                        Page &nbsp;<apex:outputText value="{!currentPage}"/> / <apex:outputText value="{!totalPages}"/>&nbsp;&nbsp;&nbsp;|&nbsp;
+                        <apex:outputPanel rendered="{!currentPage>1}">
+                            <apex:commandLink action="{!firstPage}" rerender="opResults,opPagination" >First Page</apex:commandLink>&nbsp;|&nbsp;
+                            <apex:commandLink action="{!prevPage}"  rerender="opResults,opPagination" >Previous Page</apex:commandLink>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!NOT(currentPage>1)}">
+                            <i style="color:gray">First Page</i>&nbsp;|&nbsp;
+                            <i style="color:gray">Previous Page</i>
+                        </apex:outputPanel>
+                        &nbsp;|&nbsp;
+                        <apex:outputPanel rendered="{!currentPage < totalPages && totalPages>1}">
+                            <apex:commandLink action="{!nextPage}"  rerender="opResults,opPagination" >Next Page</apex:commandLink>&nbsp;|&nbsp;
+                            <apex:commandLink action="{!lastPage}"  rerender="opResults,opPagination" >Last Page</apex:commandLink>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!NOT(currentPage < totalPages && totalPages>1)}">
+                            <i style="color:gray">Next Page</i>&nbsp;|&nbsp;
+                            <i style="color:gray">Last Page</i>
+                        </apex:outputPanel>
+                 </apex:outputPanel>                                   
+                 </apex:outputPanel>
+                   
+                </apex:pageBlocksectionitem>        
+            </apex:pageBlockSection>
+ 
+       </apex:pageBlock> 
+
+        </apex:form>
+        </apex:tab>
+        </apex:tabPanel>
+        
+</apex:page>

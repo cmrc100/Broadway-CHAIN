@@ -1,0 +1,284 @@
+<apex:page standardController="Referrals__c" extensions="mapJSON">
+    <script type="text/javascript">
+        var __sfdcSessionId = '{!GETSESSIONID()}';
+        if (typeof console === 'undefined') {
+            console = {
+                'log'   : function (arg) {
+                    // do nothing
+                }
+            };
+        }
+    </script>
+    <script type="text/javascript" src="/soap/ajax/26.0/connection.js"></script>
+    <script type="text/javascript" src="//ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+    <script type="text/javascript">
+        //<![CDATA[
+            jQuery.support.cors = true;
+            var markers = [], currentMarker = null, kmlLayers = [], currentLayer = null, infoWindows = [], currentInfoWindow = null,
+                map = null, geocoder = null, locationTypes = [
+                    'UTA', 'DIS', 'LBO', 'MTD'
+                ], getParams = function () {
+                    var params = {};
+                    
+                    window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+                        params[key] = value;
+                    });
+                    
+                    return params;
+                }, clearLayers = function (destroy) {
+                    $.each(kmlLayers, function (index, element) {
+                        if (typeof element !== 'undefined') {
+                            element.setMap(null);
+                        }
+                    });
+                    
+                    if (true === destroy) {
+                        kmlLayers = [];
+                    }
+                }, clearMarkers = function (destroy) {
+                    $.each(markers, function (index, element) {
+                        if (typeof element !== 'undefined') {
+                            element.setMap(null);
+                        }
+                    });
+                    
+                    if (true === destroy) {
+                        markers = [];
+                    }
+                }, addMarker = function (location, element) {
+                    var infoWindow = new google.maps.InfoWindow({
+                            content : '<h3>' + element.formatted_address + '</h3><p><a href="http://mapit.mysociety.org/point/4326/' + element.geometry.location.lng() + ',' + element.geometry.location.lat() + '" class="getLocalAuth">Get Local Authority</a></p><ul style="margin: 0; list-style-type: none; padding: 0;"></ul>'
+                        }),
+                        marker = new google.maps.Marker({
+                            position    : location,
+                            map         : map,
+                            title       : element.formatted_address
+                        });
+                    
+                    google.maps.event.addListener(marker, 'click', function() {
+                        $.each(infoWindows, function (index, element) {
+                            element.close();
+                        });
+                        
+                        map.panTo(new google.maps.LatLng(marker.position.lat(), marker.position.lng()));
+                        map.setZoom(10);
+                        infoWindow.open(map, marker);
+                        currentInfoWindow = infoWindow;
+                        currentMarker = marker;
+                        clearLayers(true);
+                        getPointInfo("http://mapit.mysociety.org/point/4326/" + element.geometry.location.lng() + "," + element.geometry.location.lat());
+                    });
+                    
+                    google.maps.event.addListener(infoWindow, 'content_changed', function() {
+                        infoWindow.close();
+                        infoWindow.open(map,marker);
+                    });
+                    
+                    markers.push(marker);
+                    infoWindows.push(infoWindow);
+                    
+                    return marker;
+                }, getPointInfo = function (href) {
+                    Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.mapJSON.getMapPoint}', href, function (data, event) {
+                        var infoWindowContent = currentInfoWindow.getContent(),
+                            newContent = $('<div />');
+                        
+                        data = JSON.parse($('<div />').html(data).text());
+                        
+                        if (true === event.status) {
+                            $(infoWindowContent).each(function (index, element) {
+                                if (false === $(element).is('p')) {
+                                    newContent.append(element);
+                                } else {
+                                    newContent.append('<br /><br />');
+                                }
+                            });
+                            
+                            newContent.find('ul').html('');
+                            
+                            $.each(data, function (index, element) {
+                                if ($.inArray(element.type, locationTypes) !== -1) {
+                                    var sfInfo = '', kmlLayer = new google.maps.KmlLayer('http://mapit.mysociety.org/area/' + index + '.kml', {
+                                        preserveViewport    : true,
+                                        suppressInfoWindows : true
+                                    });
+                                    kmlLayer.setMap(map);
+                                    currentLayer = 'http://mapit.mysociety.org/area/' + index + '.kml';
+                                    kmlLayers[index] = kmlLayer;
+                                    $('input#selectedAuthority').val(element.name);
+                                    $('span#selectedAuthorityDisplay').text(element.name);
+                                    $('input#position').val(currentMarker.position.lat() + ',' + currentMarker.position.lng());
+                                    $('input#layer').val(currentLayer);
+                                    newContent.find('ul').append('<li><a href="#" class="kmlLayer" data-kmllayer="' + index + '">' + element.name + '</a> - ' + element.type_name + '</li>');
+                                    
+                                    google.maps.event.addListener(kmlLayer, 'click', function(e) {
+                                        currentInfoWindow.close();
+                                        currentMarker.setPosition(e.latLng);
+                                        $('#position').val(e.latLng.lat() + ',' + e.latLng.lng());
+                                        currentInfoWindow.open(map, currentMarker);
+                                    });
+                                    
+                                    getSFInfo(element, newContent);
+                                }
+                            });
+                            
+                            if (newContent.find('ul').html() === '') {
+                                newContent.find('ul').html('<li>There was no matching result, please try again.</li>');
+                            }
+                            
+                            currentInfoWindow.setContent(newContent.html());
+                        } else {
+                            $(infoWindowContent).each(function (index, element) {
+                                newContent.append(element);
+                            });
+                            
+                            newContent.find('ul').append('<li>The following error was thrown: ' + event.message + '</li>');
+                            currentInfoWindow.setContent(newContent.html());
+                        }
+                    }, {
+                        escape: true
+                    });
+                }, getSFInfo = function (element, newContent) {
+                    var queryOptions = {
+                        'onSuccess' : function (results, source) {
+                            if (results.size <= 0) {
+                                newContent.find('ul').append('<li>No results returned for the Authority ' + element.name + '</li>');
+                            } else {
+                                if (typeof results.records.Id === 'string') {
+                                    record = results.records;
+                                } else {
+                                    record = results.records[0];
+                                }
+                                
+                                if (typeof record !== 'undefined') {
+                                    if (record.Local_call_centre__c !== null) {
+                                        newContent.find('ul').append('<li>Local call centre: ' + record.Local_call_centre__c + '</li>');
+                                    }
+                                    
+                                    if (record.Local_call_centre_hours__c !== null) {
+                                        newContent.find('ul').append('<li>Local call centre hours: ' + record.Local_call_centre_hours__c + '</li>');
+                                    }
+                                    
+                                    if (record.Local_call_centre_telephone__c !== null) {
+                                        newContent.find('ul').append('<li>Phone No.: ' + record.Local_call_centre_telephone__c + '</li>');
+                                    }
+                                    
+                                    if (record.Statement__c !== null) {
+                                        newContent.find('ul').append('<li>Statement: ' + record.Statement__c + '</li>');
+                                    }
+                                    
+                                    if (record.Local_call_centre_notes__c !== null) {
+                                        newContent.find('ul').append('<li>Notes: ' + record.Local_call_centre_notes__c + '</li>');
+                                    }
+                                }
+                            }
+                            
+                            currentInfoWindow.setContent(newContent.html());
+                        },
+                        'onFailure' : function (error, source) {
+                            newContent.find('ul').append('<li>' + error + '</li>');
+                            currentInfoWindow.setContent(newContent.html());
+                        },
+                        'source'    : {
+                            'output'    : null,
+                            'startTime' : new Date().getTime()
+                        }
+                    };
+                    sforce.connection.query("SELECT Id, Local_call_centre__c, Local_call_centre_hours__c, Local_call_centre_notes__c, Local_call_centre_telephone__c, Statement__c FROM Local_Authority__c WHERE Name = '" + element.name + "'", queryOptions);
+                };
+            
+            $(function () {
+                var mapOptions = {
+                    center: new google.maps.LatLng(53.800651,-4.064941),
+                    zoom: 6,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                };
+                geocoder = new google.maps.Geocoder();
+                map = new google.maps.Map(document.getElementById("map"), mapOptions);
+                
+                google.maps.event.addListener(map, 'click', function(e) {
+                    geocoder.geocode({'latLng': e.latLng}, function(results, status) {
+                        if (status === google.maps.GeocoderStatus.OK) {
+                            if (currentInfoWindow !== null) {
+                                currentInfoWindow.close();
+                            }
+                            
+                            if (currentMarker !== null) {
+                                currentMarker.setMap(null);
+                            }
+                            
+                            currentMarker = addMarker(e.latLng, results[0]);
+                        }
+                    });
+                });
+                
+                $('div#map').on('click', 'a.getLocalAuth', function (e) {
+                    e.preventDefault();
+                    var $this = $(this);
+                    
+                    clearLayers(true);
+                    getPointInfo($this.attr('href'));
+                });
+                
+                $('input#geocode').keypress(function (e) {
+                    if (e.which === 13) {
+                        e.preventDefault();
+                        $('input.search').click();
+                    }
+                });
+                
+                $('input.search').click(function (e) {
+                    e.preventDefault();
+                    var $search = $(this).prev(),
+                        value = $search.val().indexOf('UK') === -1 ? $search.val() + ', UK' : $search.val();
+                    
+                    geocoder.geocode({
+                        'address'   : value
+                    }, function (results, status) {
+                        if (status === google.maps.GeocoderStatus.OK) {
+                            clearMarkers(true);
+                            clearLayers(true);
+                            
+                            $.each(results, function (index, element) {
+                                var latLng = new google.maps.LatLng(element.geometry.location.lat(),element.geometry.location.lng());
+                                addMarker(latLng, element);
+                            });
+                        } else if (status === google.maps.GeocoderStatus.ZERO_RESULTS) {
+                            alert('There are no results for your search.');
+                        } else if (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
+                            alert('Daily query limit reached.');
+                        } else {
+                            alert('There was a problem with this search. Please try again later');
+                        }
+                    });
+                });
+                
+                $('input.continue').click(function (e) {
+                    e.preventDefault();
+                    var params = getParams(), position = $('#position').val();
+                    
+                    window.location.href = '/apex/referral_record_type?retURL=' + params.retURL + '&CF00NC0000005FiSo=' + encodeURIComponent($('input#selectedAuthority').val())
+                        + '&00NC0000005EdkN=' + encodeURIComponent('http://maps.google.co.uk/?q=' + position + '&z=10') + '&00NC0000005FbmW=' + position;
+                });
+            });
+        //]]>
+    </script>
+    <apex:sectionHeader title="New Referrals (telephone/website)" subtitle="Referrals (telephone/website) Location"/>
+    <apex:form >
+        <apex:pageBlock title="Referrals (telephone/website) Location" mode="edit" id="thePageBlock">
+            <apex:pageBlockButtons >
+                <apex:commandButton id="continue" value="Continue" styleClass="continue" />
+                <apex:commandButton value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons>
+            <input type="text" id="geocode" value="" /> <apex:commandButton id="search" value="Search" styleClass="search" />
+            <input type="hidden" id="selectedAuthority" value="" />
+            <input type="hidden" id="position" value="" />
+            <input type="hidden" id="layer" value="" />
+            <p>Selected Authority: <span id="selectedAuthorityDisplay"></span></p>
+            <br/>
+            <div id="map" style="width: 100%; height: 650px;"></div>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,10 @@
+<apex:page standardController="Timeline_Event__c">
+<html>
+<body>
+<script>
+window.top.location =
+  "{!urlfor($Action.Timeline_Event__c.New, null, [Name='Updated on save'],true)}"
+</script>
+</body>
+</html>
+</apex:page>

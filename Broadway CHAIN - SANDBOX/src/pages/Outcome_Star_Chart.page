@@ -1,0 +1,76 @@
+<apex:page tabStyle="Support_Needs_Lifestyle__c" controller="OutcomeStarChart">
+    <apex:sectionHeader title="Outcome Star Report"/>
+    <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+    <script type='text/javascript'>
+        google.load("visualization", "1.0", {packages:["imagechart"]});
+    </script>
+    <script type='text/javascript'>
+        google.setOnLoadCallback(drawChart);
+        
+        function drawChart() {
+            var staffDataTable = new google.visualization.arrayToDataTable({!StaffRows}, false),
+                clientDataTable = new google.visualization.arrayToDataTable({!ClientRows}, false),
+                staffChart = new google.visualization.ImageChart(document.getElementById('staffRadarChart')),
+                clientChart = new google.visualization.ImageChart(document.getElementById('clientRadarChart'));
+
+            var options = {
+                cht     : 'rs',
+                chtt    : 'Staff',
+                chs     : '600x500',
+                chdlp   : 't'
+            };
+            
+            staffChart.draw(staffDataTable, options);
+            options.chtt = 'Client';
+            clientChart.draw(clientDataTable, options);
+        }
+    </script>
+    
+    <apex:includeScript value="{!URLFOR($Resource.JQueryCHAIN, 'js/jquery-1.9.1.js')}"/>
+    <script type="text/javascript">
+        function PrintElem(elem)
+        {
+            Popup($(elem).html());
+        }
+    
+        function Popup(data) 
+        {
+            var mywindow = window.open('', '{!accountName}', 'height=400,width=600');
+            mywindow.document.write('<html><head><title>{!accountName}</title>');
+            /*optional stylesheet*/ //mywindow.document.write('<link rel="stylesheet" href="main.css" type="text/css" />');
+            mywindow.document.write('</head><body >');
+            mywindow.document.write(data);
+            mywindow.document.write('</body></html>');
+    
+            mywindow.print();
+            mywindow.close();
+    
+            return true;
+        }
+    
+    </script>
+        
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!filter}" value="Filter"/>
+            </apex:pageBlockButtons>
+            <apex:pageMessages />
+            <apex:outputText value="A Client ID must be provided." rendered="{!AccountIDEmpty}" style="text-align: center; display: block;" />
+            <apex:outputText value="There are no Outcome Star Records for this Client." rendered="{!SupportListEmpty == true && AccountIDEmpty == false}" style="text-align: center; display: block;" />
+            <apex:pageBlockSection title="Filter Options" columns="4">
+                <apex:selectCheckboxes value="{!Selected}">
+                    <apex:selectOptions value="{!items}"/>
+                </apex:selectCheckboxes>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Staff Chart" columns="1">
+                <apex:commandButton onclick="PrintElem('#staffRadarChart');" Value="Print" />
+                <div id="staffRadarChart"></div>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Client Chart" columns="1">
+                <apex:commandButton onclick="PrintElem('#clientRadarChart');" value="Print"/>
+                <div id="clientRadarChart"></div>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

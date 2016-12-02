@@ -1,0 +1,3 @@
+<apex:page standardController="Timeline_Event__c" extensions="Timeline" action="{!redirectTimelineEvent}">
+	
+</apex:page>

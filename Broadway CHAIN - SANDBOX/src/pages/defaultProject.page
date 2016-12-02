@@ -1,0 +1,12 @@
+<apex:page controller="CampaignController" showHeader="false" sidebar="false">
+	<apex:form style="background-color:#E8E8E8">
+			<table cellspacing="0" cellpadding="2" width="100%" border="0" style="background-color:#E8E8E8"><tr><td>
+			<apex:selectList value="{!selectedCampaign}" size="1" style="width:160px"> 
+				<apex:selectOptions value="{!campaigns}"/>
+			</apex:selectList></td></tr><tr><td>
+			<apex:commandButton value="Save" action="{!save}"/></td></tr><tr><td>
+			<strong>(</strong> {!DefaultProj} <strong>)</strong></td></tr> 
+			</table>
+</apex:form>
+
+</apex:page>

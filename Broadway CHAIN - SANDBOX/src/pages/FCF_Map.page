@@ -1,0 +1,398 @@
+<apex:page docType="html-5.0" applyBodyTag="false" applyHtmlTag="false" cache="true" showHeader="false" standardStylesheets="false"
+                    controller="FirstContact" extensions="StreetContactMapUtility" >
+
+<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">    
+<head> 
+    <title>Input Location Details</title>
+        <apex:stylesheet value="{!URLFOR($Resource.SLDS0121, 'assets/styles/salesforce-lightning-design-system-vf.css')}" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" /> 
+
+        <!-- Google Maps  -->
+        <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false&libraries=places"></script>
+
+        
+    <!-- custom scripts -->
+    <script>
+        var lat = null;
+        var lng  = null;
+        var latLng = null;
+        var map = null;
+        var marker = null;
+        var tleData = null;
+        var geocoder = new google.maps.Geocoder();
+
+        Visualforce.remoting.timeout = 120000;
+        Visualforce.remoting.buffer = false;        
+        Visualforce.remoting.escape = true;
+       
+
+       function geocodePosition(pos) {
+          geocoder.geocode({
+            latLng: pos
+          }, function(responses) {
+            if (responses && responses.length > 0) {           
+              updateMarkerAddress(responses[0].formatted_address);
+console.log('postcode ' + responses[0]);              
+              updatePostCode(responses[0]);
+            } else {
+              updateMarkerAddress('Cannot determine address at this location.');
+              updatePostCode('');
+            }
+            
+          });
+
+         
+        }
+
+        function updateMarkerStatus(str) {
+          document.getElementById('markerStatus').innerHTML = str;
+        }
+
+        function updateMarkerPosition(latLng) {
+          document.getElementById('info').innerHTML = [
+            latLng.lat(),
+            latLng.lng()
+          ].join(', ');
+        
+        }
+
+        function updateMarkerAddress(str) {
+          document.getElementById('address').innerHTML = str;
+        }
+
+        function updatePostCode(item) {
+            var postcode = '';
+console.log(item.length);            
+            if (item.length == 0){
+                postcode = '';
+            } else {
+                for (var i = 0; i < item.address_components.length; i++)
+                  {
+                    var addr = item.address_components[i];                   
+                    var postcode;
+console.log(addr.types[0]);                    
+                    if (addr.types[0] == 'postal_code') 
+                      postcode = addr.long_name;
+                     
+                }
+            }
+            document.getElementById('postcode').innerHTML = postcode;
+
+        }
+
+        function updateValues(){
+    
+            var id = "{!$CurrentPage.parameters.Id}";
+            var address = document.getElementById('address').innerHTML;
+            var lng = document.getElementById('info').innerHTML;
+            var lat = document.getElementById('info').innerHTML;
+            var localAuthority = document.getElementById('localAuthority').innerHTML;
+            var postcode = document.getElementById('postcode').innerHTML;
+            var borough = document.getElementById('borough').innerHTML;
+            var ward= document.getElementById('ward').innerHTML;        
+            var LSOACode= document.getElementById('LSOACode').innerHTML;
+            var LSOAName= document.getElementById('LSOAName').innerHTML;
+            var MSOACode= document.getElementById('MSOACode').innerHTML;
+            var MSOAName= document.getElementById('MSOAName').innerHTML;
+            var wardCode= document.getElementById('wardCode').innerHTML;
+                        
+            passValues(id, address, lng, lat, localAuthority, postcode, borough, ward, LSOACode, LSOAName, MSOACode, MSOAName, wardCode);
+    
+        }            
+        
+        function initialize() {
+            
+            //findLocation(setLocation);
+            setLocation();
+        }
+        
+       
+
+                
+        function setLocation(){
+            
+            var sLoc = "{!$CurrentPage.parameters.loc}";
+            //var latLng;
+            if (sLoc.length == 0){
+                latLng = new google.maps.LatLng(51.50642455658189, -0.12969644433587746);
+                //alert(lat);
+                //alert(lng);
+                //latLng = new google.maps.LatLng(lat, lng);
+            } else {
+                var oLoc = sLoc.split(',');
+                var x = Number(oLoc[0]);
+                var y = Number(oLoc[1]);
+                latLng = new google.maps.LatLng(x,y);
+            }
+            var input = /** @type {HTMLInputElement} */(document.getElementById('searchTextField'));
+            var autocomplete = new google.maps.places.Autocomplete(input);
+        
+            if (map == null){
+                map = new google.maps.Map(document.getElementById('mapCanvas'), {
+                    zoom: 15,
+                    center: latLng,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                });
+            }
+            
+            marker = new google.maps.Marker({
+                position: latLng,
+                title: 'Location',
+                map: map,
+                draggable: true
+            });
+        
+             if (navigator.geolocation) {
+                 navigator.geolocation.getCurrentPosition(function (position) {
+                     latLng= new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                     map.setCenter(latLng);
+        
+                    updateMarker(latLng);             
+                 }, noGPS );
+             }
+             function noGPS(err){
+                 alert('Unable to establish current location');
+                 initMarkerEvents(marker);
+             }
+             
+            function updateMarker(clatLng){
+                marker.setMap(null);
+                marker = new google.maps.Marker({
+                        position: clatLng,
+                        title: 'Location',
+                        map: map,
+                        draggable: true
+                    });
+                latLng = clatLng;
+                initMarkerEvents(marker);    
+        
+                    updateMarkerPosition(clatLng);
+                    geocodePosition(clatLng);
+                    getLocalAuthority();            
+            }
+
+            
+    // Update current position info.
+    updateMarkerPosition(latLng);
+    geocodePosition(latLng);
+    getLocalAuthority();
+     
+          function initMarkerEvents(marker){     
+                // Add dragging event listeners.
+                google.maps.event.addListener(marker, 'dragstart', function() {
+                    updateMarkerAddress('Dragging...');
+                });
+              
+                google.maps.event.addListener(marker, 'drag', function() {
+                    updateMarkerStatus('Dragging...');
+                    updateMarkerPosition(marker.getPosition());
+                });
+              
+                google.maps.event.addListener(marker, 'dragend', function() {
+                    updateMarkerStatus('Drag ended');
+                    geocodePosition(marker.getPosition());                    
+                    getLocalAuthority();
+                })
+            
+                autocomplete.bindTo('bounds', map);
+            
+                
+            } 
+            
+            var infowindow = new google.maps.InfoWindow();
+            
+            google.maps.event.addListener(autocomplete, 'place_changed', function() {
+                infowindow.close();
+                //marker.setVisible(false);
+                input.className = '';
+                var place = autocomplete.getPlace();
+                if (!place.geometry) {
+                  // Inform the user that the place was not found and return.
+                  input.className = 'notfound';
+                  return;
+                }
+        
+                // If the place has a geometry, then present it on a map.
+                if (place.geometry.viewport) {
+                  map.fitBounds(place.geometry.viewport);
+                } else {
+                  map.setCenter(place.geometry.location);
+                  map.setZoom(15);  
+                }
+  
+                marker.setPosition(place.geometry.location);
+                marker.setVisible(true);      
+                var address = '';
+                if (place.address_components) {
+                  address = [
+                    (place.address_components[0] && place.address_components[0].short_name || ''),
+                    (place.address_components[1] && place.address_components[1].short_name || ''),
+                    (place.address_components[2] && place.address_components[2].short_name || '')
+                  ].join(' ');
+            
+                }
+                geocodePosition(marker.getPosition());
+                updateMarkerPosition(marker.getPosition());
+                
+                infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
+            
+                infowindow.open(map, marker);
+                getLocalAuthority();
+               
+        
+          });
+ 
+        
+           function getLocalAuthority(){
+                
+                var sLat = marker.getPosition().lat();
+                var sLng = marker.getPosition().lng();
+                var sAddress = document.getElementById('address').innerHTML;
+                var sLngLat = document.getElementById('info').innerHTML;
+                var sLocalAuthority = document.getElementById('localAuthority').innerHTML;
+                var sWard = document.getElementById('ward').innerHTML;
+                var sBorough = document.getElementById('borough').innerHTML;
+                 
+                var href = "http://mapit.mysociety.org/point/4326/" + sLng + ',' + sLat;
+
+                
+                Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.StreetContactMapUtility.getMapPoint}', href, sAddress, 
+                                                                    sLngLat,  function (data, event) {
+                var oData = data.split('^');
+              
+                document.getElementById('localAuthority').innerHTML = oData[0];
+                document.getElementById('ward').innerHTML = oData[2];               
+                document.getElementById('borough').innerHTML = oData[3];  
+                document.getElementById('LSOAName').innerHTML = oData[4];
+                document.getElementById('LSOACode').innerHTML = oData[5];
+                document.getElementById('MSOAName').innerHTML = oData[6];
+                document.getElementById('MSOACode').innerHTML = oData[7];
+                document.getElementById('wardCode').innerHTML = oData[8]; 
+                                           
+                //document.getElementById('msg').value = oData[1];         
+                document.getElementById('msg').value = '';
+                updateValues();
+                });
+            
+          
+  
+            }
+         
+        
+        } //End of Initialize function
+
+        // Onload handler to fire off the app.
+        google.maps.event.addDomListener(window, 'load', initialize);
+        
+    </script>
+    <style> 
+        
+          #mapCanvas {
+            width: 340px;
+            height: 200px;
+            float: left;
+          }
+          #infoPanel {
+            float: left;
+            margin-left: 10px;
+          }
+          #infoPanel div {
+            margin-bottom: 5px;
+          }      
+        
+    </style>
+</head>
+    <body>
+
+
+            <div class="slds">
+            <apex:form >
+            <c:ProcessSpinner MessageText="Processing, please wait ...." />
+             
+            <apex:actionFunction name="passValues"  action="{!saveMap}" status="processingStatus" reRender="hiddenBlock"  >
+                <apex:param name="id" value="" assignTo="{!tlId}"/>    
+                <apex:param name="address" value="" assignTo="{!address}"/>
+                <apex:param name="longitude" value="" assignTo="{!lng}"/>
+                <apex:param name="latitude" value="" assignTo="{!lat}"/>
+                <apex:param name="localAuthority" value="" assignTo="{!localAuthority}"/>
+                <apex:param name="postcode" value="" assignTo="{!postcode}"/>
+                <apex:param name="borough" value="" assignTo="{!borough}"/>
+                <apex:param name="ward" value="" assignTo="{!ward}"/>
+                <apex:param name="LSOACode" value="" assignTo="{!LSOACode}"/>
+                <apex:param name="LSOAName" value="" assignTo="{!LSOAName}"/>
+                <apex:param name="MSOACode" value="" assignTo="{!MSOACode}"/>
+                <apex:param name="MSOAName" value="" assignTo="{!MSOAName}"/>
+                <apex:param name="wardCode" value="" assignTo="{!wardCode}"/>                
+            </apex:actionFunction>            
+            
+            <apex:pageMessages />              
+                <div class="slds-page-header" role="banner">                            
+
+                    <h1 class="slds-text-heading--small slds-m-bottom--small slds-align-middle">
+                        Street Contact Location
+                    </h1>
+
+                    <div class="slds-grid ">
+                        <div class="slds-col slds-has-flexi-truncate slds-size--1-of-2 slds-col--padded-small">
+                            <!-- <button class="slds-button--brand slds-button--small" onclick="sforce.one.back();">Cancel</button> -->
+                            <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" styleClass="slds-button--brand slds-button--small" html-formnovalidate="formnovalidate" /> 
+                        </div>
+                        <!--
+                        <div class="slds-col slds-has-flexi-truncate slds-size--1-of-3 slds-col--padded-small">   
+                            <h4 class="slds-text-heading--small slds-m-bottom--small slds-align-middle">
+                                First Contact Form
+                            </h4>
+                        </div>
+                        -->
+                        <div class="slds-col  slds-has-flexi-truncate slds-size--1-of-2  slds-col--padded-small">
+                               <!--  <button class="slds-button--brand slds-button--small   slds-float--right" onclick="continueTimeline();">Continue</button> -->
+                               <apex:commandButton value="Continue"  action="{!saveLocationFCMobile}" styleClass="slds-button--brand slds-button--small   slds-float--right" />
+                        </div>
+                     </div>
+                
+                </div>
+                
+                <form class="slds-form--inline">
+                <input type="hidden" id="msg"/>
+                
+                <input id="searchTextField" type="text" size="70"/>
+                <p></p><br/> 
+                
+                <div id="mapCanvas"></div>
+
+
+                <div id="infoPanel">
+                
+                    <b>Closest matching address:</b>
+                    <div id="address"></div>
+                    <b>Post Code:</b>
+                    <div id="postcode"></div>
+                    <b>Local Authority:</b>
+                    <div id="localAuthority"></div>
+                    <b>Borough:</b>
+                    <div id="borough"></div>
+                    <b>Ward:</b>
+                    <div id="ward"></div>
+                    <b>Ward Code:</b>
+                    <div id="wardCode"></div>                    
+                    <b>LSOA Name:</b>
+                    <div id="LSOAName"></div>
+                    <b>LSOA Code:</b>
+                    <div id="LSOACode"></div>
+                    <b>MSOA Name:</b>
+                    <div id="MSOAName"></div>
+                    <b>MSOA Code:</b>
+                    <div id="MSOACode"></div>                            
+                    <b>Marker status:</b>
+                    <div id="markerStatus"><i>Click and drag the marker.</i></div>
+                    <b>Current position:</b>
+                    <div id="info"></div>
+                </div>                
+            </form>
+            </apex:form>
+            </div>                    
+           
+    
+</body>
+</html>
+</apex:page>

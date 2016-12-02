@@ -1,0 +1,886 @@
+<apex:page standardController="Support_Needs_Lifestyle__c" standardStylesheets="true" showHeader="false" sidebar="false" tabStyle="Support_Needs_Lifestyle__c"> 
+
+
+<apex:includeScript value="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js" />
+<apex:includeScript value="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.18.3/js/jquery.tablesorter.min.js" />
+<apex:stylesheet value="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.18.3/css/theme.blue.css" />
+
+<script type="text/javascript">
+    $j = jQuery.noConflict();
+
+    $j(function(){
+      $j("#HousingHistory").tablesorter({
+        theme : 'blue',
+        sortInitialOrder : "desc",
+
+        // pass the headers argument and passing a object
+        headers: {
+          // set initial sort order by column, this headers option setting overrides the sortInitialOrder option
+          // Column indexes are zero-based
+          2: { sortInitialOrder: 'desc', sorter: "shortDate" }
+        },
+        
+        // column index, sort direction (0 asc, 1 desc)
+        sortList: [[2, 1]],
+        
+        dateFormat: 'ddmmyyyy'
+
+      });
+    });
+
+    $j(function(){
+      $j("#OffendingHistory").tablesorter({
+        theme : 'blue',
+        sortInitialOrder : "desc",
+        
+        // pass the headers argument and passing a object
+        headers: {
+          // set initial sort order by column, this headers option setting overrides the sortInitialOrder option
+          // Column indexes are zero-based
+          1: { sortInitialOrder: 'desc', sorter: "shortDate" },
+          2: { sorter: "shortDate" }
+
+        },
+        
+        // column index, sort direction (0 asc, 1 desc)
+        sortList: [[1, 1]],
+        
+        dateFormat: 'ddmmyyyy'
+
+      });
+    });
+    
+
+    $j(function(){
+      $j("#EmploymentHistory").tablesorter({
+        theme : 'blue',
+
+        // pass the headers argument and passing a object
+        headers: {
+          // set initial sort order by column, this headers option setting overrides the sortInitialOrder option
+          // Column indexes are zero-based
+          2: { sortInitialOrder: 'desc', sorter: "shortDate"  },
+          3: {sorter: "shortDate"}
+        },
+        
+        // column index, sort direction (0 asc, 1 desc)
+        sortList: [[2, 1]],
+        
+        dateFormat : "ddmmyyyy"
+
+      });
+    });    
+
+</script>
+  
+    <table width="98%" border="0" cellpadding="0" cellspacing="0">
+    <tr><td align="right"><a href="javascript:window.print();">Print</a></td></tr>
+    </table>
+
+<apex:pageBlock title="Westminster BBS Assessment/Referral Form (Version 1.5)">
+    <apex:pageBlockSection title="Part A - Initial Assessment" columns="2">
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Project" for="project/team"/>
+            <apex:outputField id="project_team__c" value="{!Support_Needs_Lifestyle__c.Project_team__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Lead Worker" for="lead worker"/>
+            <apex:outputField id="lead_worker__c" value="{!Support_Needs_Lifestyle__c.lead_worker__r.Name}"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Lead worker email" for="lead worker email"/>
+            <apex:outputField id="Email" value="{!Support_Needs_Lifestyle__c.lead_worker__r.Email}"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Lead worker phone" for="lead worker phone"/>
+            <apex:outputField id="Lead_worker_phone__c" value="{!Support_Needs_Lifestyle__c.Lead_worker_phone__c}"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Createddate" for="createddate"/>
+            <apex:outputField id="Createddate" value="{!Support_Needs_Lifestyle__c.Createddate}"/>
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+     
+    <apex:pageBlockSection title="CLIENT DETAILS" columns="2">
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Name" for="Name"/>
+            <apex:outputField id="name" value="{!Support_Needs_Lifestyle__c.client__r.Name}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Birthdate" for="Birthdate"/>
+            <apex:outputField id="birthdate" value="{!Support_Needs_Lifestyle__c.client__r.Birthdate}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Birthdate estimated" for="DOB estimated"/>
+            <apex:outputField id="DOB_Estimated__c" value="{!Support_Needs_Lifestyle__c.client__r.DOB_Estimated__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Age" for="Age"/>
+            <apex:outputField id="age__c" value="{!Support_Needs_Lifestyle__c.client__r.Age__c}"/>       
+        </apex:pageBlockSectionItem>
+         <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Gender" for="Gender"/>
+            <apex:outputField id="Gender__c" value="{!Support_Needs_Lifestyle__c.client__r.Gender__c}"/>       
+        </apex:pageBlockSectionItem>
+         <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Ethnicity" for="Ethnic origin"/>
+            <apex:outputField id="Ethnic_origin__c" value="{!Support_Needs_Lifestyle__c.client__r.Ethnic_Origin__c}"/>       
+        </apex:pageBlockSectionItem>
+         <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Nationality" for="Nationality"/>
+            <apex:outputField id="Nationality__c" value="{!Support_Needs_Lifestyle__c.client__r.Nationality__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="CHAIN number" for="ClientID"/>
+            <apex:outputField id="ClientID__c" value="{!Support_Needs_Lifestyle__c.client__r.ClientID__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Date verified" for="Date First Seen Rough Sleeping"/>
+            <apex:outputField id="Date_First_Seen_Rough_Sleeping__c" value="{!Support_Needs_Lifestyle__c.client__r.Date_First_Seen_Rough_Sleeping__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="NI Number" for="NI Number"/>
+            <apex:outputField id="NINumber__c" value="{!Support_Needs_Lifestyle__c.client__r.NINumber__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Mobile" for="Mobile"/>
+            <apex:outputField id="MobilePhone" value="{!Support_Needs_Lifestyle__c.client__r.MobilePhone}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Sexuality" for="Sexuality"/>
+            <apex:outputField id="Sexuality__c" value="{!Support_Needs_Lifestyle__c.client__r.Sexuality__c}"/>       
+        </apex:pageBlockSectionItem>
+          <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Email address" for="Email"/>
+            <apex:outputField id="Email" value="{!Support_Needs_Lifestyle__c.client__r.Email}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="GLA List" for="GLA List"/>
+            <apex:outputField id="GLA_List__c" value="{!Support_Needs_Lifestyle__c.client__r.GLA_List__c}"/>       
+        </apex:pageBlockSectionItem>
+         <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Preferred language" for="Preferred language"/>
+            <apex:outputField id="Preferred_language__c" value="{!Support_Needs_Lifestyle__c.client__r.Preferred_Language__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Spoken English" for="Spoken English"/>
+            <apex:outputField id="Spoken_English_Ability__c" value="{!Support_Needs_Lifestyle__c.client__r.Spoken_English_Ability__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Date entered UK (first entry)" for="Date entered UK"/>
+            <apex:outputField id="Date_entered_UK__c" value="{!Support_Needs_Lifestyle__c.client__r.Date_entered_UK__c}"/>       
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>   
+    
+    <apex:pageBlockSection title="IMMIGRATION STATUS" columns="2">    
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Immigration Status" for="!Support_Needs_Lifestyle__c.Immigration Status"/>
+            <apex:outputField id="Immigration_Status__c" value="{!Support_Needs_Lifestyle__c.client__r.Immigration_Status__c}"/>       
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+    
+    <apex:pageBlockSection title="BENEFITS/ID" columns="2">    
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Benefit status" for="Benefit Status"/>
+            <apex:outputField id="Benefit_Status__c" value="{!Support_Needs_Lifestyle__c.Benefit_status__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Benefit status notes" for="Benefit Status notes"/>
+            <apex:outputField id="Benefit_Status_notes__c" value="{!Support_Needs_Lifestyle__c.Benefit_status_notes__c}"/>       
+        </apex:pageBlockSectionItem>
+         <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Outstanding loans/debts" for="Outstanding loans/debt"/>
+            <apex:outputField id="Outstanding_loans_debts__c" value="{!Support_Needs_Lifestyle__c.Outstanding_loans_debts__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Outstanding loans/debts notes" for="Outstanding loans/debts notes"/>
+            <apex:outputField id="Outstanding_loans_debts_notes__c" value="{!Support_Needs_Lifestyle__c.Outstanding_loans_debts_notes__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="ID seen" for="ID seen"/>
+            <apex:outputField id="ID_seen__c" value="{!Support_Needs_Lifestyle__c.ID_seen__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Types of ID seen" for="Types of ID seen"/>
+            <apex:outputField id="Types_of_ID_seen__c" value="{!Support_Needs_Lifestyle__c.Types_of_ID_seen__c}"/>       
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+        
+     
+    
+    <apex:pageBlockSection title="RELATIONSHIPS" columns="2">    
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Significant relationships" for="Friends/Family/Children/Couple"/>
+            <apex:outputField id="Friends_Family_Children_Couple__c" value="{!Support_Needs_Lifestyle__c.Friends_family_children_couple__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="MARAC client" for="MARAC client"/>
+            <apex:outputField id="MARAC_Client__c" value="{!Support_Needs_Lifestyle__c.MARAC_client__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Victim of domestic violence" for="Victim of domestic violence"/>
+            <apex:outputField id="Victim_of_domestic_violence__c" value="{!Support_Needs_Lifestyle__c.Victim_of_domestic_violence__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Safeguarding referral required" for="Safeguarding referral required"/>
+            <apex:outputField id="Safeguarding_referral_required__c" value="{!Support_Needs_Lifestyle__c.Safeguarding_referral_required__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Perpetrator of domestic violence" for="Perpetrator of domestic violence"/>
+            <apex:outputField id="Perpetrator_of_domestic_violence__c" value="{!Support_Needs_Lifestyle__c.Perpetrator_of_domestic_violence__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Victim support referral required" for="Victim support referral required"/>
+            <apex:outputField id="Victim_support_referral_required__c" value="{!Support_Needs_Lifestyle__c.Victim_support_referral_required__c}"/>       
+        </apex:pageBlockSectionItem>    
+    </apex:pageBlockSection>
+    
+    <apex:pageBlockSection title="HOUSING HISTORY AND EXPERIENCE" columns="2">    
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Local connection (country)" for="Local connection (country)"/>
+            <apex:outputField id="Local_connection_country__c" value="{!Support_Needs_Lifestyle__c.Local_connection_country__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Local connection (area)" for="Local connection (area)"/>
+            <apex:outputField id="Local_connection_area__c" value="{!Support_Needs_Lifestyle__c.Local_connection_area__c}"/>       
+        </apex:pageBlockSectionItem> 
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Housing Management Issues" for="Housing Management Issues"/>
+            <apex:outputField id="Housing_Management_Issues__c" value="{!Support_Needs_Lifestyle__c.Housing_Management_Issues__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="History of Arson" for="History of Arson"/>
+            <apex:outputField id="History_of_Arson__c" value="{!Support_Needs_Lifestyle__c.History_of_arson__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Current sleeping location" for="Current sleeping location"/>
+            <apex:outputField id="Current_sleeping_location__c" value="{!Support_Needs_Lifestyle__c.Current_sleeping_location__c}"/>       
+        </apex:pageBlockSectionItem>                  
+    </apex:pageBlockSection>  
+<!-- Housing History -->   
+    <apex:pageBlockSection title="Housing History" columns="1" id="pbHistory">    
+        <table style="background-repeat:no-repeat; width:100%;margin:0;" cellpadding="15px" cellspacing="0" border="0" class="tablesorter" id="HousingHistory" styleclass="tablesorter">
+             
+            <thead class="rich-table-thead">
+                <tr class="headerRow">
+                    <th style="width:20%;" >Address</th>
+                    <th style="width:20%;" >Type</th>
+                    <th class="sorter-shortDate dateFormat-ddmmyyyy" style="width:20%;" >Date From</th>
+                    <th class="sorter-shortDate dateFormat-ddmmyyyy" style="width:20%;" >Date To</th>
+                    <th style="width:20%;" >Reason for Leaving</th>
+                </tr>
+            </thead>
+            
+            <tbody id="historyHousing">
+              <apex:repeat value="{!Support_Needs_Lifestyle__c.History__r}" var="child"  >
+              <apex:outputPanel rendered="{!IF(child.recordtype.name = 'Housing', true, false)}" >
+                  <tr>
+                    <td class="dataCell">  {!child.Location__c}</td>
+                    <td class="dataCell">  {!child.Type__c}</td>                 
+                    <td class="dataCell">  <apex:outputText value="{0,date,dd'/'MM'/'yyyy}">
+                                                <apex:param value="{!child.Start_date__c}" /> 
+                                           </apex:outputText>
+                    </td>  
+                    <td class="dataCell">  <apex:outputText value="{0,date,dd'/'MM'/'yyyy}">
+                                                <apex:param value="{!child.End_date__c}" /> 
+                                           </apex:outputText>
+                    </td>    
+                    <td class="dataCell">  {!child.Reasons_for_staying_or_leaving__c} </td>
+                 </tr>
+             </apex:outputPanel>
+            </apex:repeat>         
+            </tbody>     
+        </table>           
+    </apex:pageBlockSection>
+    
+    <apex:pageBlockSection title="LIFE SKILLS" columns="2" id="pbLifeSkills">    
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Independent Living Skills" for="Independent Living Skills"/>
+            <apex:outputField id="Independent_Living_Skills__c" value="{!Support_Needs_Lifestyle__c.Independent_living_skills__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Independent Living Skills notes" for="Independent Living Skills notes"/>
+            <apex:outputField id="Independent_Living_Skills_notes__c" value="{!Support_Needs_Lifestyle__c.Independent_living_skills_notes__c}"/>       
+        </apex:pageBlockSectionItem>                  
+    </apex:pageBlockSection>
+       
+    <apex:pageBlockSection title="LITERACY/NUMERACY/ENGLISH SKILLS/DYSLEXIA" columns="1">    
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Difficulties in reading/writing" for="Difficulties in reading/writing"/>
+            <apex:outputField id="Difficulties_in_reading_writing__c" value="{!Support_Needs_Lifestyle__c.Difficulties_in_reading_writing__c}"/>       
+        </apex:pageBlockSectionItem>              
+    </apex:pageBlockSection>   
+    
+    <apex:pageBlockSection title="INSTITUTIONAL HISTORY" columns="2">    
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Armed forces" for="Armed Forces"/>
+            <apex:outputField id="Institutional_history_Armed_forces__c" value="{!Support_Needs_Lifestyle__c.client__r.Institutional_History_Armed_Forces__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Date last left armed forces" for="Date last left armed forces"/>
+            <apex:outputField id="Date_last_left_armed_forces__c" value="{!Support_Needs_Lifestyle__c.client__r.Date_last_left_armed_forces__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="In Care?" for="Care leaver"/>
+            <apex:outputField id="Institutional_history_Care__c" value="{!Support_Needs_Lifestyle__c.client__r.Institutional_History_Care__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Date last left care" for="Date last left care"/>
+            <apex:outputField id="Date_last_left_care__c" value="{!Support_Needs_Lifestyle__c.client__r.Date_last_left_care__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Prison" for="Prison"/>
+            <apex:outputField id="Prison__c" value="{!Support_Needs_Lifestyle__c.client__r.Prison__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Estimated Date Last Left Prison" for="Estimated Date Last Left Prison"/>
+            <apex:outputField id="Estimated_Date_Last_Left_Prison__c" value="{!Support_Needs_Lifestyle__c.client__r.Estimated_Date_Last_Left_Prison__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Date Last Left Prison" for="Date last left prison"/>
+            <apex:outputField id="Date_last_left_prison__c" value="{!Support_Needs_Lifestyle__c.client__r.Date_Last_Left_Prison__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Name of last prison" for="Name of last prison"/>
+            <apex:outputField id="Name_of_last_prison__c" value="{!Support_Needs_Lifestyle__c.client__r.Name_of_Last_Prison__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Offending Behaviour" for="Offending Behaviour"/>
+            <apex:outputField id="Offending_Behaviour__c" value="{!Support_Needs_Lifestyle__c.Offending_Behaviour__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Offending Behaviour notes" for="Offending Behaviour notes"/>
+            <apex:outputField id="Offending_Behaviour_notes__c" value="{!Support_Needs_Lifestyle__c.Offending_Behaviour_Notes__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="History of custodial sentences" for="History of custodial sentences"/>
+            <apex:outputField id="History_of_custodial_sentences__c" value="{!Support_Needs_Lifestyle__c.History_of_custodial_sentences__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Offender under probation supervision" for="Offender under probation supervision"/>
+            <apex:outputField id="Offender_under_probation_supervision__c" value="{!Support_Needs_Lifestyle__c.Offender_under_probation_supervision__c}"/>       
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+    
+    <apex:pageBlockSection title="" columns="1">    
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Offending history notes" for="Offending history (notes)"/>
+            <apex:outputField id="Offending_notes__c" value="{!Support_Needs_Lifestyle__c.Offending_Notes__c}"/>       
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+    
+    <!-- Offending History -->   
+    <apex:pageBlockSection title="Offending History" columns="1">    
+        <table style="background-repeat:no-repeat; width:100%;margin:0;" cellpadding="15px" cellspacing="0" border="0" class="tablesorter" id="OffendingHistory" styleclass="tablesorter">
+            <thead class="rich-table-thead">
+                <tr class="headerRow ">
+                    <th style="width:20%;" >Type</th>
+                    <th class="sorter-shortDate dateFormat-ddmmyyyy" style="width:20%;" >Date From</th>
+                    <th class="sorter-shortDate dateFormat-ddmmyyyy" style="width:20%;" >Date To</th>
+                    <th style="width:20%;" >Offence details</th>
+                    <th style="width:20%;" >Prison</th>
+                </tr>
+            </thead>
+
+            <tbody id="historyOffending">
+              <apex:repeat value="{!Support_Needs_Lifestyle__c.History__r}" var="child"  >
+              <apex:outputPanel rendered="{!IF(child.recordtype.name = 'Offending', true, false)}">
+                  <tr>
+                    <td class="dataCell">  {!child.Type__c}</td>                 
+                    <td class="dataCell">  <apex:outputText value="{0,date,dd'/'MM'/'yyyy}">
+                                                <apex:param value="{!child.Start_date__c}" /> 
+                                           </apex:outputText>
+                    </td>  
+                    <td class="dataCell">  <apex:outputText value="{0,date,dd'/'MM'/'yyyy}">
+                                                <apex:param value="{!child.End_date__c}" /> 
+                                           </apex:outputText>
+                    </td>    
+                    <td class="dataCell">  {!child.Offence_details__c} </td>
+                    <td class="dataCell">  {!child.Sentence__c} </td>
+                 </tr>
+             </apex:outputPanel>
+            </apex:repeat>         
+            </tbody>     
+        </table>           
+    </apex:pageBlockSection>
+    
+    
+    <apex:pageBlockSection title="EMPLOYMENT HISTORY" columns="2">    
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="History of Employment" for="History of Employment"/>
+            <apex:outputField id="History_of_Employment__c" value="{!Support_Needs_Lifestyle__c.History_of_employment__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Readiness to work" for="Readiness to work"/>
+            <apex:outputField id="Readiness_to_work__c" value="{!Support_Needs_Lifestyle__c.Readiness_to_work__c}"/>       
+        </apex:pageBlockSectionItem>                  
+    </apex:pageBlockSection>   
+<!-- Employment History -->
+   <apex:pageBlockSection title="Employment History" columns="1">    
+        <table style="background-repeat:no-repeat; width:100%;margin:0;" cellpadding="15px" cellspacing="0" border="0" class="tablesorter" id="EmploymentHistory" styleclass="tablesorter">
+            <thead >
+                <tr class="headerRow ">
+                    <th style="width:20%;"> Job title</th>
+                    <th style="width:20%;"> Job description</th>
+                    <th class="sorter-shortDate dateFormat-ddmmyyyy" style="width:20%;"> Date From</th>
+                    <th class="sorter-shortDate dateFormat-ddmmyyyy" style="width:20%;"> Date To</th>
+                    <th style="width:20%;"> Reason for Leaving</th>
+                </tr>
+            </thead>
+
+            <tbody id="historyEmployment">
+              <apex:repeat value="{!Support_Needs_Lifestyle__c.History__r}" var="child"  >
+              <apex:outputPanel rendered="{!IF(child.recordtype.name = 'Employment', true, false)}">
+                  <tr>
+                    <td class="dataCell">  {!child.Job_title__c}</td> 
+                    <td class="dataCell">  {!child.Job_description__c}</td>               
+                    <td class="dataCell">  <apex:outputText value="{0,date,dd'/'MM'/'yyyy}">
+                                                <apex:param value="{!child.Start_date__c}" /> 
+                                           </apex:outputText>
+                    </td>  
+                    <td class="dataCell">  <apex:outputText value="{0,date,dd'/'MM'/'yyyy}">
+                                                <apex:param value="{!child.End_date__c}" /> 
+                                           </apex:outputText>
+                    </td>    
+                    <td class="dataCell">  {!child.Reasons_for_staying_or_leaving__c} </td>
+                 </tr>
+             </apex:outputPanel>
+            </apex:repeat>         
+            </tbody>     
+        </table>           
+    </apex:pageBlockSection>
+           
+     <apex:pageBlockSection title="BRIEF HEALTH NEEDS ASSESSMENT" columns="2">    
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Physical health" for="Physical health"/>
+            <apex:outputField id="Physical_health__c" value="{!Support_Needs_Lifestyle__c.Physical_health__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Physical health notes" for="Physical health notes"/>
+            <apex:outputField id="Physical_health_notes__c" value="{!Support_Needs_Lifestyle__c.Physical_Health_Notes__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Physical health issues" for="Physical health issues"/>
+            <apex:outputField id="Physical_health_issues__c" value="{!Support_Needs_Lifestyle__c.Physical_health_issues__c}"/>       
+        </apex:pageBlockSectionItem> 
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Registered with GP" for="Registered with GP"/>
+            <apex:outputField id="Registered_with_GP__c" value="{!Support_Needs_Lifestyle__c.Registered_with_GP__c}"/>       
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection> 
+    
+   <apex:pageBlockSection title="DISABILITY" columns="2">    
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Disability types" for="Disability types"/>
+            <apex:outputField id="Disability_types__c" value="{!Support_Needs_Lifestyle__c.Disability_types__c}"/>       
+        </apex:pageBlockSectionItem> 
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Disability notes" for="Registered with GP"/>
+            <apex:outputField id="Disability_issues_notes__c" value="{!Support_Needs_Lifestyle__c.Disability_issues_notes__c}"/>       
+        </apex:pageBlockSectionItem>                  
+    </apex:pageBlockSection>   
+          
+    <apex:pageBlockSection title="EMOTIONAL WELLBEING/MENTAL HEALTH ISSUES" columns="2">    
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Mental health concerns" for="Mental health concerns"/>
+            <apex:outputField id="Mental_health_concerns__c" value="{!Support_Needs_Lifestyle__c.Mental_health_concerns__c}"/>       
+        </apex:pageBlockSectionItem> 
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Mental health concerns notes" for="Mental health concerns notes"/>
+            <apex:outputField id="Mental_health_diagnosis_notes__c" value="{!Support_Needs_Lifestyle__c.Mental_health_diagnosis_notes__c}"/>       
+        </apex:pageBlockSectionItem> 
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Mental health (worker)" for="Mental health (worker)"/>
+            <apex:outputField id="Mental_health_worker__c" value="{!Support_Needs_Lifestyle__c.Mental_health_worker__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Mental health (worker assessed) notes" for="Mental health (worker assessed) notes"/>
+            <apex:outputField id="Mental_health_worker_assessed_notes__c" value="{!Support_Needs_Lifestyle__c.Mental_Health_worker_assessed_notes__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Mental health (professional)" for="Mental health (professional)"/>
+            <apex:outputField id="Mental_health_professional__c" value="{!Support_Needs_Lifestyle__c.Mental_health_professional__c}"/>       
+        </apex:pageBlockSectionItem> 
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Mental health (professional assessed) notes" for="Mental health (professional assessed) notes"/>
+            <apex:outputField id="Mental_health_professional_notes__c" value="{!Support_Needs_Lifestyle__c.Mental_Health_professional_Notes__c}"/>       
+        </apex:pageBlockSectionItem>  
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="In contact with MH services" for="In contact with MH services"/>
+            <apex:outputField id="In_contact_with_secondary_MH_services__c" value="{!Support_Needs_Lifestyle__c.In_contact_with_secondary_MH_services__c}"/>       
+        </apex:pageBlockSectionItem>                 
+    </apex:pageBlockSection>  
+    
+    <apex:pageBlockSection title="DRUG/ALCOHOL USE ASSESSMENT" columns="2">    
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Alcohol" for="Alcohol"/>
+            <apex:outputField id="Alcohol__c" value="{!Support_Needs_Lifestyle__c.Alcohol__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Alcohol notes" for="Alcohol notes"/>
+            <apex:outputField id="Alcohol_notes__c" value="{!Support_Needs_Lifestyle__c.Alcohol_Notes__c}"/>       
+        </apex:pageBlockSectionItem> 
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Type of alcohol" for="Type of alcohol"/>
+            <apex:outputField id="Type_of_Alcohol__c" value="{!Support_Needs_Lifestyle__c.Type_of_alcohol__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="How many units on a typical day?" for="How many units on a typical day?"/>
+            <apex:outputField id="How_many_units_on_a_typical_day__c" value="{!Support_Needs_Lifestyle__c.How_many_units_on_a_typical_day__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="How often do you drink alcohol?" for="How often do you drink alcohol?"/>
+            <apex:outputField id="How_often_do_you_drink_alcohol__c" value="{!Support_Needs_Lifestyle__c.How_often_do_you_drink_alcohol__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="How often 4 or more drinks?" for="How often 4 or more drinks?"/>
+            <apex:outputField id="How_often_4_or_more_drinks__c" value="{!Support_Needs_Lifestyle__c.How_often_4_or_more_drinks__c}"/>       
+        </apex:pageBlockSectionItem>    
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Drugs" for="Drugs"/>
+            <apex:outputField id="Alcohol__c" value="{!Support_Needs_Lifestyle__c.Alcohol__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Drugs notes" for="Drugs notes"/>
+            <apex:outputField id="Drugs_notes__c" value="{!Support_Needs_Lifestyle__c.Drugs_Notes__c}"/>       
+        </apex:pageBlockSectionItem> 
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Primary drug" for="Primary drug"/>
+            <apex:outputField id="Primary_drug__c" value="{!Support_Needs_Lifestyle__c.Primary_drug__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Secondary drug" for="Secondary drug"/>
+            <apex:outputField id="Secondary_drug__c" value="{!Support_Needs_Lifestyle__c.Secondary_drug__c}"/>       
+        </apex:pageBlockSectionItem> 
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Primary drug frequency of use" for="Primary drug frequency of use"/>
+            <apex:outputField id="Primary_drug_frequency_of_use__c" value="{!Support_Needs_Lifestyle__c.Primary_drug_frequency_of_use__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Primary drug amount (£/weight/units)" for="Primary drug amount (£/weight/units)"/>
+            <apex:outputField id="Primary_drug_amount_weight_units__c" value="{!Support_Needs_Lifestyle__c.Primary_drug_amount_weight_units__c}"/>       
+        </apex:pageBlockSectionItem>   
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Secondary drug amount (£/weight/units)" for="Secondary drug amount (£/weight/units)"/>
+            <apex:outputField id="Secondary_drug_amount_weight_units__c" value="{!Support_Needs_Lifestyle__c.Secondary_drug_amount_weight_units__c}"/>       
+        </apex:pageBlockSectionItem> 
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Other substances used" for="Other substances used"/>
+            <apex:outputField id="Other_substances_used__c" value="{!Support_Needs_Lifestyle__c.Other_substances_used__c}"/>       
+        </apex:pageBlockSectionItem>   
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="On medication" for="On medication"/>
+            <apex:outputField id="On_medication__c" value="{!Support_Needs_Lifestyle__c.On_medication__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Drug taking method(s)" for="Drug taking method(s)"/>
+            <apex:outputField id="Drug_taking_method_s__c" value="{!Support_Needs_Lifestyle__c.Drug_taking_method_s__c}"/>       
+        </apex:pageBlockSectionItem>  
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Medication details" for="Medication details"/>
+            <apex:outputField id="Medication_details__c" value="{!Support_Needs_Lifestyle__c.Medication_details__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Do you use legal highs?" for="Do you use legal highs?"/>
+            <apex:outputField id="Do_you_use_legal_highs__c" value="{!Support_Needs_Lifestyle__c.Do_you_use_legal_highs__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Which legal highs?" for="Which legal highs?"/>
+            <apex:outputField id="Which_legal_highs__c" value="{!Support_Needs_Lifestyle__c.Which_legal_highs__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Legal high effects" for="Legal high effects"/>
+            <apex:outputField id="Legal_high_effects__c" value="{!Support_Needs_Lifestyle__c.Legal_high_effects__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Other effects (of legal highs)" for="Other effects (of legal highs)"/>
+            <apex:outputField id="Other_effects_of_legal_highs__c" value="{!Support_Needs_Lifestyle__c.Other_effects_of_legal_highs__c}"/>       
+        </apex:pageBlockSectionItem>
+                          
+    </apex:pageBlockSection> 
+    
+    <apex:pageBlockSection title="GAMBLING" columns="2">    
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Gambling" for="Gambling"/>
+            <apex:outputField id="Gambling__c" value="{!Support_Needs_Lifestyle__c.Gambling__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Gambling notes" for="Gambling notes"/>
+            <apex:outputField id="Gambling_notes__c" value="{!Support_Needs_Lifestyle__c.Gambling_Notes__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Gambling days (out of last 30)" for="Gambling days (out of last 30)"/>
+            <apex:outputField id="Gambling_days_out_of_last_30__c" value="{!Support_Needs_Lifestyle__c.Gambling_days_out_of_last_30__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Gambling losses (excluding money won)" for="Gambling losses (excluding money won)"/>
+            <apex:outputField id="Gambling_losses_excluding_money_won__c" value="{!Support_Needs_Lifestyle__c.Gambling_losses_excluding_money_won__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Gambling types" for="Gambling types"/>
+            <apex:outputField id="Gambling_types__c" value="{!Support_Needs_Lifestyle__c.Gambling_types__c}"/>       
+        </apex:pageBlockSectionItem>                    
+    </apex:pageBlockSection>   
+    
+     <apex:pageBlockSection title="STREET LIFESTYLE" columns="2">    
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Begging" for="Begging"/>
+            <apex:outputField id="Begging__c" value="{!Support_Needs_Lifestyle__c.Begging__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Begging notes" for="Begging notes"/>
+            <apex:outputField id="Begging_notes__c" value="{!Support_Needs_Lifestyle__c.Begging_Notes__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Street drinking" for="Street drinking"/>
+            <apex:outputField id="Street_drinking__c" value="{!Support_Needs_Lifestyle__c.Street_Drinking__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Street drinking notes" for="Street drinking notes"/>
+            <apex:outputField id="Street_drinking_notes__c" value="{!Support_Needs_Lifestyle__c.Street_Drinking_Notes__c}"/>       
+        </apex:pageBlockSectionItem>
+         <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Street drug use" for="Street drug use"/>
+            <apex:outputField id="Street_drug_use__c" value="{!Support_Needs_Lifestyle__c.Street_Drug_Use__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Street drug user notes" for="Street drug user notes"/>
+            <apex:outputField id="Street_drug_user_notes__c" value="{!Support_Needs_Lifestyle__c.Street_Drug_User_Notes__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Sex worker" for="Sex worker"/>
+            <apex:outputField id="Sex_worker__c" value="{!Support_Needs_Lifestyle__c.Sex_Worker__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Sex worker notes" for="Sex worker notes"/>
+            <apex:outputField id="Sex_worker_notes__c" value="{!Support_Needs_Lifestyle__c.Sex_Worker_Notes__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Other vulnerability" for="Other vulnerability"/>
+            <apex:outputField id="Other_vulnerability__c" value="{!Support_Needs_Lifestyle__c.Other_Vulnerability__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Other vulnerability notes" for="Other vulnerability notes"/>
+            <apex:outputField id="Other_vulnerability_notes__c" value="{!Support_Needs_Lifestyle__c.Other_Vulnerability_Notes__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Other vulnerability category" for="Other vulnerability category"/>
+            <apex:outputField id="Other_vulnerability_category__c" value="{!Support_Needs_Lifestyle__c.Other_Vulnerability_Category__c}"/>       
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection> 
+        
+            
+    <apex:pageBlockSection title="NEXT OF KIN" columns="2">    
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Next of kin" for="Next of kin"/>
+            <apex:outputField id="Next_of_kin__c" value="{!Support_Needs_Lifestyle__c.client__r.Next_of_kin__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Next of kin telephone" for="Next of kin telephone"/>
+            <apex:outputField id="Next_of_kin_telephone__c" value="{!Support_Needs_Lifestyle__c.client__r.Next_of_kin_telephone__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Next of kin address" for="Next of kin address"/>
+            <apex:outputField id="Next_of_kin_address__c" value="{!Support_Needs_Lifestyle__c.client__r.Next_of_kin_address__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Next of kin relationship to client" for="Next of kin relationship to client"/>
+            <apex:outputField id="Next_of_kin_relationship_to_client__c" value="{!Support_Needs_Lifestyle__c.client__r.Next_of_kin_relationship_to_client__c}"/>       
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+        
+        <apex:pageBlockSection title="LINKS TO OTHER AGENCIES" columns="2">    
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="GP registered" for="GP registered"/>
+            <apex:outputField id="GP_registered__c" value="{!Support_Needs_Lifestyle__c.client__r.GP_registered__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="GP details" for="GP details"/>
+            <apex:outputField id="GP_details" value="{!Support_Needs_Lifestyle__c.client__r.GP_details__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Other worker (1)" for="Other worker (1)"/>
+            <apex:outputField id="Other_worker_1__c" value="{!Support_Needs_Lifestyle__c.Other_worker_1__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Other worker (2)" for="Other worker (2)"/>
+            <apex:outputField id="Other_worker_2__c" value="{!Support_Needs_Lifestyle__c.Other_worker_2__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Other worker (1) details" for="Other worker (1) details"/>
+            <apex:outputField id="Other_worker_1_details__c" value="{!Support_Needs_Lifestyle__c.Other_worker_1_details__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Other worker (2) details" for="Other worker (2) details"/>
+            <apex:outputField id="Other_worker_2_details__c" value="{!Support_Needs_Lifestyle__c.Other_worker_2_details__c}"/>       
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+        
+    <apex:pageBlockSection title="RISK ASSESSMENT" columns="3"> 
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Risk to self" for="Risk to self"/>
+            <apex:outputField id="Risk_to_self__c" value="{!Support_Needs_Lifestyle__c.Risk_to_self__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Risk to others" for="Risk to others"/>
+            <apex:outputField id="Risk_to_others__c" value="{!Support_Needs_Lifestyle__c.Risk_to_others__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="" for=""/>  
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Suicidal thoughts/attempts - details" for="Suicidal thoughts/attempts - details"/>
+            <apex:outputField id="Suicidal_thoughts_attempts_details__c" value="{!Support_Needs_Lifestyle__c.Suicidal_thoughts_attempts_details__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Suicidal thoughts/attempts (P/C)" for="Suicidal thoughts/attempts (P/C)"/>
+            <apex:outputField id="Suicidal_thoughts_attempts_P_C__c" value="{!Support_Needs_Lifestyle__c.Suicidal_thoughts_attempts_P_C__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Suicidal thoughts/attempts (actions)" for="Suicidal thoughts/attempts (actions)"/>
+            <apex:outputField id="Suicidal_thoughts_attempts_actions__c" value="{!Support_Needs_Lifestyle__c.Suicidal_thoughts_attempts_actions__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Self harm - details" for="Self harm - details"/>
+            <apex:outputField id="Self_harm_details__c" value="{!Support_Needs_Lifestyle__c.Self_harm_details__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Self harm (P/C)" for="Self harm (P/C)"/>
+            <apex:outputField id="Self_harm_P_C__c" value="{!Support_Needs_Lifestyle__c.Self_harm_P_C__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Self harm (actions)" for="Self harm (actions"/>
+            <apex:outputField id="Self_harm_actions__c" value="{!Support_Needs_Lifestyle__c.Self_harm_actions__c}"/>       
+        </apex:pageBlockSectionItem>
+         <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Self neglect - details" for="Self neglect - details"/>
+            <apex:outputField id="Self_neglect_details__c" value="{!Support_Needs_Lifestyle__c.Self_neglect_details__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Self neglect (P/C)" for="Self neglect (P/C)"/>
+            <apex:outputField id="Self_neglect_P_C__c" value="{!Support_Needs_Lifestyle__c.Self_neglect_P_C__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Self neglect (actions)" for="Self neglect (actions)"/>
+            <apex:outputField id="Self_neglect_actions__c" value="{!Support_Needs_Lifestyle__c.Self_neglect_actions__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Violence towards others - details" for="Violence towards others - details"/>
+            <apex:outputField id="Violence_towards_others_details__c" value="{!Support_Needs_Lifestyle__c.Violence_towards_others_details__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Violence towards others (P/C)" for="Violence towards others (P/C)"/>
+            <apex:outputField id="Violence_towards_others_P_C__c" value="{!Support_Needs_Lifestyle__c.Violence_towards_others_P_C__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Violence towards others (actions)" for="Violence towards others (actions)"/>
+            <apex:outputField id="Violence_towards_others_actions__c" value="{!Support_Needs_Lifestyle__c.Violence_towards_others_actions__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Exploitation - details" for="Exploitation - details"/>
+            <apex:outputField id="Exploitation_details__c" value="{!Support_Needs_Lifestyle__c.Exploitation_details__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Exploitation (P/C)" for="Exploitation (P/C)"/>
+            <apex:outputField id="Exploitation_P_C__c" value="{!Support_Needs_Lifestyle__c.Exploitation_P_C__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Exploitation (actions)" for="Exploitation (actions)"/>
+            <apex:outputField id="Exploitation_actions__c" value="{!Support_Needs_Lifestyle__c.Exploitation_actions__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="At risk of violence - details" for="At risk of violence - details"/>
+            <apex:outputField id="At_risk_of_violence_details__c" value="{!Support_Needs_Lifestyle__c.At_risk_of_violence_details__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="At risk of violence (P/C)" for="At risk of violence (P/C)"/>
+            <apex:outputField id="At_risk_of_violence_P_C__c" value="{!Support_Needs_Lifestyle__c.At_risk_of_violence_P_C__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="At risk of violence (actions)" for="At risk of violence (actions)"/>
+            <apex:outputField id="At_risk_of_violence_actions__c" value="{!Support_Needs_Lifestyle__c.At_risk_of_violence_actions__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Offending behaviour - details" for="Offending behaviour - details"/>
+            <apex:outputField id="Offending_behaviour_details__c" value="{!Support_Needs_Lifestyle__c.Offending_behaviour_details__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Offending behaviour (P/C)" for="Offending behaviour (P/C)"/>
+            <apex:outputField id="Offending_behaviour_P_C__c" value="{!Support_Needs_Lifestyle__c.Offending_behaviour_P_C__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Offending behaviour (actions)" for="Offending behaviour (actions)"/>
+            <apex:outputField id="Offending_behaviour_actions__c" value="{!Support_Needs_Lifestyle__c.Offending_behaviour_actions__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Withdrawal seizures - details" for="Withdrawal seizures - details"/>
+            <apex:outputField id="Withdrawal_seizures_details__c" value="{!Support_Needs_Lifestyle__c.Withdrawal_seizures_details__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Withdrawal seizures (P/C)" for="Withdrawal seizures (P/C)"/>
+            <apex:outputField id="Withdrawal_seizures_P_C__c" value="{!Support_Needs_Lifestyle__c.Withdrawal_seizures_P_C__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Withdrawal seizures (actions)" for="Withdrawal seizures (actions)"/>
+            <apex:outputField id="Withdrawal_seizures_actions__c" value="{!Support_Needs_Lifestyle__c.Withdrawal_seizures_actions__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Overdose - details" for="Overdose - details"/>
+            <apex:outputField id="Overdose_details__c" value="{!Support_Needs_Lifestyle__c.Overdose_details__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Overdose (P/C)" for="Overdose (P/C)"/>
+            <apex:outputField id="Overdose_P_C__c" value="{!Support_Needs_Lifestyle__c.Overdose_P_C__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Overdose (actions)" for="Overdose (actions)"/>
+            <apex:outputField id="Overdose_actions__c" value="{!Support_Needs_Lifestyle__c.Overdose_actions__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Infectious diseases - details" for="Infectious diseases - details"/>
+            <apex:outputField id="Infectious_diseases_details__c" value="{!Support_Needs_Lifestyle__c.Infectious_diseases_details__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Infectious diseases (P/C)" for="Infectious diseases (P/C)"/>
+            <apex:outputField id="Infectious_diseases_P_C__c" value="{!Support_Needs_Lifestyle__c.Infectious_diseases_P_C__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Infectious diseases (actions)" for="Infectious diseases (actions)"/>
+            <apex:outputField id="Infectious_diseases_actions__c" value="{!Support_Needs_Lifestyle__c.Infectious_diseases_actions__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Physical health concerns - details" for="Physical health concerns - details"/>
+            <apex:outputField id="Physical_health_concerns_details__c" value="{!Support_Needs_Lifestyle__c.Physical_health_concerns_details__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Physical health concerns (P/C)" for="Physical health concerns (P/C)"/>
+            <apex:outputField id="Physical_health_concerns_P_C__c" value="{!Support_Needs_Lifestyle__c.Physical_health_concerns_P_C__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Physical health concerns (actions)" for="Physical health concerns (actions)"/>
+            <apex:outputField id="Physical_health_concerns_actions__c" value="{!Support_Needs_Lifestyle__c.Physical_health_concerns_actions__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Other risk - details" for="Other risk - details"/>
+            <apex:outputField id="Other_risk_details__c" value="{!Support_Needs_Lifestyle__c.Other_risk_details__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Other risk (P/C)" for="Other risk (P/C)"/>
+            <apex:outputField id="Other_risk_P_C__c" value="{!Support_Needs_Lifestyle__c.Other_risk_P_C__c}"/>       
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Other risk (actions)" for="Other risk (actions)"/>
+            <apex:outputField id="Other_risk_actions__c" value="{!Support_Needs_Lifestyle__c.Other_risk_actions__c}"/>       
+        </apex:pageBlockSectionItem>
+     </apex:pageBlockSection>
+     
+    <apex:pageBlockSection title="MOVE-ON PLAN" columns="2" >    
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Move-on plan" for="Move-on plan"/>
+            <apex:outputField id="Move_on_plan__c" value="{!Support_Needs_Lifestyle__c.Move_on_plan__c}"/>       
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection> 
+        
+    </apex:pageBlock>
+
+</apex:page>

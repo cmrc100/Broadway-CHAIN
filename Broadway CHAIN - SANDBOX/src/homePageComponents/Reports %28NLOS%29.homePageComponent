@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HomePageComponent xmlns="http://soap.sforce.com/2006/04/metadata">
+    <links>Outreach_bookings_into_my_project</links>
+    <links>Current_clients_at_NLOS_Hub</links>
+    <links>Current_clients_at_NLOS_accommodation</links>
+    <links>Missing_consent_for_NLOS_clients</links>
+    <pageComponentType>links</pageComponentType>
+</HomePageComponent>

@@ -1,0 +1,7 @@
+<apex:page standardController="Timeline_Event__c" extensions="StreetContactTimelineEventOverride" showHeader="false" sidebar="false" standardStylesheets="false">
+<script type="text/javascript">
+window.onload = function() {
+    window.location = '{! url }';
+}
+</script>
+</apex:page>

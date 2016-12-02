@@ -1,0 +1,300 @@
+<apex:page controller="FirstContact" extensions="StreetContactMapUtility" tabStyle="Account" doctype="html-5.0" applyhtmltag="false" showheader="false" standardstylesheets="false"
+            cache="false">
+    <head>    
+                 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous"/>
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous"/>
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+
+    
+        <style>
+            .top-buffer { 
+                margin-top:20px; 
+            }
+            .fullwidth {
+                margin-left:0;
+                margin-right:0;
+                padding-left:0;
+                padding-right:0;
+            }
+            .hidden-toggle {
+                display:none;
+            }
+            .navbar-default {
+                background-color: #fe5000;
+                color: #fff;
+            }
+            .nav.nav-center {
+                margin:auto;
+                float:none;
+                color: #fff;
+            }
+            .nav-logo-small {
+                margin: auto; 
+                display:block; 
+                height:2.5em; 
+                width:2.647em;
+                margin-top: 0.6em;
+            }
+            .nav-logo-large {
+                margin-left: 55%; 
+                display:block; 
+                height:2em; 
+                width:8.823em;
+                margin-top: 0.7em;
+            }
+            .sm-container {
+                margin-top: 0.8em;
+                float:left;
+            }
+            .sm-icon {
+                width:1.75em;
+                height:1.75em;
+                margin-left: 0.5em;
+            }
+            
+            @media (min-width: 568px) {
+              .container {
+                width: 550px;
+              }
+            }
+            @media (min-width: 992px) {
+              .container {
+                width: 970px;
+              }
+            }
+            @media (min-width: 1200px) {
+              .container {
+                width: 1170px;
+              }
+            }
+
+            .contact_form label {
+                width:150px;
+                margin-top: 3px;
+                display:inline-block;
+                float:left;
+                padding:3px;
+            }
+            .contact_form input {
+                height:40px; 
+                width:220px; 
+                padding:5px 8px;
+            }
+            .contact_form textarea {padding:8px; width:300px;}
+            .contact_form button {margin-left:156px;}
+      </style>
+
+
+    </head>
+    <script type="text/javascript">
+        var __sfdcSessionId = '{!GETSESSIONID()}';
+    </script>
+    <script type="text/javascript" src="/soap/ajax/25.0/connection.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script type="text/javascript">
+        jQuery.expr[':'].regex = function(elem, index, match) {
+            var matchParams = match[3].split(','),
+                validLabels = /^(data|css):/,
+                attr = {
+                    method: matchParams[0].match(validLabels) ? 
+                                matchParams[0].split(':')[0] : 'attr',
+                    property: matchParams.shift().replace(validLabels,'')
+                },
+                regexFlags = 'ig',
+                regex = new RegExp(matchParams.join('').replace(/^\s+|\s+$/g,''), regexFlags);
+            return regex.test(jQuery(elem)[attr.method](attr.property));
+        };
+        
+        var query = function() {
+            var query = this;
+            this.lastName = $('input:regex(id, ^.*lastName$)').val().substr(0,3);
+            this.firstName = $('input:regex(id, ^.*firstName$)').val().substr(0,3);
+            this.dob = $('input:regex(id, ^.*dateOfBirth$)').val();
+            this.callback = {
+                onSuccess   : function (queryResult, source) {
+                    if (queryResult.size > 0) {
+                        var records = queryResult.getArray('records'),
+                            output = '<a onclick="$(\'#dupList\').toggle();">Show/Hide Possible Duplicates</a><br /><ul id="dupList" style="display:none;list-style-type:none;margin:0;padding:0;">';
+                        
+                        for (var i = 0; i < records.length; i++) {
+                            var account = records[i];
+                            var birthDate = [];
+                            
+                            output += '<li><a href="/' + account.Id + '" target="_blank" style="color: #f00;">' + account.FirstName + ' ' + account.LastName + '</a>';
+                            
+                            if (typeof account.PersonBirthdate === 'string') {
+                                birthDate = account.PersonBirthdate.split('-');
+                                output += ' - ' + birthDate[2] + '/' + birthDate[1] + '/' + birthDate[0];
+                            }
+                            
+                            output += '</li>';
+                        }
+                        
+                        source.output.innerHTML = output;
+                        $('#DuplicateClients').show();
+                    }
+                },
+                onFailure   : function (error, source) {
+                    alert(error);
+                },
+                source      : {
+                    output      : document.getElementById('clientList'),
+                    startTime   : new Date().getTime()
+                }
+            };
+            this.blur = function () {
+                query.lastName = $('input:regex(id, ^.*lastName$)').val().substr(0,3);
+                query.firstName = $('input:regex(id, ^.*firstName$)').val().substr(0,3);
+                query.dob = $('input:regex(id, ^.*dateOfBirth$)').val();
+                query.go();
+            };
+            this.go = function () {
+                var soql = "Select Id, FirstName, LastName, PersonBirthdate From Account Where",
+                    run = false;
+                
+                if (query.lastName.length > 0) {
+                    soql = soql + " LastName Like '" + query.lastName + "%'";
+                    run = true;
+                }
+                
+                if (query.firstName.length > 0) {
+                    if (query.lastName.length > 0) {
+                        soql = soql + " And ";
+                    }
+                    
+                    soql = soql + " FirstName Like '" + query.firstName + "%'";
+                    run = true;
+                }
+                
+                if (query.dob.length > 0) {
+                    if (query.lastName.length > 0 || query.firstName.length > 0) {
+                        soql = soql + " And ";
+                    }
+                    
+                    query.dob = query.dob.split('/');
+                    soql = soql + " PersonBirthdate >= " + query.dob[2] + "-01-01";
+                    soql = soql + " AND PersonBirthdate <= " + query.dob[2] + "-12-31";
+                    run = true;
+                }
+                
+                $('#DuplicateClients').hide();
+                
+                if (true === run) {
+                    sforce.connection.query(soql, query.callback);
+                }
+            };
+        };
+    </script>
+    
+    
+    <body>
+    <div class="container-fluid">
+    <apex:form >
+        <apex:pageMessages />
+        <!-- <apex:pageBlock title="First Contact: Add Client Info" mode="edit" id="thePageBlock"> -->
+        <h1>First Contact: Add Client Info</h1>
+            <!-- <apex:pageBlockButtons >  -->
+            <!--    <apex:commandButton action="{!save}" value="Save"/>
+                <apex:commandButton action="{!AddSUpportNeeds}" value="Add Support Needs"/>  -->
+                <apex:commandButton value="Create initial timeline event" action="{!createTimelineEvent}"/>
+                <apex:commandButton action="{!cancel}" value="Do not save and Exit" immediate="true"/>
+                &nbsp;&nbsp;
+            <!-- </apex:pageBlockButtons>  -->
+            <div id="DuplicateClients" style="display: none;">
+                <div class="message warningM3" style="font-size: 15px;">
+                    <table border="0" cellpadding="0" cellspacing="0" class="messageTable" style="padding:0px;margin:0px;">
+                        <tbody><tr valign="top">
+                            <td>
+                                <img alt="WARNING" class="msgIcon" src="/s.gif" title="WARNING" />
+                            </td>
+                            <td class="messageCell"><div class="messageText"><span>
+                                <h4>Warning:</h4></span>Possible duplicate clients.<br/></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td id="clientList"></td>
+                        </tr>
+                    </tbody></table>
+                </div>
+            </div>
+
+
+                  
+    <!-- </apex:pageBlock> -->
+
+                <form class="contact_form" name="contact_form">
+                <div class="row-fluid">
+                    <div class="col-xs-12 col-md-9">
+                    <div class="form-group">
+                    <!-- <apex:pageBlockSection title="Client Information" columns="1"> -->
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" class="form-control" onblur="search.blur();" required="true"/>                        
+                        <!--<apex:inputField id="firstName" onblur="search.blur();" value="{!contact.firstname}" required="true" /> -->
+                        
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" class="form-control" onblur="search.blur();" required="true"/>                         
+                        <!-- <apex:inputField id="lastName" onblur="search.blur();" value="{!contact.lastname}" required="true"/> -->
+                        
+                        <label for="otherName">Other Names</label>
+                        <input type="text" id="otherName" class="form-control" onblur="search.blur();"/>                         
+                        <!-- <apex:inputField value="{!contact.Other_Names__c}"/> -->
+                        
+                        <apex:inputField value="{!contact.Nickname__c}"/>
+                        <apex:inputField value="{!contact.Gender__c}"  required="true"/>
+                        <apex:outputText value=""/>
+                        <apex:inputField id="dateOfBirth" onblur="search.blur();" value="{!contact.Birthdate}"  required="true"/>
+                        <apex:inputField value="{!contact.DOB_Estimated__c}"/>
+                        <apex:inputField value="{!contact.NINumber__c}"/>
+                        <apex:inputField value="{!contact.Email}"/>
+                        <apex:inputField value="{!contact.Phone}"/>
+                        <apex:inputField value="{!contact.MobilePhone}"/>
+                        <apex:inputField value="{!contact.Ethnic_Origin__c}" required="true"/>
+                        <apex:inputField value="{!contact.Nationality__c}"  required="true"/>
+                        <apex:inputField value="{!contact.Immigration_Status__c}"/>
+                        <apex:inputField value="{!contact.Immigration_Notes__c}"/>
+                        <apex:inputField value="{!contact.Trafficking_Victim__c}"/>
+                        <apex:inputField value="{!contact.Date_entered_UK__c}"/>
+                        <apex:inputField value="{!contact.Date_entered_UK_status__c}"/>
+                        <apex:inputField value="{!contact.Country_Region__c}" required="true"/>
+                        <apex:inputField value="{!contact.Preferred_Language__c}" />
+                        <apex:inputField value="{!contact.Spoken_English_Ability__c}" />
+                        <apex:inputField value="{!contact.Recourse_to_public_funds__c}" />
+                        <apex:outputText value=""/>
+                        <apex:inputField value="{!contact.Consent__c}" />
+                        <apex:inputField value="{!contact.Consent_Date__c}" />
+        <!--                <apex:inputField value="{!contact.Institutional_History_Armed_Forces__c}" />-->
+                        <apex:inputField value="{!contact.Armed_forces_2__c}" />
+                        <apex:inputField value="{!contact.Date_last_left_armed_forces__c}" />
+                        <apex:inputField value="{!contact.Care_leaver_2__c}" />
+                        <apex:inputField value="{!contact.Date_last_left_care__c}" />
+                        <apex:inputField value="{!contact.Prison_2__c}" />
+                        <apex:inputField value="{!contact.Date_Last_Left_Prison__c}" />
+                        <apex:inputField value="{!contact.Name_of_Last_Prison__c}" />
+                        <apex:inputField value="{!contact.Estimated_Date_Last_Left_Prison__c}" />
+                        <apex:inputField value="{!contact.Equipment__c}" />
+                    <!-- </apex:pageBlockSection>  -->
+                    </div>
+                    </div>
+                </div>
+                </form>
+            
+
+</apex:form>
+</div>
+</body>
+    
+    <script type="text/javascript">
+        var search = new query();
+        search.go();
+    </script>
+</apex:page>

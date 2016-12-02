@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Follow</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Use for recording NSNO container event, related to which are NSNO stay timeline events</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>ClientID__c</fullName>
+        <externalId>false</externalId>
+        <formula>Client__r.ClientID__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>ClientID</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Client__c</fullName>
+        <externalId>false</externalId>
+        <label>Client</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>Contact.Account.IsPersonAccount</field>
+                <operation>equals</operation>
+                <value>True</value>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Contact</referenceTo>
+        <relationshipLabel>NSNO Events</relationshipLabel>
+        <relationshipName>NSNO_Events</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>true</reparentableMasterDetail>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>Count_of_NSNO_referrals__c</fullName>
+        <externalId>false</externalId>
+        <label>Count of NSNO referrals</label>
+        <precision>2</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Count_of_SSOs__c</fullName>
+        <externalId>false</externalId>
+        <label>Count of SSOs</label>
+        <precision>2</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Count_of_open_NSNO_referrals__c</fullName>
+        <externalId>false</externalId>
+        <label>Count of open NSNO referrals</label>
+        <precision>2</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>First_arrival__c</fullName>
+        <externalId>false</externalId>
+        <label>First arrival</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Rough_sleeping_status__c</fullName>
+        <externalId>false</externalId>
+        <label>Rough sleeping status</label>
+        <picklist>
+            <picklistValues>
+                <fullName>New rough sleeper</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Known rough sleeper with no SSO/local connection</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Known rough sleeper with SSO</fullName>
+                <default>false</default>
+            </picklistValues>
+            <sorted>false</sorted>
+        </picklist>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+    </fields>
+    <label>NSNO Event</label>
+    <listViews>
+        <fullName>All</fullName>
+        <filterScope>Everything</filterScope>
+        <label>All</label>
+    </listViews>
+    <nameField>
+        <displayFormat>NSNO-{00000}</displayFormat>
+        <label>NSNO Event ref</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>NSNO Events</pluralLabel>
+    <searchLayouts>
+        <lookupDialogsAdditionalFields>Client__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Rough_sleeping_status__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>First_arrival__c</lookupDialogsAdditionalFields>
+    </searchLayouts>
+    <sharingModel>ControlledByParent</sharingModel>
+    <validationRules>
+        <fullName>Rough_sleeper_status_cant_be_changed</fullName>
+        <active>true</active>
+        <description>Prevent users from editing Rough Sleeping Status once it has initially been recorded (mainly to stop them changing to &quot;Known rough sleeper with SSO&quot; after stay added at location other than High Needs SP)</description>
+        <errorConditionFormula>AND(  $User.ProfileId  &lt;&gt;&quot;00e800000014UPq&quot;, ISCHANGED( Rough_sleeping_status__c ) =true, ISPICKVAL(Rough_sleeping_status__c, &quot;Known rough sleeper with SSO&quot;) )</errorConditionFormula>
+        <errorDisplayField>Rough_sleeping_status__c</errorDisplayField>
+        <errorMessage>Rough Sleeping Status cannot be changed to &quot;Known rough sleeper with SSO&quot; for existing events. If you need to make a change to this field please contact the CHAIN Team on 020 7710 0562 or chain@mungosbroadway.org.uk.</errorMessage>
+    </validationRules>
+</CustomObject>

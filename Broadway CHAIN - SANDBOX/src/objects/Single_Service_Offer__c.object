@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Follow</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Used to create Single Service Offers (SSOs)</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Client__c</fullName>
+        <externalId>false</externalId>
+        <label>Client</label>
+        <referenceTo>Contact</referenceTo>
+        <relationshipLabel>Single Service Offers</relationshipLabel>
+        <relationshipName>Single_Service_Offers</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>Date_offer_made__c</fullName>
+        <externalId>false</externalId>
+        <label>Date offer made</label>
+        <required>true</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>NSNO_Event__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>NSNO Event</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>$Source.Client__c</field>
+                <operation>equals</operation>
+                <valueField>NSNO_Event__c.Client__c</valueField>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>NSNO_Event__c</referenceTo>
+        <relationshipLabel>Single Service Offers</relationshipLabel>
+        <relationshipName>Single_Service_Offers</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Notes__c</fullName>
+        <externalId>false</externalId>
+        <label>Notes</label>
+        <length>500</length>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Offer_Outcome__c</fullName>
+        <externalId>false</externalId>
+        <label>Offer Outcome</label>
+        <picklist>
+            <picklistValues>
+                <fullName>Rejected</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Accepted</fullName>
+                <default>false</default>
+            </picklistValues>
+            <sorted>false</sorted>
+        </picklist>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>Single_Service_Offer__c</fullName>
+        <externalId>false</externalId>
+        <label>Single Service Offer</label>
+        <required>true</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Team_making_SSO__c</fullName>
+        <externalId>false</externalId>
+        <label>Team making SSO</label>
+        <length>100</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Timeline_Event__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <externalId>false</externalId>
+        <inlineHelpText>Relate this SSO to an NSNO or NLOS referral</inlineHelpText>
+        <label>NSNO/NLOS Stay Event</label>
+        <lookupFilter>
+            <active>true</active>
+            <booleanFilter>1 AND 2 AND 3 AND 4 AND 5</booleanFilter>
+            <filterItems>
+                <field>Timeline_Event__c.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>NSNO Referrals, NLOS Referrals</value>
+            </filterItems>
+            <filterItems>
+                <field>$Source.Client__c</field>
+                <operation>equals</operation>
+                <valueField>Timeline_Event__c.Client__c</valueField>
+            </filterItems>
+            <filterItems>
+                <field>$User.Default_Project_Name__c</field>
+                <operation>equals</operation>
+                <valueField>Timeline_Event__c.Accommodation2__c</valueField>
+            </filterItems>
+            <filterItems>
+                <field>Timeline_Event__c.Arrival_Date__c</field>
+                <operation>notEqual</operation>
+                <value></value>
+            </filterItems>
+            <filterItems>
+                <field>Timeline_Event__c.Reason_offer_not_made__c</field>
+                <operation>equals</operation>
+                <value></value>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Timeline_Event__c</referenceTo>
+        <relationshipLabel>Single Service Offers</relationshipLabel>
+        <relationshipName>Single_Service_Offers</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <label>Single Service Offer</label>
+    <listViews>
+        <fullName>All</fullName>
+        <columns>Client__c</columns>
+        <columns>Single_Service_Offer__c</columns>
+        <columns>Team_making_SSO__c</columns>
+        <columns>Date_offer_made__c</columns>
+        <columns>CREATEDBY_USER</columns>
+        <columns>CREATED_DATE</columns>
+        <columns>Notes__c</columns>
+        <filterScope>Everything</filterScope>
+        <label>All</label>
+    </listViews>
+    <nameField>
+        <displayFormat>SSO-{00000}</displayFormat>
+        <label>Single Service Offer ref</label>
+        <trackHistory>false</trackHistory>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Single Service Offers</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ControlledByParent</sharingModel>
+    <validationRules>
+        <fullName>Cannot_edit_other_teams_SSO</fullName>
+        <active>true</active>
+        <description>Prevent users editing SSOs recorded by other services</description>
+        <errorConditionFormula>$Setup.Global_Object_Validation__c.Timeline_Event_Active__c &amp;&amp; AND(NOT(ISNEW()), Team_making_SSO__c &lt;&gt; $User.Default_Project_Name__c )</errorConditionFormula>
+        <errorMessage>You can only amend an existing SSO if you have your Default Project set to the team that originally recorded it.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Date_cannot_be_in_future</fullName>
+        <active>true</active>
+        <description>Prevent users from creating SSO with Offer Date in the future</description>
+        <errorConditionFormula>AND(  OR(ISNEW(), ISCHANGED( Date_offer_made__c ) )  , Date_offer_made__c &gt; TODAY() )</errorConditionFormula>
+        <errorDisplayField>Date_offer_made__c</errorDisplayField>
+        <errorMessage>Date Offer Made cannot be in the future</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>NSNO_Event_Required</fullName>
+        <active>true</active>
+        <description>Ensure System Admin users enter an NSNO Event when editing/creating SSOs on behalf of NSNO, as the field is not required on Admin page layout</description>
+        <errorConditionFormula>AND( $User.ProfileId =&quot;00e800000014UPq&quot;, OR( CONTAINS(  Team_making_SSO__c  , &quot;NSNO Assessment&quot;) ,CONTAINS(  Team_making_SSO__c  , &quot;NSNO Staging Post&quot;)) ,  ISBLANK( NSNO_Event__c ))</errorConditionFormula>
+        <errorDisplayField>NSNO_Event__c</errorDisplayField>
+        <errorMessage>Please enter NSNO Event for SSOs created/edited on behalf of NSNO</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Only_1_day_to_amend</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND ( FLOOR( TODAY() -  DATEVALUE(CreatedDate)) &gt; 1,   AND($User.ProfileId &lt;&gt;&quot;00e800000014UPq&quot;,$User.ProfileId &lt;&gt;&quot;00eC0000001SrXV&quot;,$User.ProfileId &lt;&gt;&quot;00eC0000001Sswd&quot;))</errorConditionFormula>
+        <errorMessage>You only have 1 day to amend the SSO. Please contact the CHAIN team to amend (020 7710 0562 or chain@mungosbroadway.org.uk).</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>SSO_already_exists</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND (
+Client__r.Count_of_SSOs__c &gt; 0,
+ISNEW(), 
+NOT(CONTAINS ( $User.Default_Project_Name__c , &quot;NLOS&quot;)),
+$User.ProfileId &lt;&gt; &quot;00e800000014UPq&quot;,
+Date_offer_made__c -  Client__r.Date_NSNO_offer_made__c &lt;365,
+NOT( AND(OR( CONTAINS( $User.Default_Project_Name__c , &quot;NSNO Assessment&quot;) ,CONTAINS( $User.Default_Project_Name__c , &quot;NSNO Staging&quot;)),OR( CONTAINS(  Client__r.Team_making_single_service_offer__c  , &quot;NSNO Assessment&quot;) ,CONTAINS( Client__r.Team_making_single_service_offer__c , &quot;NSNO Staging&quot;)))) 
+)</errorConditionFormula>
+        <errorMessage>A Single Service Offer already exists for this client. If you would like to replace the existing offer please contact the service that made it to obtain their agreement, and then forward detail to CHAIN team (020 7710 0562 or chain@mungosbroadway.org.uk).</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Team_must_be_entered_by_admin</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND ($User.ProfileId  =&quot;00e800000014UPq&quot;, ISNEW(), ISBLANK ( Team_making_SSO__c ))</errorConditionFormula>
+        <errorDisplayField>Team_making_SSO__c</errorDisplayField>
+        <errorMessage>CHAIN Admin must enter the team making the SSO manually</errorMessage>
+    </validationRules>
+    <webLinks>
+        <fullName>New_SSO</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <linkType>url</linkType>
+        <masterLabel>New SSO</masterLabel>
+        <openType>replace</openType>
+        <protected>false</protected>
+        <requireRowSelection>false</requireRowSelection>
+        <url>https://na8.salesforce.com/a0X/e?CF00NC0000005mBY2={!Account.FirstName}+{!Account.LastName}&amp;CF00NC0000005mBY2_lkid={!Contact.Id}&amp;CF00NC0000005nKPe={!NSNO_Event__c.Name}&amp;retURL=%2F{!NSNO_Event__c.Id}</url>
+    </webLinks>
+</CustomObject>

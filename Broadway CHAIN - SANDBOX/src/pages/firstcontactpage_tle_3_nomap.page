@@ -1,0 +1,49 @@
+<apex:page controller="FirstContact" extensions="StreetContactMapUtility" tabStyle="Account">
+    
+    <apex:form >
+        <apex:pageMessages />
+        <apex:pageBlock title="First Contact: Add Timeline event info" mode="edit" id="thePageBlock">
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!save}" value="Save and Exit"/>
+                <apex:commandButton action="{!saveAndAddSupportNeedsfromTLE}" value="Save and Add Support Needs"/>
+                <apex:commandButton action="{!cancel}" value="Do not save and Exit" immediate="true"/>
+                &nbsp;&nbsp;
+            </apex:pageBlockButtons>           
+           
+            <apex:pageBlockSection title="Timeline event (initial contact) Information" columns="2" id="thePageBlockSection">
+                <apex:inputField value="{!timeLineEvent.Date__c}" required="true"/>
+                
+                <apex:inputField value="{!timeLineEvent.Encounter_Type__c}" required="true"/>
+                <apex:inputField value="{!timeLineEvent.Event__c}" required="true"/>
+
+                
+                <apex:inputField id="notes" value="{!timeLineEvent.Notes__c}"/>
+                <apex:outputText value=""/>
+                                
+                <apex:inputField value="{!timeLineEvent.Project_Team__c}" />
+               
+           
+            </apex:pageBlockSection>   
+                
+            <apex:pageBlockSection title="Notes" columns="2" id="thePageBlockSection2">
+                
+                <apex:inputField value="{!timeLineEvent.Referral_telephone_website_reference__c}" />
+
+                <apex:inputField value="{!timeLineEvent.On_behalf_of__c}" />
+                <apex:inputField value="{!timeLineEvent.On_behalf_of_project_team__c}" />                                                                             
+                                
+                <apex:inputField value="{!timeLineEvent.Private_Notes_Thames_Reach__c}" />
+                <apex:inputField value="{!timeLineEvent.Private_Notes_NSNO__c}" />
+                        
+                </apex:pageBlockSection>
+
+            
+                  
+</apex:pageBlock>
+</apex:form>
+    
+    <script type="text/javascript">
+        var search = new query();
+        search.go();
+    </script>
+</apex:page>

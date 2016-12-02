@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HomePageComponent xmlns="http://soap.sforce.com/2006/04/metadata">
+    <links>Key_Worker_Action_Plan_for_me</links>
+    <links>Missing_booking_information</links>
+    <links>Adelaide_Street</links>
+    <links>Bow_Street</links>
+    <links>Floral_Street</links>
+    <links>Portugal_Street</links>
+    <links>Strand</links>
+    <pageComponentType>links</pageComponentType>
+</HomePageComponent>

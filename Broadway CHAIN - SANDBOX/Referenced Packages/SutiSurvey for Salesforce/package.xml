@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SutiSurvey for Salesforce</fullName>
+    <apiAccessLevel>Unrestricted</apiAccessLevel>
+    <namespacePrefix>HelloNameSpace</namespacePrefix>
+    <types>
+        <members>SutiSurveyController</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>Greeting</members>
+        <name>ApexPage</name>
+    </types>
+    <types>
+        <members>Suti_Survey_App</members>
+        <name>CustomApplication</name>
+    </types>
+    <types>
+        <members>Hello</members>
+        <name>CustomTab</name>
+    </types>
+    <types>
+        <members>SurveyLogo</members>
+        <name>Document</name>
+    </types>
+    <types>
+        <members>SutiSurveyLoader</members>
+        <name>StaticResource</name>
+    </types>
+    <version>35.0</version>
+</Package>

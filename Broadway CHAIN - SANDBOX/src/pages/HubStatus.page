@@ -1,0 +1,40 @@
+<apex:page controller="HubsController" sidebar="false" showHeader="false">
+<div id="my-timeline" style="height:140px; width:180px;">
+
+    <script type="text/javascript">
+        var __sfdcSessionId = '{!GETSESSIONID()}';
+    </script>
+    <script src="/soap/ajax/24.0/connection.js" type="text/javascript"></script>
+    <script src="/soap/ajax/24.0/apex.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        function updateHubValues(hub, status){
+
+            var sCall = sforce.apex.execute("HubsController","updateHub", {hubName:hub, hubStatus:status});
+            if (sCall.indexOf('error') > 0){
+                alert(sCall);
+            }
+        }
+    
+    
+    </script>
+    
+    <apex:form >
+        <apex:pageBlock id="pbHubs">
+
+            <apex:pageBlockTable value="{!hubs}" var="item" columnsWidth="80%,20%">
+
+                <apex:column value="{!item.Hub_Name__c}"/> 
+                <apex:column headerValue="Open" >
+                    <apex:inputCheckbox value="{!item.Hub_Open__c}" immediate="true" onchange="updateHubValues('{!item.Hub_Name__c}', '{!item.Hub_Open__c}'); window.top.location='/';"  >
+                     <!--   <apex:actionsupport event="onchange" action="{!updateValues}" rerender="pbHubs"/> -->
+                    </apex:inputCheckbox>
+                </apex:column>
+            </apex:pageBlockTable> 
+
+
+        </apex:pageBlock>     
+        
+    
+    </apex:form>
+</div>
+</apex:page>

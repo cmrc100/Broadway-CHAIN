@@ -1,0 +1,54 @@
+<apex:page controller="FirstContact" extensions="StreetContactMapUtility" tabStyle="Account" >
+    <apex:form >
+     <apex:pageMessages />
+        <apex:pageBlock title="First Contact: Support Needs Assessment Info" mode="edit" id="thePageBlock">
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!saveSNA}" value="Save and Exit"/>
+                <apex:commandButton action="{!cancel}" value="Exit" immediate="true"/>
+                &nbsp;&nbsp;
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="Support Needs Assessment Information" columns="2">
+                <apex:inputField value="{!sna.Assessment_date__c}" />
+                <apex:outputPanel >&nbsp;</apex:outputPanel>
+                <apex:inputField value="{!sna.Alcohol__c}" />
+                <apex:inputField value="{!sna.Alcohol_Notes__c}" />
+                <apex:inputField value="{!sna.Drugs__c}" />
+                <apex:inputField value="{!sna.Drugs_Notes__c}" />
+                <apex:inputField value="{!sna.Mental_health_worker__c}" />
+                <apex:inputField value="{!sna.Mental_Health_worker_assessed_notes__c}" />
+                <apex:inputField value="{!sna.Mental_health_professional__c}" />
+                <apex:inputField value="{!sna.Mental_Health_professional_Notes__c}"/>
+                <apex:inputField value="{!sna.In_contact_with_secondary_MH_services__c}"/>
+                <apex:outputPanel >&nbsp;</apex:outputPanel>
+                <apex:inputField value="{!sna.Offending_Behaviour__c}" />
+                <apex:inputField value="{!sna.Offending_Behaviour_Notes__c}"/>
+                <apex:inputField value="{!sna.Offender_under_probation_supervision__c}"/>
+                <apex:outputPanel >&nbsp;</apex:outputPanel>
+                <apex:inputField value="{!sna.Physical_health__c}" />
+                <apex:inputField value="{!sna.Physical_Health_Notes__c}" />
+                <apex:inputField value="{!sna.Gambling__c}" />
+                <apex:inputField value="{!sna.Gambling_Notes__c}" />
+                <apex:inputField value="{!sna.Learning_Disabilities__c}" />
+                <apex:inputField value="{!sna.Learning_Disabilities_Notes__c}" />
+                <apex:inputField value="{!sna.Sex_Worker__c}" />
+                <apex:inputField value="{!sna.Sex_Worker_Notes__c}" />
+                <apex:inputField value="{!sna.Other_Vulnerability__c}" />
+                <apex:inputField value="{!sna.Other_Vulnerability_Notes__c}" />
+             </apex:pageBlockSection>  
+            <apex:pageBlockSection title="Street Lifestyle" columns="2">  
+                <apex:inputField value="{!sna.Begging__c}"/>
+                <apex:inputField value="{!sna.Begging_Notes__c}"/>
+                <apex:inputField value="{!sna.Street_Drinking__c}"/>
+                <apex:inputField value="{!sna.Street_Drinking_Notes__c}"/>
+                <apex:inputField value="{!sna.Street_Drug_Use__c}"/>
+                <apex:inputField value="{!sna.Street_Drug_User_Notes__c}"/>
+                <apex:inputField value="{!sna.Sex_Worker__c}"/>
+                <apex:inputField value="{!sna.Sex_Worker_Notes__c}"/>
+                <apex:inputField value="{!sna.Other_Vulnerability__c}"/>
+                <apex:inputField value="{!sna.Other_Vulnerability_Notes__c}"/>
+                <apex:inputField value="{!sna.Other_Vulnerability_Category__c}"/>
+                
+            </apex:pageBlockSection>
+        </apex:pageBlock>   
+    </apex:form>
+</apex:page>

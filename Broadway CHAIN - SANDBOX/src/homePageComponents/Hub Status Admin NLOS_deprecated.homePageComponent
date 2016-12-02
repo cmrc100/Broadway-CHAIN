@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HomePageComponent xmlns="http://soap.sforce.com/2006/04/metadata">
+    <body>&lt;br&gt;&lt;iframe src=&quot;/apex/HubStatus2?core.apexpages.devmode.url=1&quot; width=&quot;315px&quot; height=&quot;100px&quot;&gt;&lt;/iframe&gt;&lt;br&gt;</body>
+    <pageComponentType>htmlArea</pageComponentType>
+    <width>wide</width>
+</HomePageComponent>

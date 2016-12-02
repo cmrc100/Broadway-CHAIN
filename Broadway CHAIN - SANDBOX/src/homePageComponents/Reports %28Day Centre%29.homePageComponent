@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HomePageComponent xmlns="http://soap.sforce.com/2006/04/metadata">
+    <links>Attendances_this_month</links>
+    <links>Attendances_last_month</links>
+    <links>Attendances_this_quarter</links>
+    <links>Attendances_last_quarter</links>
+    <links>My_attendances_current_previous_quarter</links>
+    <pageComponentType>links</pageComponentType>
+</HomePageComponent>

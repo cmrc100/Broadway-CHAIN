@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HomePageComponent xmlns="http://soap.sforce.com/2006/04/metadata">
+    <links>All_referrals_in_last_7_days</links>
+    <links>My_referrals_in_last_7_days</links>
+    <pageComponentType>links</pageComponentType>
+</HomePageComponent>

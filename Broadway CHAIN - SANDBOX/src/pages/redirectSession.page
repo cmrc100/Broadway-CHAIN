@@ -1,0 +1,3 @@
+<apex:page standardController="Session__c" extensions="Session" action="{!redirectSession}">
+    
+</apex:page>

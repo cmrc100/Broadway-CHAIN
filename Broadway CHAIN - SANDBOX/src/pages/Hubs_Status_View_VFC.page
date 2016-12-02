@@ -1,0 +1,17 @@
+<apex:page controller="HubsController2">
+
+    <b> Hubs Status View </b>
+    <apex:repeat value="{!hubs}" var="hub">
+
+        <table>
+            
+            <tr>
+                <td ><font color="{!IF(hub.status , 'green', 'red')}">The {!hub.name} is {!IF(hub.status, "Open", "Not currently open")}</font></td>
+            </tr>
+        
+        </table>
+    
+    </apex:repeat>
+
+
+</apex:page>

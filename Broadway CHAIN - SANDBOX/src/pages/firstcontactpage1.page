@@ -1,0 +1,228 @@
+<apex:page controller="FirstContact" tabStyle="Account">
+    <script type="text/javascript">
+        var __sfdcSessionId = '{!GETSESSIONID()}';
+    </script>
+    <script type="text/javascript" src="/soap/ajax/25.0/connection.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script type="text/javascript">
+        jQuery.expr[':'].regex = function(elem, index, match) {
+            var matchParams = match[3].split(','),
+                validLabels = /^(data|css):/,
+                attr = {
+                    method: matchParams[0].match(validLabels) ? 
+                                matchParams[0].split(':')[0] : 'attr',
+                    property: matchParams.shift().replace(validLabels,'')
+                },
+                regexFlags = 'ig',
+                regex = new RegExp(matchParams.join('').replace(/^\s+|\s+$/g,''), regexFlags);
+            return regex.test(jQuery(elem)[attr.method](attr.property));
+        };
+        
+        var query = function() {
+            var query = this;
+            this.lastName = $('input:regex(id, ^.*lastName$)').val().substr(0,3);
+            this.firstName = $('input:regex(id, ^.*firstName$)').val().substr(0,3);
+            this.dob = $('input:regex(id, ^.*dateOfBirth$)').val();
+            this.callback = {
+                onSuccess   : function (queryResult, source) {
+                    if (queryResult.size > 0) {
+                        var records = queryResult.getArray('records'),
+                            output = '<a onclick="$(\'#dupList\').toggle();">Show/Hide Possible Duplicates</a><br /><ul id="dupList" style="display:none;list-style-type:none;margin:0;padding:0;">';
+                        
+                        for (var i = 0; i < records.length; i++) {
+                            var account = records[i];
+                            var birthDate = [];
+                            
+                            output += '<li><a href="/' + account.Id + '" target="_blank" style="color: #f00;">' + account.FirstName + ' ' + account.LastName + '</a>';
+                            
+                            if (typeof account.PersonBirthdate === 'string') {
+                                birthDate = account.PersonBirthdate.split('-');
+                                output += ' - ' + birthDate[2] + '/' + birthDate[1] + '/' + birthDate[0];
+                            }
+                            
+                            output += '</li>';
+                        }
+                        
+                        source.output.innerHTML = output;
+                        $('#DuplicateClients').show();
+                    }
+                },
+                onFailure   : function (error, source) {
+                    alert(error);
+                },
+                source      : {
+                    output      : document.getElementById('clientList'),
+                    startTime   : new Date().getTime()
+                }
+            };
+            this.blur = function () {
+                query.lastName = $('input:regex(id, ^.*lastName$)').val().substr(0,3);
+                query.firstName = $('input:regex(id, ^.*firstName$)').val().substr(0,3);
+                query.dob = $('input:regex(id, ^.*dateOfBirth$)').val();
+                query.go();
+            };
+            this.go = function () {
+                var soql = "Select Id, FirstName, LastName, PersonBirthdate From Account Where",
+                    run = false;
+                
+                if (query.lastName.length > 0) {
+                    soql = soql + " LastName Like '" + query.lastName + "%'";
+                    run = true;
+                }
+                
+                if (query.firstName.length > 0) {
+                    if (query.lastName.length > 0) {
+                        soql = soql + " And ";
+                    }
+                    
+                    soql = soql + " FirstName Like '" + query.firstName + "%'";
+                    run = true;
+                }
+                
+                if (query.dob.length > 0) {
+                    if (query.lastName.length > 0 || query.firstName.length > 0) {
+                        soql = soql + " And ";
+                    }
+                    
+                    query.dob = query.dob.split('/');
+                    soql = soql + " PersonBirthdate >= " + query.dob[2] + "-01-01";
+                    soql = soql + " AND PersonBirthdate <= " + query.dob[2] + "-12-31";
+                    run = true;
+                }
+                
+                $('#DuplicateClients').hide();
+                
+                if (true === run) {
+                    sforce.connection.query(soql, query.callback);
+                }
+            };
+        };
+    </script>
+    <apex:form >
+        <apex:pageMessages />
+        <apex:pageBlock title="First Contact: Add Client/Encounter Info" mode="edit" id="thePageBlock">
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!save}" value="Save"/>
+                <apex:commandButton action="{!AddSUpportNeeds}" value="Add Support Needs"/>
+                <apex:commandButton action="{!cancel}" value="Cancel" immediate="true"/>
+                &nbsp;&nbsp;
+            </apex:pageBlockButtons>
+            <div id="DuplicateClients" style="display: none;">
+                <div class="message warningM3" style="font-size: 15px;">
+                    <table border="0" cellpadding="0" cellspacing="0" class="messageTable" style="padding:0px;margin:0px;">
+                        <tbody><tr valign="top">
+                            <td>
+                                <img alt="WARNING" class="msgIcon" src="/s.gif" title="WARNING" />
+                            </td>
+                            <td class="messageCell"><div class="messageText"><span>
+                                <h4>Warning:</h4></span>Possible duplicate clients.<br/></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td id="clientList"></td>
+                        </tr>
+                    </tbody></table>
+                </div>
+            </div>
+            <apex:pageBlockSection title="Client Information" columns="2">
+                <apex:inputField id="firstName" onblur="search.blur();" value="{!contact.firstname}" required="true"/>
+                <apex:inputField id="lastName" onblur="search.blur();" value="{!contact.lastname}" required="true"/>
+                <apex:inputField value="{!contact.Other_Names__c}"/>
+                <apex:inputField value="{!contact.Nickname__c}"/>
+                <apex:inputField value="{!contact.Gender__c}"  required="true"/>
+                <apex:outputText value=""/>
+                <apex:inputField id="dateOfBirth" onblur="search.blur();" value="{!contact.Birthdate}"  required="true"/>
+                <apex:inputField value="{!contact.DOB_Estimated__c}"/>
+                <apex:inputField value="{!contact.NINumber__c}"/>
+                <apex:inputField value="{!contact.Email}"/>
+                <apex:inputField value="{!contact.Phone}"/>
+                <apex:inputField value="{!contact.MobilePhone}"/>
+                <apex:inputField value="{!contact.Ethnic_Origin__c}" required="true"/>
+                <apex:inputField value="{!contact.Nationality__c}"  required="true"/>
+                <apex:inputField value="{!contact.Immigration_Status__c}"/>
+                <apex:inputField value="{!contact.Immigration_Notes__c}"/>
+                <apex:inputField value="{!contact.Trafficking_Victim__c}"/>
+                <apex:inputField value="{!contact.Date_entered_UK__c}"/>
+                <apex:inputField value="{!contact.Date_entered_UK_status__c}"/>
+                <apex:inputField value="{!contact.Country_Region__c}"/>
+                <apex:inputField value="{!contact.Preferred_Language__c}" />
+                <apex:inputField value="{!contact.Spoken_English_Ability__c}" />
+                <apex:inputField value="{!contact.Recourse_to_public_funds__c}" />
+                <apex:outputText value=""/>
+                <apex:inputField value="{!contact.Consent__c}" />
+                <apex:inputField value="{!contact.Consent_Date__c}" />
+<!--                <apex:inputField value="{!contact.Institutional_History_Armed_Forces__c}" />-->
+                <apex:inputField value="{!contact.Armed_forces_2__c}" />
+                <apex:inputField value="{!contact.Date_last_left_armed_forces__c}" />
+                <apex:inputField value="{!contact.Care_leaver_2__c}" />
+                <apex:inputField value="{!contact.Date_last_left_care__c}" />
+                <apex:inputField value="{!contact.Prison_2__c}" />
+                <apex:inputField value="{!contact.Date_Last_Left_Prison__c}" />
+                <apex:inputField value="{!contact.Name_of_Last_Prison__c}" />
+                <apex:inputField value="{!contact.Estimated_Date_Last_Left_Prison__c}" />
+                <apex:inputField value="{!contact.Equipment__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection collapsible="true" title="Encounter Information" columns="2" id="thePageBlockSection">
+                <apex:inputField value="{!timeLineEvent.Date__c}" required="true"/>
+                <apex:inputField value="{!timeLineEvent.Borough_Street_Site__c}" required="true" id="streetsite"/>
+                
+                <apex:inputField value="{!timeLineEvent.Time_of_contact__c}" required="true"/>
+                <apex:inputField value="{!timeLineEvent.Other_site__c}" />
+                
+                <apex:inputField value="{!timeLineEvent.Non_verified_event__c}" required="true"/>
+
+                <apex:PageBlockSectionItem >              
+                    <apex:outputLabel value="Encounter Event"/>
+                    <apex:actionRegion >
+                         <apex:inputField value="{!timeLineEvent.Encounter_Event__c}" required="true">
+                            <apex:actionSupport event="onchange" reRender="flowPanel" />
+                        </apex:inputField>
+                     </apex:actionRegion>
+                </apex:PageBlockSectionItem>                
+
+                <apex:inputField value="{!timeLineEvent.Hotspot__c}"/>
+                <apex:inputField value="{!timeLineEvent.Hidden_hotspot_type__c}"/>
+                <apex:inputField id="notes" value="{!timeLineEvent.Notes__c}"/>
+                <apex:outputText value=""/>
+                                
+                <apex:inputField value="{!timeLineEvent.Project_Team__c}" />
+                <apex:inputField value="{!timeLineEvent.Activity__c}" />
+
+                <apex:inputField value="{!timelineEvent.NSNO_Action__c}" />
+                <apex:inputField value="{!timelineEvent.Unable_to_refer_Other_reasons__c}" />
+                <apex:inputField value="{!timelineEvent.Initial_contact_alternative_to_NSNO__c}" />
+                <apex:inputField value="{!timelineEvent.Initial_contact_advice_and_signposting__c}" />
+                    
+                <apex:inputField value="{!timeLineEvent.Work_Carried_Out_1_FCF__c}" />
+                <apex:inputField value="{!timeLineEvent.Intel_Count__c}" />
+                <apex:inputField value="{!timeLineEvent.Work_Carried_Out_2_FCF__c}" />
+                <apex:inputField value="{!timelineEvent.Barka_Joint_Shift__c}" />
+                <apex:inputField value="{!timeLineEvent.Work_Carried_Out_3_FCF__c}" />
+                <apex:inputField value="{!timeLineEvent.Other_Work_Carried_Out__c}" />
+                <apex:inputField value="{!timeLineEvent.Referral_telephone_website_reference__c}" />
+
+                <apex:inputField value="{!timeLineEvent.On_behalf_of__c}" />
+                <apex:inputField value="{!timeLineEvent.On_behalf_of_project_team__c}" />                                                                             
+                                
+                <apex:inputField value="{!timeLineEvent.Private_Notes_Thames_Reach__c}" />
+                <apex:inputField value="{!timeLineEvent.Private_Notes_SPEAR_Outreach__c}" />
+                <apex:inputField value="{!timeLineEvent.Private_Notes_Westminster_SPOT__c}" />
+                <apex:inputField value="{!timeLineEvent.Private_notes_St_Mungo_s__c}" />
+                <apex:inputField value="{!timeLineEvent.Private_notes_CSTM__c}" />
+                <apex:inputField value="{!timeLineEvent.Private_notes_Passage__c}" />
+                <apex:inputField value="{!timeLineEvent.Private_notes_WLDC__c}" />
+                        
+                </apex:pageBlockSection>
+
+                
+
+                  
+</apex:pageBlock>
+</apex:form>
+    
+    <script type="text/javascript">
+        var search = new query();
+        search.go();
+    </script>
+</apex:page>

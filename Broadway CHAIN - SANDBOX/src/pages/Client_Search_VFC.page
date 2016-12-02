@@ -1,0 +1,72 @@
+<apex:page standardStylesheets="false">
+
+    <script>
+        function noenter(ev)
+           {
+              if (window.event)
+              {
+                  ev=window.event;
+              }
+           
+              var keyCode;
+              if (ev.keyCode)
+              {
+                 keyCode=ev.keyCode;
+              }
+              else
+              {
+                 keyCode=ev.charCode;
+              }
+           
+              if (keyCode == 13)
+              {
+                 searchBtn.click();
+                 return false;
+              }
+              else
+              {
+                 return true;
+              }
+           }
+    </script>
+    
+    <head> 
+        <base target="_parent" />
+    </head>
+
+    <apex:form id="frmMain" >
+
+        <div id="theForm">
+            <div>
+                <apex:outputLabel value="First Name" for="firstname"/> 
+                <apex:inputText id="firstname" label="First Name" style="width:150px" onkeypress="return noenter(event);"/>
+                <script>
+                    var firstname=document.getElementById("{!$Component.firstname}");
+                </script>
+            </div>
+            <div>
+                <apex:outputLabel value="Surname" for="surname"/> 
+                <apex:inputText id="surname" label="Surname" style="width:150px" onkeypress="return noenter(event);"/>
+                <script>
+                    var surname=document.getElementById("{!$Component.surname}");
+                </script>
+            </div>
+            <div>
+                <apex:outputLabel value="Any name/DOB/Client ID/Description" for="any"/> 
+                <apex:inputText id="any" label="Any name/DOB/Client ID" style="width:150px" onkeypress="return noenter(event);" /><br/>
+                <script>
+                    var any=document.getElementById("{!$Component.any}");
+                </script>        
+            </div>
+        </div>
+        <br/>
+        <apex:commandButton id="searchBtn" value="Search"  oncomplete="window.parent.location='{!$Site.Prefix}/00O80000003t2JU?pv1=' + firstname.value + '&pv2='+ surname.value + '&pv0='+ any.value;"/>
+        <script>
+            var searchBtn = document.getElementById("{!$Component.searchBtn}");
+        </script>
+        <div class="searchFooter">
+            <a onclick="document.getElementById('sbsearch').action='/search/AdvancedSearch';document.getElementById('sbsearch').submit(); return false;" href='{!$Site.Prefix}/search/AdvancedSearch?searchType=1&sen=a0X&setLast=1&sbstr='>Advanced Search...</a>
+        </div>
+    </apex:form>
+
+</apex:page>

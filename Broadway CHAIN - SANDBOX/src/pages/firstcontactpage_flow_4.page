@@ -1,0 +1,107 @@
+<apex:page controller="FirstContact" extensions="StreetContactMapUtility" tabStyle="Account">
+    <apex:form >
+        <apex:pageMessages />
+        <apex:pageBlock title="First Contact: Add Flow Information" mode="edit" id="thePageBlock">
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!saveFlow}" value="Save"/>
+                <apex:commandButton action="{!saveAndAddSupportNeeds}" value="Save and Add Support Needs"/>
+                <apex:commandButton action="{!cancel}" value="Cancel" immediate="true"/>
+                &nbsp;&nbsp;
+            </apex:pageBlockButtons>
+
+            <apex:pageBlockSection title="Flow - last longer term or settled base prior to 1st contact?" columns="2">
+            
+                <apex:inputField value="{!flowInfo.Last_longer_term_place_settled_base__c}" />
+                <apex:inputField value="{!flowInfo.Primary_reason_for_leaving__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="1">
+                <apex:inputField value="{!flowInfo.Secondary_reasons_for_leaving__c}" />
+            </apex:pageBlockSection> 
+            <apex:pageBlockSection columns="2">       
+                <apex:inputField value="{!flowInfo.Status__c}" />
+                <apex:inputField value="{!flowInfo.Other_reason_for_leaving__c}" />
+                <apex:inputField value="{!flowInfo.Other_base__c}" />
+                <apex:inputField value="{!flowInfo.Contributing_factors__c}" />
+                <apex:inputField value="{!flowInfo.Location_last_settled_base_UK__c}" />
+                <apex:inputField value="{!flowInfo.Location_last_settled_base_non_UK__c}" />
+            
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Flow - places stayed 3 months prior to 1st contact" columns="2">
+            
+                <apex:inputField value="{!flowInfo.Places_stayed_1__c}" />
+                <apex:inputField value="{!flowInfo.Country_1__c}" />
+                <apex:outputText value=""/>
+                <apex:inputField value="{!flowInfo.Local_authority_UK_1__c}" />
+                <apex:inputField value="{!flowInfo.Places_stayed_2__c}" />
+                <apex:inputField value="{!flowInfo.Country_2__c}" />
+                <apex:outputText value=""/>
+                <apex:inputField value="{!flowInfo.Local_authority_UK_2__c}" />
+                <apex:inputField value="{!flowInfo.Places_stayed_3__c}" />
+                <apex:inputField value="{!flowInfo.Country_3__c}" />
+                <apex:inputField value="{!flowInfo.Other__c}" />
+                <apex:inputField value="{!flowInfo.Local_authority_UK_3__c}" />
+                <apex:inputField value="{!flowInfo.Other_location__c}" />
+            
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Flow - contacts with LA HPU/housing options last 12 months before 1st contact?" columns="2">    
+                
+                <apex:inputField value="{!flowInfo.HPU_Housing_Options_in_last_12_months__c}" />
+                <apex:inputField value="{!flowInfo.Name_of_local_authority__c}" />
+                <apex:inputField value="{!flowInfo.HPU_notes__c}" />
+                <apex:outputText value=""/>
+                <apex:inputField value="{!flowInfo.Flow_notes__c}" />
+            
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Advice agency approached in 3 months prior to first rough sleeping contact (1)" columns="2">    
+                   
+                <apex:inputField value="{!flowInfo.Type_1__c}" />
+                <apex:inputField value="{!flowInfo.Most_recent_contact_date_1__c}" />
+                <apex:inputField value="{!flowInfo.Agency_name_1__c}" />
+                <apex:inputField value="{!flowInfo.Number_of_times_contacted_1__c}" />
+                <apex:inputField value="{!flowInfo.Advice_given_1__c}" />
+            
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Advice agency approached in 3 months prior to first rough sleeping contact (2)" columns="2">    
+                   
+                <apex:inputField value="{!flowInfo.Type_2__c}" />
+                <apex:inputField value="{!flowInfo.Most_recent_contact_date_2__c}" />
+                <apex:inputField value="{!flowInfo.Agency_name_2__c}" />
+                <apex:inputField value="{!flowInfo.Number_of_times_contacted_2__c}" />
+                <apex:inputField value="{!flowInfo.Advice_given_2__c}" />
+            
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Advice agency approached in 3 months prior to first rough sleeping contact (3)" columns="2">    
+                   
+                <apex:inputField value="{!flowInfo.Type_3__c}" />
+                <apex:inputField value="{!flowInfo.Most_recent_contact_date_3__c}" />
+                <apex:inputField value="{!flowInfo.Agency_name_3__c}" />
+                <apex:inputField value="{!flowInfo.Number_of_times_contacted_3__c}" />
+                <apex:inputField value="{!flowInfo.Advice_given_3__c}" />
+            
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Advice agency approached in 3 months prior to first rough sleeping contact (4)" columns="2">    
+                   
+                <apex:inputField value="{!flowInfo.Type_4__c}" />
+                <apex:inputField value="{!flowInfo.Most_recent_contact_date_4__c}" />
+                <apex:inputField value="{!flowInfo.Agency_name_4__c}" />
+                <apex:inputField value="{!flowInfo.Number_of_times_contacted_4__c}" />
+                <apex:inputField value="{!flowInfo.Advice_given_4__c}" />
+            
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Further details" columns="2">    
+                 
+                 <apex:inputField value="{!flowInfo.Any_further_advice_agencies_contacted__c}" />  
+                            
+            </apex:pageBlockSection>    
+                  
+</apex:pageBlock>
+</apex:form>
+
+</apex:page>

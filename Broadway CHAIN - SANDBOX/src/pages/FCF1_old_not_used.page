@@ -1,0 +1,336 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" controller="FirstContact" extensions="StreetContactMapUtility">    
+
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">    
+
+        <script type="text/javascript">
+            var __sfdcSessionId = '{!GETSESSIONID()}';
+        </script>
+
+        <script type="text/javascript" src="/soap/ajax/25.0/connection.js"></script>
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+        <script type="text/javascript">
+            jQuery.expr[':'].regex = function(elem, index, match) {
+                var matchParams = match[3].split(','),
+                    validLabels = /^(data|css):/,
+                    attr = {
+                        method: matchParams[0].match(validLabels) ? 
+                                    matchParams[0].split(':')[0] : 'attr',
+                        property: matchParams.shift().replace(validLabels,'')
+                    },
+                    regexFlags = 'ig',
+                    regex = new RegExp(matchParams.join('').replace(/^\s+|\s+$/g,''), regexFlags);
+                return regex.test(jQuery(elem)[attr.method](attr.property));
+            };
+            
+            var query = function() {
+                var query = this;
+                this.lastName = $('input:regex(id, ^.*lastName$)').val().substr(0,3);
+                this.firstName = $('input:regex(id, ^.*firstName$)').val().substr(0,3);
+                this.dob = $('input:regex(id, ^.*dateOfBirth$)').val();
+                this.callback = {
+                    onSuccess   : function (queryResult, source) {
+                        if (queryResult.size > 0) {
+                            var records = queryResult.getArray('records'),
+                                output = '<a onclick="$(\'#dupList\').toggle();">Show/Hide Possible Duplicates</a><br /><ul id="dupList" style="display:none;list-style-type:none;margin:0;padding:0;">';
+                            
+                            for (var i = 0; i < records.length; i++) {
+                                var account = records[i];
+                                var birthDate = [];
+                                var contactId = account.PersonContactId;
+                                //output += '<li><a href="/' + account.Id + '" target="_blank" style="color: #f00;">' + account.FirstName + ' ' + account.LastName + '</a>';
+                                
+                                output += '<li><a href="javascript:selectContact(\''+ contactId +'\' ,  \''+ account.Id +'\' );"   style="color: #f00;">' + account.FirstName + ' ' + account.LastName + ' '  
+                                                                                                                +  account.Gender__pc + ' ' + account.Ethnic_Origin__pc + ' ' + account.Nationality__pc + '</a>';
+                                
+                                if (typeof account.PersonBirthdate === 'string') {
+                                    birthDate = account.PersonBirthdate.split('-');
+                                    output += ' - ' + birthDate[2] + '/' + birthDate[1] + '/' + birthDate[0];
+                                }
+                                
+                                output += '</li>';
+                            }
+                            
+                            source.output.innerHTML = output;
+                            $('#DuplicateClients').show();
+                        }
+                    },
+                    onFailure   : function (error, source) {
+                        alert(error);
+                    },
+                    source      : {
+                        output      : document.getElementById('clientList'),
+                        startTime   : new Date().getTime()
+                    }
+                };
+                this.blur = function () {
+                    query.lastName = $('input:regex(id, ^.*lastName$)').val().substr(0,3);
+                    query.firstName = $('input:regex(id, ^.*firstName$)').val().substr(0,3);
+                    query.dob = $('input:regex(id, ^.*dateOfBirth$)').val();
+                    query.go();
+                };
+                this.go = function () {
+                    var soql = "Select Id, FirstName, LastName, PersonBirthdate , PersonContactId, Gender__pc, Ethnic_Origin__pc, Nationality__pc From Account Where",
+                        run = false;
+                    
+                    if (query.lastName.length > 0) {
+                        soql = soql + " LastName Like '" + query.lastName + "%'";
+                        run = true;
+                    }
+                    
+                    if (query.firstName.length > 0) {
+                        if (query.lastName.length > 0) {
+                            soql = soql + " And ";
+                        }
+                        
+                        soql = soql + " FirstName Like '" + query.firstName + "%'";
+                        run = true;
+                    }
+                    
+                    if (query.dob.length > 0) {
+                        if (query.lastName.length > 0 || query.firstName.length > 0) {
+                            soql = soql + " And ";
+                        }
+                        
+                        query.dob = query.dob.split('/');
+                        soql = soql + " PersonBirthdate >= " + query.dob[2] + "-01-01";
+                        soql = soql + " AND PersonBirthdate <= " + query.dob[2] + "-12-31";
+                        run = true;
+                    }
+                    
+                    $('#DuplicateClients').hide();
+                    
+                    if (true === run) {
+                        sforce.connection.query(soql, query.callback);
+                    }
+                };
+            };
+         
+        </script> 
+
+        <script type="text/javascript">
+            function selectContact(contactId, accountId) {
+              useSelectedContact(contactId, accountId);
+              //alert("selectContact: "+ contactId + ' - ' + accountId);
+              $('#DuplicateClients').show();
+              return false;
+            }
+                    
+        </script>
+        <head>
+            <apex:stylesheet value="{!URLFOR($Resource.SLDS0121, 'assets/styles/salesforce-lightning-design-system-vf.css')}" /> 
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" /> 
+        </head>    
+        
+    
+        
+        <body>
+        
+
+            
+            <div class="slds">
+            
+                <apex:form id="frmMain">
+                    
+                    <apex:actionRegion >
+                    <apex:actionFunction action="{!useSelectedContact}" name="useSelectedContact" rerender="gender, ethnicOrigin, frmMain">
+                        <apex:param id="selectedContact" name="selectedContact" assignTo="{!selectedContact}" value=""/>
+                        <apex:param id="selectedAccount" name="selectedAccount" assignTo="{!selectedAccount}" value=""/>
+                    </apex:actionFunction>
+                    </apex:actionRegion>
+                    
+                <apex:pageMessages />
+                    <div class="slds-page-header" role="banner">                            
+                        <h1 class="slds-text-heading--small slds-m-bottom--small slds-align-middle">
+                            First Contact Form - Quick Entry
+                        </h1>
+    
+                        <div class="slds-grid ">
+                            <div class="slds-col slds-has-flexi-truncate slds-size--1-of-2 slds-col--padded-small">
+                                <!-- <button class="slds-button--brand slds-button--small" onclick="sforce.one.back();">Cancel</button> -->
+                                <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" styleClass="slds-button--brand slds-button--small" html-formnovalidate="formnovalidate"/>  
+                            </div>
+                            <!--
+                            <div class="slds-col slds-has-flexi-truncate slds-size--1-of-3 slds-col--padded-small">   
+                                <h4 class="slds-text-heading--small slds-m-bottom--small slds-align-middle">
+                                    First Contact Form
+                                </h4>
+                            </div>
+                            -->
+                            <div class="slds-col  slds-has-flexi-truncate slds-size--1-of-2  slds-col--padded-small">
+                                <!-- <button class="slds-button slds-button--brand slds-button--small   slds-float--right" onclick="top.window.location.href = '/apex/FCF_Map';">Create Timeline</button> -->
+                                <apex:commandButton action="{!quickSaveClient}" value="Create Street Contact" styleClass="slds-button slds-button--brand slds-button--small   slds-float--right" />
+                            </div>
+                         </div>
+                    </div>
+                    
+                    <div id="DuplicateClients" style="display: none;">
+                        <div class="message warningM3" style="font-size: 15px;">
+                            <table border="0" cellpadding="0" cellspacing="0" class="messageTable" style="padding:0px;margin:0px;">
+                                <tbody><tr valign="top">
+                                    <td>
+                                        <img alt="WARNING" class="msgIcon" src="/s.gif" title="WARNING" />
+                                    </td>
+                                    <td class="messageCell"><div class="messageText"><span>
+                                        <h4>Warning:</h4></span>Possible duplicate clients.<br/></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td id="clientList"></td>
+                                </tr>
+                            </tbody></table>
+                        </div>
+                    </div>
+                   
+                    <b><h1>Enter Client Details</h1></b><br/>
+                    
+                    
+                    <form class="slds-form--inline">
+
+
+<div class="slds-form-element slds-col--padded-small">
+                            <label class="slds-form-element__label" >First Name</label>
+                            <div class="slds-form-element__control">
+                                <!-- <input id="fstName" class="slds-input--small slds-size--1-of-1" type="text" placeholder="" /> -->
+                                <apex:inputField id="firstName" onblur="search.blur();" value="{!contact.firstname}" required="true" styleclass="slds-input--small slds-size--1-of-1 "/>
+                            </div>
+                        </div>
+            
+                        <div class="slds-form-element slds-col--padded-small">
+                            <label class="slds-form-element__label" >Surname</label>
+                            <div class="slds-form-element__control">
+                                <!-- <input id="lstName" class="slds-input--small" type="text" placeholder="" />  -->
+                                <apex:inputField id="lastName" onblur="search.blur();" value="{!contact.lastname}" required="true" styleclass="slds-input--small slds-size--1-of-1 "/>
+                            </div>
+                        </div>                  
+    
+                        <div class="slds-form-element slds-col--padded-small">
+                            <label class="slds-form-element__label" >Other Names</label>
+                            <div class="slds-form-element__control">                            
+                                <apex:inputField id="otherNames"  value="{!contact.Other_Names__c}" styleclass="slds-input--small slds-size--1-of-1 "/>
+                            </div>
+                        </div>
+    
+                        <div class="slds-form-element slds-col--padded-small">
+                            <label class="slds-form-element__label" >Nickname</label>
+                            <div class="slds-form-element__control">                            
+                                <apex:inputField id="nickName"  value="{!contact.Nickname__c}" styleclass="slds-input--small slds-size--1-of-1 "/>
+                            </div>
+                        </div>
+    
+                        <div class="slds-form-element slds-col--padded-small">
+                            <label class="slds-form-element__label" >Date of Birth</label>
+                            <div class="slds-form-element__control">                            
+                                <apex:inputField id="dateOfBirth" onblur="search.blur();" value="{!contact.Birthdate}"  required="true" styleclass="slds-input--small slds-size--1-of-1 "/>
+                            </div>
+                        </div>
+    
+                        <div class="slds-form-element slds-col--padded-small">
+                           
+                            <div class="slds-form-element__control">                            
+                                 <label class="slds-form-element__label" >Date of Birth - Estimated</label>
+                                <apex:inputField id="dateOfBirthEstimated" value="{!contact.DOB_Estimated__c}"   styleclass="slds-input--small"/>
+                            </div>
+                        </div>
+                                                                                    
+                        <div class="slds-form-element  slds-col--padded-small">
+                             <h2><label class="slds-form-element__label" >Gender</label></h2>
+                            <div class="slds-form-element__control">
+                                <!-- <input id="lstName" class="slds-input--small" type="text" placeholder="" /> -->
+                                <apex:inputField id="gender" value="{!contact.Gender__c}"  required="true" styleclass="slds-input--small slds-size--1-of-1 "/>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element slds-col--padded-small">
+                            <label class="slds-form-element__label" >Ethnic Origin</label>
+                            <div class="slds-form-element__control">                            
+                                <apex:inputField id="ethnicOrigin" value="{!contact.Ethnic_Origin__c}"   styleclass="slds-input--small slds-size--1-of-1 "/>
+                            </div>
+                        </div>
+    
+                        <div class="slds-form-element slds-col--padded-small">
+                            <label class="slds-form-element__label" >Nationality</label>
+                            <div class="slds-form-element__control">                            
+                                <apex:inputField id="nationality" value="{!contact.Nationality__c}"   styleclass="slds-input--small slds-size--1-of-1 "/>
+                            </div>
+                        </div>
+    
+                        <div class="slds-form-element slds-col--padded-small">
+                            <label class="slds-form-element__label" >Country Region</label>
+                            <div class="slds-form-element__control">                            
+                                <apex:inputField id="countryRegion" value="{!contact.Country_Region__c}" required="true"  styleclass="slds-input--small slds-size--1-of-1 "/>
+                            </div>
+                        </div>
+
+                        <div class="slds-form-element slds-col--padded-small">
+                            <label class="slds-form-element__label" >Last longer term place/settled base</label>
+                            <div class="slds-form-element__control">                            
+                                <apex:inputField id="lastBase" value="{!contact.Last_longer_term_place_settled_base__c}"   styleclass="slds-input--small slds-size--1-of-1 "/>
+                            </div>
+                        </div>
+
+                        <div class="slds-form-element slds-col--padded-small">
+                            <label class="slds-form-element__label" >Primary reason for leaving</label>
+                            <div class="slds-form-element__control">                            
+                                <apex:inputField id="primaryReason" value="{!contact.Reason_for_leaving_settled_base__c}"   styleclass="slds-input--small slds-size--1-of-1 "/>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element slds-col--padded-small">
+                            <label class="slds-form-element__label" >Places stayed (1)</label>
+                            <div class="slds-form-element__control">                            
+                                <apex:inputField id="placesStayed" value="{!contact.Places_stayed_1__c}"   styleclass="slds-input--small slds-size--1-of-1 "/>
+                            </div>
+                        </div>  
+                    
+
+                        <apex:repeat var="f" value="{!$ObjectType.Contact.FieldSets.MobileClientEntry}">
+                            <div class="slds-form-element slds-col--padded-small">
+                                <label class="slds-form-element__label" >{!f.label}</label>
+                                <div class="slds-form-element__control">
+                           
+                                    <apex:inputField value="{!contact[f.fieldPath]}"   styleclass="slds-input--small " rendered="{!f.fieldPath = 'DOB_Estimated__c'}"/>
+                                    <apex:inputField value="{!contact[f.fieldPath]}"   styleclass="slds-input--small slds-size--1-of-1" rendered="{!NOT(f.fieldPath = 'DOB_Estimated__c')}"/>
+                                </div>
+                            </div>                      
+                    
+                    
+                        </apex:repeat>                                                                                                       
+
+
+                    
+                    
+                        <div class="slds-page-header" role="banner">                            
+    
+        
+                            <div class="slds-grid ">
+                                <div class="slds-col slds-has-flexi-truncate slds-size--1-of-2 slds-col--padded-small">
+                                    <!-- <button class="slds-button--brand slds-button--small" onclick="sforce.one.back();">Cancel</button> -->
+                                    <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" styleClass="slds-button--brand slds-button--small" html-formnovalidate="formnovalidate"/>  
+                                </div>
+                                <!--
+                                <div class="slds-col slds-has-flexi-truncate slds-size--1-of-3 slds-col--padded-small">   
+                                    <h4 class="slds-text-heading--small slds-m-bottom--small slds-align-middle">
+                                        First Contact Form
+                                    </h4>
+                                </div>
+                                -->
+                                <div class="slds-col  slds-has-flexi-truncate slds-size--1-of-2  slds-col--padded-small">
+                                    <!-- <button class="slds-button slds-button--brand slds-button--small   slds-float--right" onclick="top.window.location.href = '/apex/FCF_Map';">Create Timeline</button> -->
+                                    <apex:commandButton action="{!quickSaveClient}" value="Create Street Contact" styleClass="slds-button slds-button--brand slds-button--small   slds-float--right" />
+                                </div>
+                             </div>
+                        </div>
+                    </form>
+                    </apex:form>                    
+                </div>
+            </body>
+
+    </html>
+    
+    <script type="text/javascript">
+        var search = new query();
+        search.go();
+    </script>
+                
+</apex:page>

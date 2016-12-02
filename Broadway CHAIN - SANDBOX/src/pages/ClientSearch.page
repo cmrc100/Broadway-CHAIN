@@ -1,0 +1,344 @@
+<apex:page controller="FirstContact" extensions="ClientSearchController" sidebar="false" showHeader="false" standardStylesheets="false"  applyBodyTag="false" docType="html-5.0">
+    
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">    
+
+    <head>
+      <apex:stylesheet value="{!URLFOR($Resource.SLDS0121, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+      <apex:includeScript value="{!$Resource.Sorttable}"></apex:includeScript>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    </head>    
+
+    <style>
+       #wrapper {
+            width: 700px ;
+            margin-left: auto ;
+            margin-right: auto ;
+        }
+
+        input[type=text] {
+            font-size: 1rem;
+            -webkit-appearance: none;
+            box-shadow: none;
+            padding: 8px;
+            border: 1px solid #DDDDDD;
+            border-radius: 4px;
+            width: 600px;
+            
+        }    
+            
+        li {
+            border-bottom: solid 1px #DDDDDD;
+            padding: 8px;
+        }
+
+        p {
+            margin: 4px;
+        }    
+
+        /* Sortable tables */
+        table.sortable thead {
+            background-color:#eee;
+            color:#666666;
+            font-weight: bold;
+            cursor: default;
+        }   
+    
+    </style>
+
+    <div class="slds">
+           
+        <div class="slds-page-header"   role="banner">
+
+                <div class="slds-grid homeBtn" id="homeBtn" >
+                    <div class="slds-col  slds-size--1-of-1 ">
+                        <button class="slds-button slds-button--brand slds-button--small slds-align-right" onclick="cancelAction();">Home</button>
+                    </div>
+                </div>    
+                <div class="slds-grid">
+                     <div class="slds-col  slds-size--1-of-1 ">
+                        <h2 class="slds-text-heading--large slds-m-bottom--large slds-text-align--center">
+                            Client Search
+                        </h2>
+                     </div>
+                 </div>
+
+        </div> 
+        
+        <div id='searching' align="center">Searching...  <img src="{!$Resource.ajaxSpinner}"/></div>
+        
+        <div>
+            <div id="wrapper">
+                <input type="text" id="searchText" class="searchKey"  placeholder="Search ..." />
+                <button class="btn btn-link" onclick="$j('#searchText').val('');">X</button> <br/> <br/>
+                <button id="searchBtn" class="slds-button slds-button--brand slds-button--small" onclick="$j('#searching').show(); searchClients();">Search Clients</button>
+            </div>
+            
+        </div>
+        
+        <br/><br/>
+        
+        <!-- Search Results LIST TABLE -->
+        <div id="searchResults" class="slds-p-vertical--large slds-cell-wrap"></div>
+        <!-- / Search Results LIST TABLE -->
+          
+    </div>
+    
+    <!-- <apex:includeScript value="https://code.jquery.com/jquery-1.9.1.min.js"/> -->
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"/>
+   <!-- custom scripts -->
+   
+    <script>
+   
+        $j = jQuery.noConflict();
+        var homeUrl;
+        var fields;
+
+        $j(document).ready(function() {
+        
+            //readitem = {"apexType":"c.apiCustomerRead.cls_CustomerReadItem"};
+            $j('#searchText').val('');
+            $j('#searching').hide();
+     
+            if( ('{!$User.UIThemeDisplayed}' == 'Theme4t' || '{!$User.UIThemeDisplayed}' == 'Theme4d' ) ) {
+             // running in mobile
+                homeUrl = '/home/home.jsp';
+                $j('#homeBtn').hide();
+            } else { //desktop
+                homeUrl = '/home/home.jsp';
+            }                        
+
+            $j("#searchText").keypress(function(e) {
+                if(e.which == 13) {
+                    $j("#searchBtn").click();
+                }
+            });
+            
+
+            <apex:repeat var="f" value="{!$ObjectType.Account.FieldSets.ClientSearchList}">
+                console.log("{!f.Label + ' - ' + f.FieldPath + ' - ' + f.Type}");
+            </apex:repeat>
+
+
+         
+        })
+
+        Visualforce.remoting.timeout = 60000;
+        Visualforce.remoting.buffer = false;        
+        Visualforce.remoting.escape = false;        
+        
+
+               
+        function searchClients(){
+                
+            $j('#searching').show();
+            var searchString = $j('#searchText').val();
+            searchString = searchString.trim();
+            
+            console.log(searchString);    
+            var search = false;
+            
+            if (searchString.length > 0){                                
+                search = true;
+            }
+            
+            
+            if (search){
+                 
+                 ClientSearchController.searchClients(searchString, function(result, event) {
+                                     
+                        console.log(result);
+
+                        var html = buildHTML(result);
+                        $j('#searching').hide();
+                        
+                        if(event.status) {
+                          
+                            $j( "#searchResults").html(function() {
+                               return html;
+                            });
+                            if(html){
+                                var resultTable = document.getElementById("resultsTable");
+                                sorttable.makeSortable(resultTable);
+                            }
+                            
+                        } else {
+                            $j( "#searchResults").html(function() {
+                               return "<p>Network Error - Please report issue if problem persists</p> <br/>" + result
+                            });
+        
+                        }
+                              
+
+                    },{buffer: false, escape: false, timeout: 90000} );            
+            
+            } else {
+                $j('#searching').hide();
+            }
+
+        
+        }
+  
+
+        function buildHTML(records){
+                                                                           
+            var html = '';
+            var outputDiv = document.getElementById("searchResults");
+            
+            console.log(records.length + ' found ');            
+            
+            if (records.length == 0){
+                html = '<div align="center"><p>No clients found</p></div>';
+                html = html + '</br> <button class="slds-button slds-button--brand slds-button--small   slds-float--right" onclick="newClient();">New Client</button></div>'; 
+                outputDiv.innerHTML = html;
+                return html;
+            }
+            
+            for (var i=0; i<records.length; i++){
+                var html = '<div class="slds-scrollable--x"><table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal sortable" id="resultsTable">';    
+                var svgUrl = '{!URLFOR($Resource.SLDS0121, "/assets/icons/utility-sprite/svg/symbols.svg#arrowdown")}';
+                
+                html += '<thead>';
+                html += '<tr>';
+                html += '<th scope="col"> </th>';
+                html += '<th scope="col"> </th>';
+                <apex:repeat var="f" value="{!$ObjectType.Account.FieldSets.ClientSearchList}">
+                     html += '<th class="slds-is-sortable" scope="col">{!f.Label}</th>';
+                </apex:repeat>
+               
+
+                html += '</tr>';
+                html += '</thead><tbody>';
+                if (records.length > 40){
+                    $j('#searching').hide();
+                    alert ('Too many records returned, please refine your search criteria');
+                    return '';
+                }    
+                if (records.length > 0) {    
+                    records.forEach(function(record) {
+                        var contactId = undefinedToEmptyString(record.PersonContactId);
+                        var clientRef = undefinedToEmptyString(record.ClientID__pc);
+                        var recId = record.Id;
+                                               
+                        html += '<tr>';
+                        html += '<td><a href="javascript:viewClient(\''+ recId +'\');">' + clientRef+ '</a></td>';
+                        html += '<td><a href="javascript:newTimelineEvent(\''+ recId +'\', \'' + contactId + '\');">Add Street Contact</a></td>';
+                        
+                        <apex:repeat var="f" value="{!$ObjectType.Account.FieldSets.ClientSearchList}">
+                             var value = record['{!f.FieldPath}'];
+                             var fType = "{!f.Type}";
+                             if (fType == 'date'){
+                                 value = undefinedToEmptyDate(value);
+                             } else {
+                                 value = undefinedToEmptyString(value);
+                             }
+                             html += '<td data-label="{!f.label}">' + value+ '</td>';                        
+                        </apex:repeat>                        
+
+                        html += '</tr>';
+                        
+                    });
+                    html = html + '</tbody></table>';
+                    html = html + '</br> <button class="slds-button slds-button--brand slds-button--small   slds-float--right" onclick="newClient();">New Client</button></div>'; 
+                    outputDiv.innerHTML = html;
+                } else {
+                    html = '<div align="center"><p>No records found</p></div>';
+                    html = html + '</br> <button class="slds-button slds-button--brand slds-button--small   slds-float--right" onclick="newClient();">New Client</button></div>'; 
+                    outputDiv.innerHTML = html;
+                }
+
+            }
+            
+            return html;     
+        
+        }
+
+        function viewClient(recId){
+            var url =  encodeURI('/' + recId);
+            if(  ('{!$User.UIThemeDisplayed}' == 'Theme4t' || '{!$User.UIThemeDisplayed}' == 'Theme4d' ) && typeof(sforce) != 'undefined' ) {
+             // running in mobile
+                sforce.one.navigateToURL(url);
+
+            } else { //desktop
+                window.open(url, '_blank');
+                //window.open(url); 
+            } 
+                    
+        }
+                
+        function newClient(){
+            var url =  encodeURI('/apex/FCF1');
+            if( (typeof sforce != 'undefined') && (sforce != null) && typeof(sforce) != 'undefined') {
+             // running in mobile
+                 sforce.one.navigateToURL(url);
+            } else { //desktop
+                window.location.href = url;
+            }     
+
+        }
+        
+        function newTimelineEvent(recId, contactId){
+                        
+            var url =  encodeURI('/apex/FCF_Map?selectedContact=' + contactId + '&selectedAccount=' + recId);
+            if(  ('{!$User.UIThemeDisplayed}' == 'Theme4t' || '{!$User.UIThemeDisplayed}' == 'Theme4d' )  && typeof(sforce) != 'undefined') {
+             // running in mobile
+                sforce.one.navigateToURL(url);
+
+            } else { //desktop
+                window.open(url, '_blank');
+                //window.open(url); 
+            } 
+                    
+        }
+
+
+                
+        function cancelAction(){
+        
+            if(  ('{!$User.UIThemeDisplayed}' == 'Theme4t' || '{!$User.UIThemeDisplayed}' == 'Theme4d' ) && typeof(sforce) != 'undefined' ) {
+             // running in mobile
+                console.log('MOBILE URL ... ' + homeUrl);
+                
+                sforce.one.navigateToURL(homeUrl);
+
+            } else { //desktop
+                console.log('DESKTOP URL ... ' + homeUrl);
+                window.location.href = homeUrl;
+            }     
+
+        }
+
+        function undefinedToEmptyString(v){
+            
+            if (typeof(v) == 'undefined' || v == null){
+                return '';
+            } else {
+                return v;
+            }
+        }
+
+        function undefinedToEmptyDate(v){
+            
+            if (typeof(v) == 'undefined' || v == null){
+                return '';
+            } else {                
+                var dt = new Date(v);
+                var day = dt.getDate();
+                var monthIndex = dt.getMonth() + 1;
+                if (day.toString().length < 2){
+                    day = '0' + day;
+                }
+                if (monthIndex.toString().length < 2){
+                    monthIndex = '0' + monthIndex;
+                }
+                var year = dt.getFullYear();
+                return day + '/' + monthIndex + '/' + year;
+            }
+        }
+    
+    </script>
+    
+
+            
+    </html>
+    
+</apex:page>

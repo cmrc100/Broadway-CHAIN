@@ -1,0 +1,4 @@
+<apex:page controller="CustomReportController" cache="true" contentType="text/csv#Export.csv" language="en-US"> 
+{!selectedFields}
+{!resultValues}
+</apex:page>

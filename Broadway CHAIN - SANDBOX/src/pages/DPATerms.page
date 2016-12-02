@@ -1,0 +1,12 @@
+<apex:page controller="UserDPA" showHeader="false" sidebar="false"  >
+    <apex:form >
+        <apex:pageBlock title="Data Protection Agreement">
+            <b>
+                By ticking this box I agree to adhere to the terms of the Data Protection Agreement signed by a Director of my organisation on behalf of all staff. I will ensure I refer to the Data Protection materials stored on CHAIN in the ‘support and information’ area of the system whenever I need to. I understand that I must familiarise myself with the basic requirements of the agreement including data security, appropriate use of data and data sharing, consent (inputting staff only), clients’ rights. I am aware that any breach of the Data Protection agreement is taken very seriously and could result in legal action
+            </b>
+            <apex:inputCheckbox id="DPA" value="{!usrDPA}" immediate="true"  >
+                <apex:actionSupport event="onchange" action="{!updateDPA}"  />
+            </apex:inputCheckbox>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

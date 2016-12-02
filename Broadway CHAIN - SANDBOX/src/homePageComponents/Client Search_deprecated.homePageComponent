@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HomePageComponent xmlns="http://soap.sforce.com/2006/04/metadata">
+    <body>&lt;form method=&quot;get&quot; action=&quot;https://na8.salesforce.com/00O80000003t2JU#fchArea&quot;&gt;First name&lt;br&gt;&lt;input name=&quot;pv1&quot;&gt;&lt;br&gt;Surname&lt;br&gt;&lt;input name=&quot;pv2&quot;&gt;&lt;br&gt;Any name/DOB/Client ID&lt;br&gt;&lt;input name=&quot;pv0&quot;&gt;&lt;br&gt;&lt;input class=&quot;button&quot; name=&quot;search&quot; value=&quot;Search&quot; type=&quot;submit&quot;&gt;&lt;/form&gt;
+&lt;div class=&quot;searchFooter&quot;&gt;&lt;a onclick=&quot;document.getElementById(&apos;sbsearch&apos;).action=&apos;/search/AdvancedSearch&apos;;document.getElementById(&apos;sbsearch&apos;).submit(); return false;&quot; href=&quot;https://na6.salesforce.com/search/AdvancedSearch&quot;&gt;Advanced Search...&lt;/a&gt;&lt;/div&gt;</body>
+    <pageComponentType>htmlArea</pageComponentType>
+    <width>narrow</width>
+</HomePageComponent>

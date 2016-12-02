@@ -1,0 +1,56 @@
+<apex:page standardStylesheets="false">
+
+    <script>
+        function noenter(ev)
+           {
+              if (window.event)
+              {
+                  ev=window.event;
+              }
+           
+              var keyCode;
+              if (ev.keyCode)
+              {
+                 keyCode=ev.keyCode;
+              }
+              else
+              {
+                 keyCode=ev.charCode;
+              }
+           
+              if (keyCode == 13)
+              {
+                 searchBtn.click();
+                 return false;
+              }
+              else
+              {
+                 return true;
+              }
+           }
+    </script>
+    
+    <head> 
+        <base target="_parent" />
+    </head>
+
+    <apex:form id="frmMain" >
+
+        <div id="theForm">
+            <div>
+                <apex:outputLabel value="Name/DOB/Borough/Site" for="search"/> 
+                <apex:inputText id="search" label="Name/DOB/Borough/Site" style="width:150px" onkeypress="return noenter(event);"/>
+                <script>
+                    var search=document.getElementById("{!$Component.search}");
+                </script>
+            </div>
+        </div>
+        <br/>
+        <apex:commandButton id="searchBtn" value="Search"  oncomplete="window.parent.location='{!$Site.Prefix}/00OC0000004x2mU?pv0=' + search.value ;"/>
+        <script>
+            var searchBtn = document.getElementById("{!$Component.searchBtn}");
+        </script>
+
+    </apex:form>
+
+</apex:page>

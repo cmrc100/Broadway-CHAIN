@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HomePageComponent xmlns="http://soap.sforce.com/2006/04/metadata">
+    <body>&lt;form method=&quot;get&quot; action=&quot;https://na8.salesforce.com/00OC0000004xhiR#fchArea&quot;&gt;Street site&lt;br&gt;&lt;input name=&quot;pv0&quot;&gt;&lt;br&gt;&lt;input class=&quot;button&quot; name=&quot;site_dropdown&quot; value=&quot;Search&quot; type=&quot;submit&quot;&gt;&lt;/form&gt;</body>
+    <pageComponentType>htmlArea</pageComponentType>
+    <width>wide</width>
+</HomePageComponent>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HomePageComponent xmlns="http://soap.sforce.com/2006/04/metadata">
+    <links>Current_Client_List_Outreach</links>
+    <links>Missing_booking_information</links>
+    <links>Missing_consent_for_my_current_clients</links>
+    <links>Telephone_website_referrals_to_team</links>
+    <pageComponentType>links</pageComponentType>
+</HomePageComponent>

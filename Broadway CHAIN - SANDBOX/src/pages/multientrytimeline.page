@@ -1,0 +1,267 @@
+<apex:page standardController="Timeline_Event__c" extensions="Timeline" tabStyle="Timeline_Event__c" standardstylesheets="true">
+
+ 
+    <apex:form >
+     <apex:pageMessages />
+        <apex:pageBlock title="MultiEntry Timeline Event" mode="edit" id="thePageBlock">
+            <apex:pageBlockButtons id="btns">
+                <apex:commandButton id="savebt" action="{!save}" value="Add Encounters" onClick="handleClients()"/>
+                <apex:commandButton action="{!cancel}" value="Cancel"/>
+                &nbsp;&nbsp;
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="Encounter Information" columns="2">
+                <apex:inputField value="{!timeline.Project_Team__c}" />
+                <apex:outputText value=""/>
+                <apex:inputField value="{!timeline.Date__c}" />
+                <apex:inputField value="{!timeLine.Borough_Street_Site__c}"  id="streetsite"/>
+                <apex:inputField value="{!timeline.Encounter_Type__c}" />
+                <apex:inputField value="{!timeline.Other_site__c}" />
+                <apex:inputField value="{!timeLine.Event__c}"/>
+                <apex:inputField value="{!timeline.Notes__c}" />
+            </apex:pageBlockSection>
+<!--             <apex:pageBlockSection title="Activity" columns="2" showHeader="true">
+                <apex:inputField value="{!timeline.Work_Carried_Out_1__c}" />
+                <apex:inputField value="{!timeline.Activity__c}" />
+                <apex:inputField value="{!timeline.Work_Carried_Out_2__c}" />
+                <apex:outputText value=""/>
+                <apex:inputField value="{!timeline.Work_Carried_Out_3__c}" />
+                <apex:outputText value=""/>
+                <apex:inputField value="{!timeLine.Other_Work_Carried_Out__c}" /> 
+            </apex:pageBlockSection>
+-->            
+            <apex:pageBlockSection columns="2" showHeader="false">
+                &nbsp;
+            </apex:pageBlockSection> 
+            <apex:outputPanel layout="block" id="myform">
+            <apex:actionRegion >
+            <apex:pageBlockSection columns="1" title="Search Clients">
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Search"/>
+                    <apex:pageBlockSectionItem >
+                        <apex:inputText id="key" value="{!searchKey}"/>
+                        <apex:commandButton value="Search" action="{!SearchClients}" rerender="myform" onClick="handleClients()"/>
+                    </apex:pageBlockSectionItem>    
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection columns="2" showHeader="false">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Search" rendered="false"/><apex:outputText style="color:red" value="Please enter Search keyword" rendered="{!IF(AND(submitForm,NOT(LEN(searchKey)>0)), true, false)}"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection columns="1" showHeader="false" rendered="{!IF(AND(Clients.size>0, LEN(searchKey)>0),true,false)}">
+                    <table cellspacing="0" cellpadding="0" border="0" class="detailList">
+                        <tbody>
+                            <tr>
+                                <td class="labelCol first  last ">
+                                    <label for="{!$Component.clients}">Clients</label>
+                                </td>
+                                <td class="data2Col  first  last ">
+                                    <div class="requiredInput"><div class="requiredBlock"/>
+                                    <table cellspacing="0" cellpadding="0" border="0" style="display: none;" ><tr><td>
+                                    <apex:selectList id="clients" size="5" style="display: none;" multiselect="true" onchange="MultiSelectPicklist.handleMSPChange(this);">
+                                        <apex:selectOptions value="{!Clients}"/>
+                                    </apex:selectList>
+                                    <apex:selectList id="clientsS" size="5" style="display: none;" multiselect="true" onchange="MultiSelectPicklist.handleMSPChange(this);">
+                                        <apex:selectOptions value="{!SelectedClientOptions}"/>
+                                    </apex:selectList>
+                                    </td></tr></table>
+                                    <input type="hidden" id="pickid" value="{!$Component.clients}"/>
+                                    <input type="hidden" id="pickidS" value="{!$Component.clientsS}"/>
+                                    <table cellspacing="0" cellpadding="0" border="0" class="multiSelectPicklistTable"><tbody>
+                                    <tr>
+                                        <td/><td height="5" colspan="100%"/></tr>
+                                    <tr class="multiSelectPicklistRow">
+                                        <td>
+                                            <select ondblclick="handleMSPSelect('{!$Component.clients}');" id="{!$Component.clients}_unselected" size="5" multiple="multiple" title="Clients - Available" style="width: 273px;">
+                                                <optgroup label="Available" style="font-size: 9px; text-decoration: none;"/>
+                                            </select>
+                    
+                                        </td><td class="multiSelectPicklistCell">
+                    <a href="javascript:handleMSPSelect('{!$Component.clients}');"><img width="17" height="17" align="texttop" title="Select" style="cursor: pointer;" id="{!$Component.clients}_right_arrow" alt="Select" src="/img/arrow2_picklist_right.gif"/></a><br/><br/>
+                    <a href="javascript:handleMSPUnSelect('{!$Component.clients}');"><img width="17" height="17" align="texttop" title="Remove" style="cursor: pointer;" id="{!$Component.clients}_left_arrow" alt="Remove" src="/img/arrow2_picklist_left.gif"/></a></td><td>
+                    <select ondblclick="handleMSPUnSelect('{!$Component.clients}');" id="{!$Component.clients}_selected" size="5" multiple="multiple" title="Clients - Selected" style="width: 273px;"><optgroup label="Selected" style="font-size: 9px; text-decoration: none;"/></select></td></tr></tbody></table>
+                    </div>
+                    
+                    </td></tr>
+                    </tbody></table>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="1" showHeader="false" rendered="{!IF(AND(submitForm,NOT(LEN(strselectedClients)>0), LEN(searchKey)>0), true, false)}">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Search" rendered="false"/><apex:outputText style="color:red" value="Please select Clients" rendered="{!IF(AND(submitForm,NOT(LEN(strselectedClients)>0)), true, false)}"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <script>
+        function handleClients()
+        {
+            if(document.getElementById('pickid')){
+            var selStr = document.getElementById('pickid').value + '_selected';
+            var s='';
+            var selObj = document.getElementById(selStr);
+              for (var i=0; i < selObj.options.length; i++) {
+               
+                s = s + selObj.options[i].value + ';';
+              }
+              document.getElementById(document.getElementById('csid').value).value = s;
+              
+             } 
+        }
+        function addOption(selectbox,text,value )
+        {
+            var optn = document.createElement("OPTION");
+            optn.text = text;
+            optn.value = value;
+            document.getElementById(selectbox).options.add(optn);
+        }
+            if(document.getElementById('pickid')){
+            var selObj = document.getElementById(document.getElementById('pickid').value);
+              if(selObj && selObj.options && selObj.options.length>0){
+              for (var i=0; i<selObj.options.length; i++) {
+                    addOption(document.getElementById('pickid').value + '_unselected',selObj.options[i].text,selObj.options[i].value);
+              }
+             } 
+            }
+            if(document.getElementById('pickidS') && document.getElementById('pickid')){
+            var selObj = document.getElementById(document.getElementById('pickidS').value);
+             
+              if(selObj && selObj.options && selObj.options.length>0){
+              for (var i=0; i<selObj.options.length; i++) {
+                    addOption(document.getElementById('pickid').value + '_selected',selObj.options[i].text,selObj.options[i].value);
+              }
+             } 
+            } 
+            if(document.getElementById('pickid'))
+            {
+                var mainElem = getElementByIdCS(document.getElementById('pickid').value);
+                handleMSPChange(mainElem); 
+            }
+    </script>
+        <apex:inputHidden value="{!strselectedClients}" id="selectedClients"/>
+        <input type="hidden" id="csid" value="{!$Component.selectedClients}"/>  
+
+            </apex:actionRegion>
+        <input type="hidden" id="svb" value="{!$Component.savebt}"/>
+            </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>
+    <script>
+var isSafari = navigator.userAgent.indexOf("AppleWebKit") != -1;
+    
+// retrieve a DOM element by id honoring case
+function getElementByIdCS(id) {
+    return getElementByIdCSWithDoc(document, id);
+}
+
+
+function getElementByIdCSWithDoc(doc, id) {
+    var el = doc.getElementById(id);
+    if(el == null || el.id == id) return el;
+
+    if (doc.all) {
+        return doc.all[id];
+    }
+    return null;
+}
+
+    
+   function handleMSPChange(sel) {
+   var sElem = getElementByIdCS(sel.id + "_selected");
+   var uElem = getElementByIdCS(sel.id + "_unselected");
+   if(false) {
+      var sDepth;
+      var uDepth;
+      for(i = 0; i < sElem.childNodes.length; i++) {
+         var ch = sElem.childNodes[i];
+         if(ch.nodeName == "OPTGROUP") {
+            sDepth = i;
+            var chlen = ch.childNodes.length;
+            for(j = 0; j < chlen; j++) {
+               ch.removeChild(ch.childNodes[0]);
+               }
+            ch.appendChild(document.createElement("p"));
+            }
+         }
+      for(i = 0; i < uElem.childNodes.length; i++) {
+         var ch = uElem.childNodes[i];
+         if(ch.nodeName == "OPTGROUP") {
+            uDepth = i;
+            var chlen = ch.childNodes.length;
+            for(j = 0; j < chlen; j++) {
+               ch.removeChild(ch.childNodes[0]);
+               }
+            ch.appendChild(document.createElement("p"));
+            }
+         }
+      for(i = 0; i < sel.options.length; i++) {
+         if(sel.options[i].value != picklistNAMarker) {
+            var o = document.createElement("option");
+            o.text = sel.options[i].text;
+            o.value = sel.options[i].value;
+            if(sel.options[i].selected) {
+               sElem.childNodes[sDepth].appendChild(o);
+               }
+            else {
+               uElem.childNodes[uDepth].appendChild(o);
+               }
+            }
+         }
+      }
+   else {
+      var sI = 0;
+      var uI = 0;
+      sElem.length = 0;
+      uElem.length = 0;
+      for(var i = 0; i < sel.options.length; i++) {
+         if(sel.options[i].value != picklistNAMarker) {
+            if(sel.options[i].selected) {
+               sElem.options[sI] = new Option(sel.options[i].text, sel.options[i].value);
+               sI++;
+               }
+            else {
+               uElem.options[uI] = new Option(sel.options[i].text, sel.options[i].value);
+               uI++;
+               }
+            }
+         }
+      }
+   MultiSelectPicklist.resizeMSP(sElem, uElem);
+   };
+function handleMSPSelect(selId) {
+   var mainElem = getElementByIdCS(selId);
+   var uElem = getElementByIdCS(selId + "_unselected");
+   for(var i = 0; i < uElem.options.length; i++) {
+      if(uElem.options[i].selected) 
+      {
+         for(var j = 0; j < mainElem.options.length; j++) 
+         {
+            if(mainElem.options[j].value==uElem.options[i].value)mainElem.options[j].selected=true;
+         }
+         //mainElem.options[parseInt(uElem.options[i].value)].selected = true;
+      }
+      }
+   handleMSPChange(mainElem);
+            
+   
+   };
+function handleMSPUnSelect(selId) {
+   var mainElem = getElementByIdCS(selId);
+   var sElem = getElementByIdCS(selId + "_selected");
+   for(var i = 0; i < sElem.options.length; i++) {
+      if(sElem.options[i].selected) {
+         for(var j = 0; j < mainElem.options.length; j++) 
+         {
+            if(mainElem.options[j].value==sElem.options[i].value)mainElem.options[j].selected=false;
+         }
+         //mainElem.options[parseInt(sElem.options[i].value)].selected = false;
+         }
+      }
+   handleMSPChange(mainElem);
+   };
+
+    
+    
+    </script>
+</apex:page>

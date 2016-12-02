@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HomePageComponent xmlns="http://soap.sforce.com/2006/04/metadata">
+    <body>&lt;p&gt;&lt;b&gt;&lt;span style=&quot;font-family: arial,sans-serif; font-size: 10pt;&quot;&gt;Welcome to CHAIN&lt;/span&gt;&lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;span style=&quot;font-family: arial,sans-serif; font-size: 10pt;&quot;&gt;More information about the Combined Homelessness and Information Network (CHAIN) can be found&lt;span class=&quot;apple-converted-space&quot;&gt; &lt;/span&gt;&lt;a href=&quot;http://www.mungosbroadway.org.uk/chain&quot; target=&quot;NEW&quot;&gt;&lt;span style=&quot;color: black;&quot;&gt;here&lt;/span&gt;&lt;/a&gt;.&lt;span class=&quot;apple-converted-space&quot;&gt; &lt;/span&gt;&lt;br&gt;&lt;br&gt;CHAIN borough and Street to Home reports from April-June 2014 onwards can be found at the &lt;/span&gt;&lt;span style=&quot;font-family: arial,sans-serif; font-size: 9pt;&quot;&gt;&lt;a href=&quot;http://data.london.gov.uk/dataset/chain-reports&quot; target=&quot;_blank&quot;&gt;&lt;span style=&quot;color: black; font-size: 10.0pt;&quot;&gt;GLA&amp;#39;s Datastore site&lt;/span&gt;&lt;/a&gt;&lt;/span&gt;&lt;span style=&quot;font-family: arial,sans-serif; font-size: 10pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;span style=&quot;font-family: arial,sans-serif; font-size: 9pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;span style=&quot;font-family: arial,sans-serif; font-size: 10pt;&quot;&gt;An online archive of CHAIN reports for periods prior to April 2014 has been made available on the &lt;a href=&quot;http://www.mungosbroadway.org.uk/chain/street_home_annual_reports&quot;&gt;&lt;span style=&quot;color: black;&quot;&gt;St Mungo’s Broadway website&lt;/span&gt;&lt;/a&gt;. This includes Street to Home annual reports and bulletins going back to 2005-06, and annual borough reports and quarterly/bimonthly Street to Home and borough reports going back to 2010. &lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;span style=&quot;font-family: arial,sans-serif; font-size: 10pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt; &lt;/p&gt;
+
+&lt;p class=&quot;MsoNormal&quot;&gt;&lt;span style=&quot;font-family: arial,sans-serif; font-size: 10pt;&quot;&gt;Please don’t hesitate to contact&lt;span class=&quot;apple-converted-space&quot;&gt; &lt;/span&gt;&lt;b&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;the CHAIN team on&lt;/span&gt;&lt;/b&gt;&lt;span class=&quot;apple-converted-space&quot;&gt;&lt;b&gt; &lt;/b&gt;&lt;/span&gt;&lt;b&gt;&lt;a href=&quot;mailto:chain@mungosbroadway.org.uk&quot;&gt;&lt;b&gt;&lt;span style=&quot;color: blue; font-weight: normal;&quot;&gt;chain@mungosbroadway.org.uk&lt;/span&gt;&lt;/b&gt;&lt;/a&gt;&lt;/b&gt;&lt;span class=&quot;apple-converted-space&quot;&gt; &lt;/span&gt;&lt;b&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;or 020 7710 0562&lt;/span&gt;&lt;/b&gt;&lt;span class=&quot;apple-converted-space&quot;&gt; &lt;/span&gt;&lt;b&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;in case you’ve got any questions, comments or suggestions.&lt;/span&gt;&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt; &lt;/p&gt;</body>
+    <pageComponentType>htmlArea</pageComponentType>
+    <width>wide</width>
+</HomePageComponent>

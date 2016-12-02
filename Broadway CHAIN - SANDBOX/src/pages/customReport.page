@@ -1,0 +1,35 @@
+<apex:page controller="ReportController">
+<td align="left">
+<br>
+<br>
+Use this section to run reports specific to your project. At the moment you can click on reports which will provide you with data entered either in the last month, last 90 days, or within the current calendar year. 
+        <br>
+        <br>
+        This page will in the future allow you to select date ranges, but if you require data which falls outside of these preset ranges in the meantime, please contact the CHAIN team on chain@broadwaylondon.org or 020 77100562.  
+        <br>
+        <br>
+        Timeline Events (actions) for all clients worked with or staying in my project
+        <br>
+    <apex:form >
+    <table width="100%" align="left" border="0">
+        <tr>
+            
+            <strStartDate = {!$User.Default_Project_Name__c}>
+            <td align="left">
+            <apex:commandLink action="{!goToReport}" value="During the last 90 days">
+               <apex:param name="strTargetReport" value="/00O80000003tntF" assignTo="{!strTargetReport}"/>
+            </apex:commandLink>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td align="left">
+               <apex:commandLink value="Run Report b" action="{!goToReport}"> 
+                  <apex:param name="strTargetReport" value="/00O80000003t2JU" assignTo="{!strTargetReport}"/>
+               </apex:commandLink>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+    </table>
+</apex:form>
+</apex:page>

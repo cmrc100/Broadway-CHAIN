@@ -1,0 +1,52 @@
+<apex:page standardController="Referrals__c" extensions="Referral_Record_Type">
+    <apex:sectionHeader title="New Referrals (telephone/website)" subtitle="Select Referrals (telephone/website) Record Type"/>
+    <script type="text/javascript">
+        var __sfdcSessionId = '{!GETSESSIONID()}',getParams = function () {
+            var params = {};
+            
+            window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+                params[key] = value;
+            });
+            
+            return params;
+        };
+        
+        if (typeof console === 'undefined') {
+            var console = {
+                'log'   : function (arg) {
+                    alert((typeof arg) + ': ' + arg);
+                }
+            };
+        }
+    </script>
+    <script type="text/javascript" src="/soap/ajax/26.0/connection.js"></script>
+    <script type="text/javascript" src="//ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+    <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?key=AIzaSyAw4XntQpGdOz8M6n_nEjFFgVSzITG2WZY&sensor=false"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+    <script type="text/javascript">
+        //<![CDATA[
+            $(function () {
+                $('input.continue').click(function (e) {
+                    e.preventDefault();
+                    var params = getParams();
+                    
+                    window.location.href = '/a0K/e?retURL=' + params.retURL + '&RecordType=' + $('.RecordType').val() + '&nooverride=true&CF00NC0000005FiSo=' + params["CF00NC0000005FiSo"]
+                        + '&00NC0000005EdkN=' + params["00NC0000005EdkN"] + '&00NC0000005FbmW=' + params["00NC0000005FbmW"];
+                });
+            });
+        //]]>
+    </script>
+    <apex:form >
+        <apex:pageBlock title="Select Referrals (telephone/website) Record Type" mode="edit" id="thePageBlock">
+            <apex:pageBlockButtons >
+                <apex:commandButton id="continue" value="Continue" styleClass="continue" />
+                <apex:commandButton value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="1">
+                <apex:selectList value="{!selected}" multiselect="false" size="1" label="Record Type of new record" id="RecordType" styleClass="RecordType" required="true">
+                    <apex:selectOptions value="{!items}"/>
+                </apex:selectList>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>
