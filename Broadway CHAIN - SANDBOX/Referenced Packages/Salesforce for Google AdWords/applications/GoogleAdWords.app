@@ -2,6 +2,7 @@
 <CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
     <defaultLandingTab>standard-home</defaultLandingTab>
     <description>Provides Google AdWords and Web-to-Lead tracking capability.  Understand which keywords, ads, campaigns, and landing pages are generating results for your company.</description>
+    <formFactors>Large</formFactors>
     <label>Google AdWords</label>
     <tab>GoogleAdWordsSetup</tab>
     <tab>standard-Lead</tab>
@@ -19,4 +20,5 @@
     <tab>Referrals__c</tab>
     <tab>Finance__c</tab>
     <tab>Country_or_Area__c</tab>
+    <tab>Mobile_CHAIN</tab>
 </CustomApplication>

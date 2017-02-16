@@ -2,6 +2,8 @@
 <CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
     <defaultLandingTab>standard-home</defaultLandingTab>
     <description>Super Clone, a utility to clone a record and the record&apos;s related lists.</description>
+    <formFactors>Large</formFactors>
     <label>Super Clone</label>
     <tab>SuperCloneConfiguration</tab>
+    <tab>Mobile_CHAIN</tab>
 </CustomApplication>

@@ -1,0 +1,24 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:appHostable">
+	
+    <aura:attribute name="client" type="Account" default="{ sobjectType: 'Account' }"/>
+    
+    <div class="slds">
+		<b><h1>Enter Client Details</h1></b><br/>
+        <form class="slds-form--inline">
+			
+
+             <div class="slds-form-element slds-size--1-of-3 slds-col--padded-small">
+                    <label class="slds-form-element__label" for="fstName">First Name</label>
+                    <div class="slds-form-element__control">                        
+                        <force:inputField value="{!v.client.FirstName}" aura:id="fstName" class="elfForceEditable" />
+                    </div>
+             </div>            
+            
+        
+        </form>
+        
+        
+    </div>
+    
+    
+</aura:component>

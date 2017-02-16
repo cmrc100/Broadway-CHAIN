@@ -46,7 +46,7 @@
             </apex:pageBlockSection>
             
             <apex:pageBlockSection title="Flow - contacts with LA HPU/housing options last 12 months before 1st contact?" columns="2">    
-                
+                <apex:inputField value="{!flowInfo.Housing_Options_in_last_12_months__c}" />
                 <apex:inputField value="{!flowInfo.HPU_Housing_Options_in_last_12_months__c}" />
                 <apex:inputField value="{!flowInfo.Name_of_local_authority__c}" />
                 <apex:inputField value="{!flowInfo.HPU_notes__c}" />

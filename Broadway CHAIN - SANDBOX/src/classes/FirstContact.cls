@@ -8,7 +8,8 @@ public without sharing class FirstContact {
     public Timeline_Event__c te {get;set;}
     public Flow_information__c flowInfo {get;set;}
     
-    Support_Needs_Lifestyle__c sna;
+    public Support_Needs_Lifestyle__c sna {get;set;}
+    
     String strAccId; 
 
 
@@ -72,6 +73,8 @@ public without sharing class FirstContact {
         }
         
         useSelectedContact();
+        
+        contactFields = getcontactFields();
     }
 
     public FirstContact(ApexPages.StandardController controller) {
@@ -357,15 +360,15 @@ system.debug('@@@@@@@@@@@@   calling save ..... ');
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, 'Notes: You must enter a value'));
             return null;
         }*/
-system.debug ('@@@@@@@@@@@@   save called .. ');
-system.debug(' @@@@  contact ..  ' + this.c);
-system.debug(' @@@@@@@@@@@@   printed contact ...');
-Account a = null;        
-if (string.isBlank(this.selectedAccount)){
-    a = setAccountFields();
-} else {
-    a = [select Id from Account where Id =:selectedAccount];
-}
+        system.debug ('@@@@@@@@@@@@   save called .. ');
+        system.debug(' @@@@  contact ..  ' + this.c);
+        system.debug(' @@@@@@@@@@@@   printed contact ...');
+        Account a = null;        
+        if (string.isBlank(this.selectedAccount)){
+            a = setAccountFields();
+        } else {
+            a = [select Id from Account where Id =:selectedAccount];
+        }
         
         Savepoint sp = Database.setSavepoint();
         
@@ -401,21 +404,48 @@ if (string.isBlank(this.selectedAccount)){
         //First COntact form has to create a timeline event of record type encounter, hence fetch the encounet record type id
         //RecordType rtE = [Select Id From RecordType where SobjectType='Timeline_Event__c' and Name='Encounters'];
         //this.te.RecordTypeId = rtE.Id;
-        try {
-            //as all other values are set on the page, set the record type id of timeline event record and insert
-            insert this.te;
-            success = true;
-        } catch (System.DmlException e) {//show any error on page
-            for (Integer i =0; i<e.getNumDml(); ++i) {
-                ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, e.getDmlMessage(i)));
-                Database.rollback(sp);
-this.te.Client__c=null;               
+
+        string requiredFields = '';
+        for (integer i :timelineEventFields.keySet()){
+            list<Schema.FieldSetMember> fldList = timelineEventFields.get(i);            
+            for (Schema.FieldSetMember fld :fldList){
+                boolean exclude = false;
+                string val = string.valueOf(this.te.get(fld.fieldPath));
+                if (exclusionFields.containsKey(fld.fieldPath)){
+                    if (exclusionFields.get(fld.fieldPath) == 'Timeline_Event__c'){
+                        exclude = true;
+                    }
+                }
+                if (string.isBlank(val) && fld.required && !exclude){
+                    requiredFields += ' Please enter a value for - ' + fld.label  +  '<br/>';                
+                }
             }
-            success = false;
-            return null;
+        
+        }
+        
+        PageReference pg = new PageReference('/' + a.Id);
+        
+        if (string.isnotBlank(requiredFields)){
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, requiredFields));
+            pg = null;
+            Database.rollback(sp); 
+        } else {
+            try {
+                //as all other values are set on the page, set the record type id of timeline event record and insert
+                insert this.te;
+                success = true;
+            } catch (System.DmlException e) {//show any error on page
+                for (Integer i =0; i<e.getNumDml(); ++i) {
+                    ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, e.getDmlMessage(i)));
+                    Database.rollback(sp);
+                    this.te.Client__c=null;               
+                }
+                success = false;
+                pg =  null;
+            }
         }
         //return back to the client record
-        return new PageReference('/' + a.Id);
+        return pg;
     }
     //Used to redirect to the second page of the wizard
     public PageReference AddSupportNeeds()
@@ -430,6 +460,7 @@ this.te.Client__c=null;
     public PageReference SaveSNA()
     {
         this.sna.Client__c = this.te.Client__c;
+        strAccId = this.sna.Client__c; 
         // this.sna.Client2__c = this.strAccId; //TODO: Query Ian if this field is needed
         //Add some validations, if fine, insert the Support Need record, related to the client record
         try
@@ -449,10 +480,18 @@ this.te.Client__c=null;
     //On click of the cancel button 
     public PageReference Cancel()
     {
-        if(strAccId!=null)
-            return new PageReference('/' + strAccId);
-        else
-            return new PageReference('/001/o'); 
+        id chk = this.te.Client__c;
+        strAccId = chk;
+        
+        try {
+            if(strAccId!=null)
+                return new PageReference('/' + strAccId);
+            else
+                return new PageReference('/001/o'); 
+        } catch (exception e){
+        
+            return new PageReference('/001/o');
+        }
     }
   
   private Account setAccountFields(){
@@ -551,15 +590,68 @@ this.te.Client__c=null;
 
 
     public PageReference quickSaveClient(){
-        
+       
+        timelineEventFields = getTimelineEventFields(null);
         PageReference pg = new PageReference('/apex/FCF_Map');
         pg.setRedirect(false);
         
+        string requiredFields = '';
+        for (integer i :contactFields.keySet()){
+            list<Schema.FieldSetMember> fldList = contactFields.get(i);
+            for (Schema.FieldSetMember fld :fldList){
+                string val = string.valueOf(this.c.get(fld.fieldPath));
+                if (string.isBlank(val) && fld.required){
+                    requiredFields += ' Please enter a value for - ' + fld.label  +  '<br/>';                
+                }
+            }
+        
+        }
+        
+        if (string.isnotBlank(requiredFields)){
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, requiredFields));
+            pg = null;        
+        } else {
+            Account a = null;        
+            if (string.isBlank(this.selectedAccount)){
+                a = setAccountFields();
+            } else {
+                a = [select Id from Account where Id =:selectedAccount];
+            }
+            
+            Savepoint sp = Database.setSavepoint();
+            
+                 
+            try {
+                //If button was clicked from a client record, update the existing record
+                if (string.isnotBlank(this.selectedAccount)){
+                    update a;
+                }
+                else if (strAccId!=null || a.Id!=null) {
+                    insert a;
+                } else {
+                    //else create a new client record
+                    insert a;
+                }
+            } catch (System.DmlException e) { //show an error message back on page, in any
+                for (Integer i =0; i<e.getNumDml(); ++i) {
+                    ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, e.getDmlMessage(i)));
+                }
+                
+                pg = null;
+            }
+            
+            Database.rollback(sp);
+        }
         return pg;
     }
     
     public PageReference saveLocationFCMobile(){
 
+        
+        if (this.timelineEventFields == null)
+            this.timelineEventFields = gettimelineEventFields(null);
+
+                
         PageReference pg = new PageReference('/apex/FCF_Timeline_Event');
         pg.setRedirect(false);
 
@@ -594,23 +686,341 @@ system.debug('@@@  User Project/team .... ' + user.Default_Project_Id__c);
         
     }
     
+
+    public PageReference saveAndAddFlowMobile(){
+      
+        success = true;
+        PageReference pg = null;
+
+        string requiredFields = '';
+        
+        for (integer i :timelineEventFields.keySet()){
+            list<Schema.FieldSetMember> fldList = timelineEventFields.get(i);            
+            for (Schema.FieldSetMember fld :fldList){
+                boolean exclude = false;
+                string val = string.valueOf(this.te.get(fld.fieldPath));
+                if (exclusionFields.containsKey(fld.fieldPath)){
+                    if (exclusionFields.get(fld.fieldPath) == 'Timeline_Event__c'){
+                        exclude = true;
+                    }
+                }
+                if (string.isBlank(val) && fld.required && !exclude){
+                    requiredFields += ' Please enter a value for - ' + fld.label  +  '<br/>';                
+                }
+            }
+        
+        }
+        
+        
+        if (string.isnotBlank(requiredFields)){
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, requiredFields));
+            pg = null;                
+        } else {        
+            try {
+                PageReference pgSave = this.save();
+            } catch (exception e){
+                system.debug(e.getMessage() + ' : ' + e.getStackTraceString());
+                success = false;
+                for(Integer i =0; i<e.getNumDml(); ++i) { 
+                    ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, e.getDmlMessage(i)));  
+                }
+                pg = null;            
+            }
+            
+            
+            if (success) {
+                flowFields = getflowFields();
+                this.flowInfo = new Flow_information__c();
+    system.debug('@@@ this.te ... ' + this.te);
+    system.debug('@@@ this.contact ... ' + this.c);            
+                flowInfo.client__c = this.te.client__c;
+                strAccId =  this.te.client__c;
+                pg = new PageReference('/apex/FCF_Flow_Information');
+                pg.setRedirect(false);
+            } else {
+                pg = null;
+            }
+        }
+        
+        return pg;
+        
+    }    
+    
+    public PageReference saveFlowandExit(){
+        
+        PageReference pg = null;
+        success = true;
+
+
+        string requiredFields = '';
+        for (integer i :flowFields.keySet()){
+            list<Schema.FieldSetMember> fldList = flowFields.get(i);
+            for (Schema.FieldSetMember fld :fldList){
+                string val = string.valueOf(this.flowInfo.get(fld.fieldPath));
+                if (string.isBlank(val) && fld.required){
+                    requiredFields += ' Please enter a value for - ' + fld.label  +  '<br/>';                
+                }
+            }
+        
+        }
+        
+        
+        if (string.isnotBlank(requiredFields)){
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, requiredFields));
+            pg = null;                
+        } else {
+
+            try
+            {   
+                strAccId =  this.te.client__c;
+                pg = new PageReference('/' + strAccId);
+    
+    system.debug('@@@@ saveFlowandExit called ! ' + this.flowInfo);
+                insert this.flowInfo;
+                success = true;
+    system.debug('@@@@ saveFlowandExit complete ! ' + success);                
+            }//Show error message, if any
+            catch (System.DmlException e) {
+                for(Integer i =0; i<e.getNumDml(); ++i) { 
+                    ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, e.getDmlMessage(i)));  
+                }
+                pg = null;
+            }
+        
+        }
+        
+        return pg;    
+    }
+    
+    public PageReference saveFlowandAddSupportNeeds(){
+        
+        success = true;
+        PageReference pg = null;
+
+
+        string requiredFields = '';
+        for (integer i :flowFields.keySet()){
+            list<Schema.FieldSetMember> fldList = flowFields.get(i);
+            for (Schema.FieldSetMember fld :fldList){
+                string val = string.valueOf(this.flowInfo.get(fld.fieldPath));
+                if (string.isBlank(val) && fld.required){
+                    requiredFields += ' Please enter a value for - ' + fld.label  +  '<br/>';                
+                }
+            }
+        
+        }
+        
+        
+        if (string.isnotBlank(requiredFields)){
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, requiredFields));
+            pg = null;                
+        }  else {      
+            try {
+                insert this.flowInfo;
+            }
+            catch (System.DmlException e){
+                system.debug(e.getMessage() + ' : ' + e.getStackTraceString());
+                for(Integer i =0; i<e.getNumDml(); ++i) { 
+                    ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, e.getDmlMessage(i)));  
+                }
+                pg = null;            
+                success = false;        
+            }
+            if (success) {
+                serviceNeedFields = getserviceNeedFields();
+                sna = new Support_Needs_Lifestyle__c();
+                this.sna.Client__c = this.te.Client__c;
+                pg = new PageReference('/apex/FCF_Service_Needs');
+                pg.setRedirect(false);
+            }
+        }
+        return pg;    
+    
+    }
+    
+    public pageReference saveSupportNeedsandExit(){
+
+        string requiredFields = '';
+        PageReference pg =null;
+        
+        for (integer i :serviceNeedFields.keySet()){
+            list<Schema.FieldSetMember> fldList = serviceNeedFields.get(i);
+            for (Schema.FieldSetMember fld :fldList){
+                string val = string.valueOf(this.sna.get(fld.fieldPath));
+                if (string.isBlank(val) && fld.required){
+                    requiredFields += ' Please enter a value for - ' + fld.label  +  '<br/>';                
+                }
+            }
+        
+        }
+        
+        
+        if (string.isnotBlank(requiredFields)){
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, requiredFields));
+            pg = null;                
+        }  else {
+        
+            pg = SaveSNA();
+        }
+        
+        return pg;    
+    
+    }
+    
     public string selectedContact{get; set;}
     public string selectedAccount{get;set;}
     public string selectedClientName {get; set;}
+    public map<integer, list<Schema.FieldSetMember>> contactFields {get; set;}
+    public map<integer, list<string>> contactFieldFormat {get; set;}
+    public map<integer, list<Schema.FieldSetMember>> timelineEventFields {get; set;}
+    public map<integer, list<string>> timelineEventFieldFormat {get; set;}
+    public map<integer, list<Schema.FieldSetMember>> flowFields {get; set;}
+    public map<integer, list<string>> flowFieldFormat {get; set;}
+    public map<integer, list<Schema.FieldSetMember>> serviceNeedFields {get; set;}
+    public map<integer, list<string>> serviceNeedFieldFormat {get; set;}
+    private map<string, string> exclusionFields = new map<string, string>();
+    
+    public map<integer, list<Schema.FieldSetMember>> getcontactFields(){
+    
+        list<Schema.FieldSetMember> fldList = readFieldSet('MobileClientEntry', 'Contact');
+        map<integer, list<Schema.FieldSetMember>> returnMap = new map<integer, list<Schema.FieldSetMember>>();
+        contactFieldFormat  = new map<integer, list<string>>();
+        returnMap =  getObjectFields(fldList, contactFieldFormat, null );       
+        
+        return returnMap;
+    
+    }
+
+    public map<integer, list<Schema.FieldSetMember>> gettimelineEventFields(map<string, string>exclusionFields){
+        
+        map<integer, list<Schema.FieldSetMember>> returnMap = new map<integer, list<Schema.FieldSetMember>>();
+        
+        if (this.timelineEventFields == null ) {
+            list<Schema.FieldSetMember> fldList = readFieldSet('MobileTimelineEventEntry', 'Timeline_Event__c');
+            
+            timelineEventFieldFormat = new map<integer, list<string>>();
+            returnMap =  getObjectFields(fldList, timelineEventFieldFormat, exclusionFields);       
+        } else {
+            returnMap = this.timelineEventFields ;
+        }
+        
+        return returnMap;
+    
+    }
+
+    public map<integer, list<Schema.FieldSetMember>> getflowFields(){
+    
+        list<Schema.FieldSetMember> fldList = readFieldSet('MobileFlowInfoEntry', 'Flow_information__c');
+        map<integer, list<Schema.FieldSetMember>> returnMap = new map<integer, list<Schema.FieldSetMember>>();
+        flowFieldFormat = new map<integer, list<string>>();
+        returnMap =  getObjectFields(fldList, flowFieldFormat, null);       
+
+        return returnMap;
+    
+    }
+
+    public map<integer, list<Schema.FieldSetMember>> getserviceNeedFields(){
+    
+        list<Schema.FieldSetMember> fldList = readFieldSet('MobileSupportNeedsEntry', 'Support_Needs_Lifestyle__c');
+        map<integer, list<Schema.FieldSetMember>> returnMap = new map<integer, list<Schema.FieldSetMember>>();
+        serviceNeedFieldFormat = new map<integer, list<string>>();
+        returnMap =  getObjectFields(fldList, serviceNeedFieldFormat, null);       
+
+        return returnMap;
+    
+    }
+            
+    private static List<Schema.FieldSetMember> readFieldSet(String fieldSetName, String ObjectName) {
+        Map<String, Schema.SObjectType> GlobalDescribeMap = Schema.getGlobalDescribe(); 
+        Schema.SObjectType SObjectTypeObj = GlobalDescribeMap.get(ObjectName);
+        Schema.DescribeSObjectResult DescribeSObjectResultObj = SObjectTypeObj.getDescribe();
+    
+    
+        Schema.FieldSet fieldSetObj = DescribeSObjectResultObj.FieldSets.getMap().get(fieldSetName);
+ 
+        return fieldSetObj.getFields(); 
+    }   
+    
+    private static map<integer, list<Schema.FieldSetMember>> getObjectFields(list<Schema.FieldSetMember> fldList, map<integer, list<string>> fldFormat, map<string, string>exclusionFields){
+
+        map<integer, list<Schema.FieldSetMember>> returnMap = new map<integer, list<Schema.FieldSetMember>>();
+        
+        integer counter = 1;
+        string key = '';
+        list<Schema.FieldSetMember> fldRow = new list<Schema.FieldSetMember>();
+        
+        for (Schema.FieldSetMember f :fldList){
+            if (math.mod(counter, 2) == 0){
+                fldRow.add(f);
+                returnMap.put(counter, fldRow);
+                fldRow = new list<Schema.FieldSetMember>();      
+            } else {
+                fldRow.add(f);
+            }
+            counter++;
+        }
+        if (!fldRow.isEmpty()){
+            fldRow.add(fldRow[0]);
+            returnMap.put(counter, fldRow);
+        }
+
+system.debug(' @@@@ exclusionFields ..  ' + exclusionFields);        
+        for (integer k :returnMap.keySet()){
+            
+            list<Schema.FieldSetMember> fList = returnMap.get(k);
+            list<string> formatList = new list<string>();
+            counter = 0;
+            for (Schema.FieldSetMember f :fList){
+                string format = '';
+                boolean exclude = false;
+                if (exclusionFields != null){
+
+system.debug(' @@@ ' + f.fieldPath + ' - ' + exclusionFields.containsKey(f.fieldPath)); 
+                    if (exclusionFields.containsKey(f.fieldPath)){
+                        exclude = true;
+                    }
+                }                
+                if ((f.required || f.DBRequired) && !exclude){
+                    format = 'slds-form-element  slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-2 slds-col--padded-medium slds-is-required req';
+                } else {
+                    format = 'slds-form-element  slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-2 slds-col--padded-medium  ';                   
+                }
+                if (counter == 1){
+                    if (fList[0] == fList[1]){
+                        format += ' slds-hide';
+                    }
+                
+                }
+                counter++;
+                formatList.add(format);
+            }
+            fldFormat.put(k, formatList);
+        }
+
+        return returnMap;    
+        
+    }
+        
     public void useSelectedContact() {
         
         selectedContact = ApexPages.currentPage().getParameters().get('selectedContact');
         selectedAccount = ApexPages.currentPage().getParameters().get('selectedAccount');
         
         system.debug(' @@@@  ' + selectedContact);
+        
         if (string.isnotBlank(selectedContact)){
             this.c = [select Gender__c, Name, Nationality__c, FirstName, LastName, BirthDate, Other_Names__c, Ethnic_Origin__c, 
                                 Nickname__c, DOB_Estimated__c, Country_Region__c, Last_longer_term_place_settled_base__c,
                                 Reason_for_leaving_settled_base__c, Places_stayed_1__c
                       from contact where Id = :selectedContact];
             selectedClientName = this.c.Name;
+            exclusionFields.put('NSNO_Action__c', 'Timeline_Event__c');
+            this.timelineEventFields = gettimelineEventFields(exclusionFields);
+            
         } else {
             selectedClientName = this.c.FirstName + ' ' + this.c.LastName;
         }
+                
+                    
     }    
 }

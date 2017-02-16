@@ -1,4 +1,4 @@
-<apex:page showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" controller="FirstContact" extensions="StreetContactMapUtility" action="{!useSelectedContact}">    
+<apex:page showHeader="false" standardStylesheets="true" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" controller="FirstContact" extensions="StreetContactMapUtility" action="{!useSelectedContact}">    
 
     <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">    
   
@@ -7,12 +7,23 @@
             <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" /> 
         </head>    
         
-    
+        <style>
+            .req:before {content: "";
+                            color: red;
+                            font-size: 1.6em;
+                            font-weight: bold }
+        
+            input[type="text"] {
+                min-width: 120px;
+            
+            }
+                    
+        </style>    
         
         <body>
             <div class="slds">
             <apex:form >
-            <apex:pageMessages />
+            
                 <div class="slds-page-header" role="banner">                            
                     <h1 class="slds-text-heading--small slds-m-bottom--small slds-align-middle">
                         Timeline Event - Quick Entry
@@ -21,42 +32,81 @@
                     </h1>
 
                     <div class="slds-grid ">
-                        <div class="slds-col slds-has-flexi-truncate slds-size--1-of-2 slds-col--padded-small">
-                            <!-- <button class="slds-button--brand slds-button--small" onclick="sforce.one.back();">Cancel</button> -->
-                            <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" styleClass="slds-button--brand slds-button--small" html-formnovalidate="formnovalidate" />  
+                        <div class="slds-col slds-has-flexi-truncate slds-size--1-of-3 slds-col--padded-small">
+                            <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" styleClass="slds-button slds-button--brand slds-button--small" html-formnovalidate="formnovalidate" />  
                         </div>
-                        <!--
-                        <div class="slds-col slds-has-flexi-truncate slds-size--1-of-3 slds-col--padded-small">   
-                            <h4 class="slds-text-heading--small slds-m-bottom--small slds-align-middle">
-                                First Contact Form
-                            </h4>
+                        <div class="slds-col  slds-has-flexi-truncate slds-size--1-of-3  slds-col--padded-small">
+                            <center><apex:commandButton action="{!saveAndAddFlowMobile}" value="Save and Add Flow Info" styleClass="slds-button slds-button--brand slds-button--small  " /></center>
                         </div>
-                        -->
-                        <div class="slds-col  slds-has-flexi-truncate slds-size--1-of-2  slds-col--padded-small">
-                            <!-- <button class="slds-button slds-button--brand slds-button--small   slds-float--right" onclick="top.window.location.href = '/apex/FCF_Map';">Create Timeline</button> -->
+                        <div class="slds-col  slds-has-flexi-truncate slds-size--1-of-3  slds-col--padded-small">
                             <apex:commandButton action="{!save}" value="Save and Exit" styleClass="slds-button slds-button--brand slds-button--small   slds-float--right" />
                         </div>
                      </div>
                 </div>
                 
                 <b><h1>Enter Timeline Event Details</h1></b><br/>
-                
+                <apex:pageMessages escape="false"/>
                 <form class="slds-form--inline">
+                    <!--
+                    <apex:repeat var="f" value="{!$ObjectType.Timeline_Event__c.FieldSets.MobileTimelineEventEntry}">
+                        <div class="slds-form-element slds-col--padded-small">
+                            <label class="slds-form-element__label" >{!f.label}</label>
+                            <div class="slds-form-element__control">
+                       
+                                <apex:inputField value="{!te[f.fieldPath]}"   styleclass="slds-input--small " rendered="{!f.type = 'boolean'}"/>
+                                <apex:inputField value="{!te[f.fieldPath]}"   styleclass="slds-input--small slds-size--1-of-1" rendered="{!NOT(f.type = 'boolean')}"/>
+                            </div>
+                        </div>                      
                 
-                        <apex:repeat var="f" value="{!$ObjectType.Timeline_Event__c.FieldSets.MobileTimelineEventEntry}">
-                            <div class="slds-form-element slds-col--padded-small">
-                                <label class="slds-form-element__label" >{!f.label}</label>
-                                <div class="slds-form-element__control">
-                           
-                                    <apex:inputField value="{!te[f.fieldPath]}"   styleclass="slds-input--small " rendered="{!f.type = 'boolean'}"/>
-                                    <apex:inputField value="{!te[f.fieldPath]}"   styleclass="slds-input--small slds-size--1-of-1" rendered="{!NOT(f.type = 'boolean')}"/>
-                                </div>
-                            </div>                      
+                
+                    </apex:repeat>
+                    -->
                     
-                    
-                        </apex:repeat> 
-                                                                                                                                        
+                    <div class="slds-grid slds-wrap">
+                        <apex:repeat value="{!timelineEventFields }" var="key">
+
+                                    <div class="{!timelineEventFieldFormat[key][0]}">
+                                        <span class="slds-form-element__label  {!timelineEventFieldFormat[key][0]}">{!timelineEventFields[key][0].label}</span>
+                                        <div class="slds-form-element__control "  >
+                                                                                       
+                                            <apex:inputField value="{!te[timelineEventFields[key][0].fieldPath]}"   styleclass="slds-input--small "  />
+
+
+
+                                        </div>
+
+                                     </div>
+
+                                                                      
+                                 <!-- <apex:outputPanel rendered="{!timelineEventFields[key][0].fieldPath != timelineEventFields[key][1].fieldPath}"> -->
+                                     <div class="{!timelineEventFieldFormat[key][1]}">
+    
+                                        <span class="slds-form-element__label {!timelineEventFieldFormat[key][1]}">{!timelineEventFields[key][1].label}</span>
+                                        <div class="slds-form-element__control"> 
+                                            <apex:inputField value="{!te[timelineEventFields[key][1].fieldPath]}"   styleclass="slds-input--small "  />
+                                        </div>
+                                    </div>
+                                <!-- </apex:outputPanel> -->
+                            
+                        </apex:repeat>                    
+                    </div> 
+                                            
+                    <div class="slds-page-header" role="banner"> 
+                        <div class="slds-grid ">
+                            <div class="slds-col slds-has-flexi-truncate slds-size--1-of-3 slds-col--padded-small">
+                                <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" styleClass="slds-button slds-button--brand slds-button--small" html-formnovalidate="formnovalidate" />  
+                            </div>
+                            <div class="slds-col  slds-has-flexi-truncate slds-size--1-of-3  slds-col--padded-small">
+                                <center><apex:commandButton action="{!saveAndAddFlowMobile}" value="Save and Add Flow Info" styleClass="slds-button slds-button--brand slds-button--small  " /></center>
+                            </div>
+                            <div class="slds-col  slds-has-flexi-truncate slds-size--1-of-3  slds-col--padded-small">
+                                <apex:commandButton action="{!save}" value="Save and Exit" styleClass="slds-button slds-button--brand slds-button--small   slds-float--right" />
+                            </div>
+                         </div>
+                     </div>                                                                                                                   
                 </form>
+
+
                 </apex:form>
             </div>
         </body>

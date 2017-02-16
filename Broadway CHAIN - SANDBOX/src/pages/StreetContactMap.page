@@ -2,9 +2,10 @@
   
     <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false&libraries=places"></script>
+        <!-- <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false&libraries=places"></script> -->
+        
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-
+        <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyBKD87YS0y8fB9tAZPIhGANr5u37Bn_Yv8&sensor=false&libraries=places"></script>
 
     <script type="text/javascript"> 
 

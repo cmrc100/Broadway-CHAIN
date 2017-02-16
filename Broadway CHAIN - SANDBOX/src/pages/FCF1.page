@@ -1,14 +1,27 @@
-<apex:page showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" controller="FirstContact" extensions="StreetContactMapUtility">    
+<apex:page showHeader="false" standardStylesheets="true" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" controller="FirstContact" extensions="StreetContactMapUtility">    
 
     <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">    
-
+        <style>
+            .req:before {content: "";
+                            color: red;
+                            font-size: 1.6em;
+                            font-weight: bold }
+        
+    
+            input[type="text"] {
+                min-width: 120px;
+            
+            }    
+        </style>
+        
         <head>
-            <apex:stylesheet value="{!URLFOR($Resource.SLDS0121, 'assets/styles/salesforce-lightning-design-system-vf.css')}" /> 
+            <apex:stylesheet value="{!URLFOR($Resource.SLDS0121, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+            
             <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" /> 
         </head>    
             
         
-        <body>
+        <body class="slds-scope">
         
 
             
@@ -17,7 +30,7 @@
                 <apex:form id="frmMain">
                     
                     
-                <apex:pageMessages />
+                
                     <div class="slds-page-header" role="banner">                            
                         <h1 class="slds-text-heading--small slds-m-bottom--small slds-align-middle">
                             First Contact Form - Quick Entry
@@ -26,7 +39,7 @@
                         <div class="slds-grid ">
                             <div class="slds-col slds-has-flexi-truncate slds-size--1-of-2 slds-col--padded-small">
                                 <!-- <button class="slds-button--brand slds-button--small" onclick="sforce.one.back();">Cancel</button> -->
-                                <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" styleClass="slds-button--brand slds-button--small" html-formnovalidate="formnovalidate"/>  
+                                <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" styleClass="slds-button slds-button--brand slds-button--small" html-formnovalidate="formnovalidate"/>  
                             </div>
 
                             <div class="slds-col  slds-has-flexi-truncate slds-size--1-of-2  slds-col--padded-small">
@@ -37,34 +50,59 @@
                     </div>                   
                    
                     <b><h1>Enter Client Details</h1></b><br/>
-                    
+                    <apex:pageMessages escape="false"/>
                     
                     <form class="slds-form--inline">
-                    
-
+                        <!--
                         <apex:repeat var="f" value="{!$ObjectType.Contact.FieldSets.MobileClientEntry}">
-                            <div class="slds-form-element slds-col--padded-small">
-                                <label class="slds-form-element__label" >{!f.label}</label>
-                                <div class="slds-form-element__control">
-                           
-                                    <apex:inputField value="{!contact[f.fieldPath]}"   styleclass="slds-input--small " rendered="{!f.type = 'boolean'}" required="{!f.required}"/>
-                                    <apex:inputField value="{!contact[f.fieldPath]}"   styleclass="slds-input--small slds-size--1-of-1" rendered="{!NOT(f.type = 'boolean')}" required="{!f.required}"/>
-                                </div>
-                            </div>                      
-                    
-                    
+                                    <div class="slds-form-element slds-col--padded-small " >
+                                        <label class="slds-form-element__label " >{!f.label}</label>
+                                        <div class="slds-form-element__control ">                                         
+                                            <apex:inputField value="{!contact[f.fieldPath]}"   styleclass="slds-input--small " rendered="{!f.type = 'boolean'}" required="{!f.required}"/>
+                                            <apex:inputField value="{!contact[f.fieldPath]}"   styleclass="slds-input--small slds-size--1-of-1" rendered="{!NOT(f.type = 'boolean')}" required="{!f.required}"/>
+                                        </div>
+                                    </div>
+
                         </apex:repeat>                                                                                                       
+                        -->
+                        
+                        <!-- ?? slds-is-required -->
+                                
+                        <div class="slds-grid slds-wrap">
+                            <apex:repeat value="{!contactFields }" var="key">
 
+                                        <div class="{!contactFieldFormat[key][0]} ">
+                                            <span class="slds-form-element__label  {!contactFieldFormat[key][0]}">{!contactFields[key][0].label}</span>
+                                            <div class="slds-form-element__control "  >
+                                                                                           
+                                                <apex:inputField value="{!contact[contactFields[key][0].fieldPath]}"   styleclass="slds-input--small "   /> 
+                                                   
+                                                
+                                            </div>
 
-                    
-                    
+                                         </div>
+
+                                                                          
+                                     <!-- <apex:outputPanel rendered="{!contactFields[key][0].fieldPath != contactFields[key][1].fieldPath}"> -->
+                                         <div class="{!contactFieldFormat[key][1]}">
+        
+                                            <span class="slds-form-element__label {!contactFieldFormat[key][1]}">{!contactFields[key][1].label}</span>
+                                            <div class="slds-form-element__control">
+                                            <apex:inputField value="{!contact[contactFields[key][1].fieldPath]}"   styleclass="slds-input--small "  />
+                                            </div>
+                                        </div>
+                                    <!-- </apex:outputPanel> --> 
+                                
+                            </apex:repeat>                    
+                        </div>   
+                                       
                         <div class="slds-page-header" role="banner">                            
     
         
                             <div class="slds-grid ">
                                 <div class="slds-col slds-has-flexi-truncate slds-size--1-of-2 slds-col--padded-small">
                                     <!-- <button class="slds-button--brand slds-button--small" onclick="sforce.one.back();">Cancel</button> -->
-                                    <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" styleClass="slds-button--brand slds-button--small" html-formnovalidate="formnovalidate"/>  
+                                    <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" styleClass="slds-button slds-button--brand slds-button--small" html-formnovalidate="formnovalidate"/>  
                                 </div>
 
                                 <div class="slds-col  slds-has-flexi-truncate slds-size--1-of-2  slds-col--padded-small">
