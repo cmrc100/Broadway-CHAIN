@@ -178,7 +178,7 @@
                 var sWard = document.getElementById('ward').innerHTML;
                 var sBorough = document.getElementById('borough').innerHTML;
                  
-                var href = "http://mapit.mysociety.org/point/4326/" + sLng + ',' + sLat;
+                var href = "https://mapit.mysociety.org/point/4326/" + sLng + ',' + sLat;
         
                 Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.StreetContactMapController.getMapPoint}', href, sAddress, 
                                                                     "{!$CurrentPage.parameters.Id}", sLngLat,  function (data, event) {

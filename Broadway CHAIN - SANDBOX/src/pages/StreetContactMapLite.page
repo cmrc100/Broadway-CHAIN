@@ -1,4 +1,4 @@
-<apex:page controller="FirstContact" extensions="StreetContactMapUtility" sidebar="false" showHeader="false" >
+<apex:page standardController="Account" extensions="StreetContactMapUtilityLite" sidebar="false" showHeader="false" >
   
     <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -189,7 +189,7 @@
                 var href = "https://mapit.mysociety.org/point/4326/" + sLng + ',' + sLat;
                 
                 
-                Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.StreetContactMapUtility.getMapPoint}', href, sAddress, 
+                Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.StreetContactMapUtilityLite.getMapPoint}', href, sAddress, 
                                                                     sLngLat,  function (data, event) {
 
                     var oData = data.split('^');
@@ -295,7 +295,7 @@
         <c:ProcessSpinner MessageText="Processing, please wait ...." />
          
         <apex:actionFunction name="passValues"  action="{!saveMap}" status="processingStatus" reRender="hiddenBlock"  >
-            <apex:param name="id" value="" assignTo="{!tlId}"/>    
+            <apex:param name="id" value="" assignTo="{!recId}"/>    
             <apex:param name="address" value="" assignTo="{!address}"/>
             <apex:param name="longitude" value="" assignTo="{!lng}"/>
             <apex:param name="latitude" value="" assignTo="{!lat}"/>
@@ -319,7 +319,7 @@
         
             <apex:pageBlockButtons location="top">
                 <apex:outputPanel id="buttons">
-                    <apex:commandButton id="continue" value="Continue"  action="{!saveLocationFC}"   styleClass="continue"    >
+                    <apex:commandButton id="continue" value="Continue"  action="{!saveLocation}"   styleClass="continue"    >
                     </apex:commandButton>
                     <apex:commandButton value="Cancel" oncomplete="cancelWin();" />
                     <apex:actionStatus startText="(Saving...)" stopText="" onstop="closeWin();"   id="closer"  />

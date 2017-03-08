@@ -104,6 +104,12 @@ console.log(addr.types[0]);
             
             //findLocation(setLocation);
             setLocation();
+            
+google.maps.event.addDomListener(window, "resize", function() {
+ var center = map.getCenter();
+ google.maps.event.trigger(map, "resize");
+ map.setCenter(center); 
+});          
         }
         
        
@@ -126,6 +132,13 @@ console.log(addr.types[0]);
             }
             var input = /** @type {HTMLInputElement} */(document.getElementById('searchTextField'));
             var autocomplete = new google.maps.places.Autocomplete(input);
+
+            google.maps.event.addDomListener(input, 'keydown', function(e) { 
+                if (e.keyCode == 13) {
+                    //alert('Please select from list'); 
+                    e.preventDefault(); 
+                }
+              }); 
         
             if (map == null){
                 map = new google.maps.Map(document.getElementById('mapCanvas'), {
@@ -253,7 +266,7 @@ console.log(addr.types[0]);
                 var sWard = document.getElementById('ward').innerHTML;
                 var sBorough = document.getElementById('borough').innerHTML;
                  
-                var href = "http://mapit.mysociety.org/point/4326/" + sLng + ',' + sLat;
+                var href = "https://mapit.mysociety.org/point/4326/" + sLng + ',' + sLat;
 
                 
                 Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.StreetContactMapUtility.getMapPoint}', href, sAddress, 
@@ -288,10 +301,12 @@ console.log(addr.types[0]);
     <style> 
         
           #mapCanvas {
-            width: 340px;
-            height: 200px;
+            width: 70%;
+            height: 450px;
+            
             float: left;
           }
+         
           #infoPanel {
             float: left;
             margin-left: 10px;

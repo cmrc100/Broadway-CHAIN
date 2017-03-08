@@ -31,7 +31,7 @@
                     
                     
                 
-                    <div class="slds-page-header" role="banner">                            
+                    <div class="slds-page-header " role="banner">                            
                         <h1 class="slds-text-heading--small slds-m-bottom--small slds-align-middle">
                             First Contact Form - Quick Entry
                         </h1>
@@ -49,7 +49,7 @@
                          </div>
                     </div>                   
                    
-                    <b><h1>Enter Client Details</h1></b><br/>
+                    <div class="slds-m-left--large"> <b><h1>Enter Client Details</h1></b><br/> </div>
                     <apex:pageMessages escape="false"/>
                     
                     <form class="slds-form--inline">
@@ -68,7 +68,7 @@
                         
                         <!-- ?? slds-is-required -->
                                 
-                        <div class="slds-grid slds-wrap">
+                        <div class="slds-grid slds-wrap slds-m-left--x-large">
                             <apex:repeat value="{!contactFields }" var="key">
 
                                         <div class="{!contactFieldFormat[key][0]} ">
