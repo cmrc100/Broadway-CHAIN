@@ -11,6 +11,10 @@
             input[type="text"] {
                 min-width: 120px;
             
+            }
+            
+            .fldLabel {
+                font-weight: bold
             }    
         </style>
         
@@ -33,13 +37,13 @@
                 
                     <div class="slds-page-header " role="banner">                            
                         <h1 class="slds-text-heading--small slds-m-bottom--small slds-align-middle">
-                            First Contact Form - Quick Entry
+                            <center><b>First Contact Form - Quick Entry</b></center>
                         </h1>
     
                         <div class="slds-grid ">
-                            <div class="slds-col slds-has-flexi-truncate slds-size--1-of-2 slds-col--padded-small">
+                            <div class="slds-col slds-has-flexi-truncate slds-size--1-of-2 slds-col--padded-large">
                                 <!-- <button class="slds-button--brand slds-button--small" onclick="sforce.one.back();">Cancel</button> -->
-                                <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" styleClass="slds-button slds-button--brand slds-button--small" html-formnovalidate="formnovalidate"/>  
+                                <apex:commandButton value="Cancel" action="{!mobileCancel}" immediate="true" styleClass="slds-button slds-button--brand slds-button--small" html-formnovalidate="formnovalidate"/>  
                             </div>
 
                             <div class="slds-col  slds-has-flexi-truncate slds-size--1-of-2  slds-col--padded-small">
@@ -49,7 +53,7 @@
                          </div>
                     </div>                   
                    
-                    <div class="slds-m-left--large"> <b><h1>Enter Client Details</h1></b><br/> </div>
+                    <div class="slds-m-left--large slds-col--padded-large"> <b><h1>Enter Client Details</h1></b><br/> </div>
                     <apex:pageMessages escape="false"/>
                     
                     <form class="slds-form--inline">
@@ -72,37 +76,78 @@
                             <apex:repeat value="{!contactFields }" var="key">
 
                                         <div class="{!contactFieldFormat[key][0]} ">
-                                            <span class="slds-form-element__label  {!contactFieldFormat[key][0]}">{!contactFields[key][0].label}</span>
-                                            <div class="slds-form-element__control "  >
-                                                                                           
+                                            <span class="fldLabel slds-form-element__label  {!contactFieldFormat[key][0]}">{!contactFields[key][0].label}</span>
+                                            <div class="slds-form-element__control "  >                                                                                          
                                                 <apex:inputField value="{!contact[contactFields[key][0].fieldPath]}"   styleclass="slds-input--small "   /> 
-                                                   
-                                                
                                             </div>
-
                                          </div>
 
-                                                                          
-                                     <!-- <apex:outputPanel rendered="{!contactFields[key][0].fieldPath != contactFields[key][1].fieldPath}"> -->
-                                         <div class="{!contactFieldFormat[key][1]}">
-        
-                                            <span class="slds-form-element__label {!contactFieldFormat[key][1]}">{!contactFields[key][1].label}</span>
+                                         <div class="{!contactFieldFormat[key][1]}">        
+                                            <span class="fldLabel slds-form-element__label {!contactFieldFormat[key][1]}">{!contactFields[key][1].label}</span>
                                             <div class="slds-form-element__control">
                                             <apex:inputField value="{!contact[contactFields[key][1].fieldPath]}"   styleclass="slds-input--small "  />
                                             </div>
                                         </div>
-                                    <!-- </apex:outputPanel> --> 
+                                   
                                 
                             </apex:repeat>                    
                         </div>   
+                        
+                        <h3 class="slds-section-title--divider" align="center">Demographics</h3> 
+                        <div class="slds-grid slds-wrap slds-m-left--x-large">
+                            <apex:repeat value="{!contactDemographicFields }" var="key">
+
+                                        <div class="{!contactDemographicFieldFormat[key][0]} ">
+                                            <span class="fldLabel slds-form-element__label  {!contactDemographicFieldFormat[key][0]}">{!contactDemographicFields [key][0].label}</span>
+                                            <div class="slds-form-element__control "  >                                                                                           
+                                                <apex:inputField value="{!contact[contactDemographicFields [key][0].fieldPath]}"   styleclass="slds-input--small "   /> 
+                                            </div>
+                                         </div>
+
+                                                                                                              
+                                         <div class="{!contactDemographicFieldFormat[key][1]}">        
+                                            <span class="fldLabel slds-form-element__label {!contactDemographicFieldFormat[key][1]}">{!contactDemographicFields [key][1].label}</span>
+                                            <div class="slds-form-element__control">
+                                            	<apex:inputField value="{!contact[contactDemographicFields [key][1].fieldPath]}"   styleclass="slds-input--small "  />
+                                            </div>
+                                        </div>
+
+                                
+                            </apex:repeat>                    
+                        </div>   
+
+
+                        <h3 class="slds-section-title--divider" align="center">Institutional History</h3> 
+                        <div class="slds-grid slds-wrap slds-m-left--x-large">
+                            <apex:repeat value="{!contactInstitutionalHistoryFields }" var="key">
+
+                                        <div class="{!contactInstitutionalHistoryFieldFormat[key][0]} ">
+                                            <span class="fldLabel slds-form-element__label  {!contactInstitutionalHistoryFieldFormat[key][0]}">{!contactInstitutionalHistoryFields [key][0].label}</span>
+                                            <div class="slds-form-element__control "  >                                                                                           
+                                                <apex:inputField value="{!contact[contactInstitutionalHistoryFields [key][0].fieldPath]}"   styleclass="slds-input--small "   /> 
+                                            </div>
+                                         </div>
+
+                                                                          
+                                         <div class="{!contactInstitutionalHistoryFieldFormat[key][1]}">       
+                                            <span class="fldLabel slds-form-element__label {!contactInstitutionalHistoryFieldFormat[key][1]}">{!contactInstitutionalHistoryFields [key][1].label}</span>
+                                            <div class="slds-form-element__control">
+                                            <apex:inputField value="{!contact[contactInstitutionalHistoryFields [key][1].fieldPath]}"   styleclass="slds-input--small "  />
+                                            </div>
+                                        </div>
+
+                                
+                            </apex:repeat>                    
+                        </div>   
+
                                        
                         <div class="slds-page-header" role="banner">                            
     
         
                             <div class="slds-grid ">
-                                <div class="slds-col slds-has-flexi-truncate slds-size--1-of-2 slds-col--padded-small">
+                                <div class="slds-col slds-has-flexi-truncate slds-size--1-of-2 slds-col--padded-large">
                                     <!-- <button class="slds-button--brand slds-button--small" onclick="sforce.one.back();">Cancel</button> -->
-                                    <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" styleClass="slds-button slds-button--brand slds-button--small" html-formnovalidate="formnovalidate"/>  
+                                    <apex:commandButton value="Cancel" action="{!mobileCancel}" immediate="true" styleClass="slds-button slds-button--brand slds-button--small" html-formnovalidate="formnovalidate"/>  
                                 </div>
 
                                 <div class="slds-col  slds-has-flexi-truncate slds-size--1-of-2  slds-col--padded-small">

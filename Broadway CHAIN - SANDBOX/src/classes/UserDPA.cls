@@ -1,5 +1,20 @@
 global class UserDPA{
     
+    public DateTime lastlogin{get;set;}
+    
+    public boolean getloggedInNow(){
+    	
+		User u = [SELECT LastLoginDate FROM User WHERE Id =:UserInfo.getUserId()];
+		lastlogin = u.LastLoginDate;
+		
+		system.debug(' @@@ ' + system.now() > lastlogin.addSeconds(20) + ' - ' + system.now() + ' - ' + lastlogin.addSeconds(20));
+		if (system.now() > lastlogin.addSeconds(20) ){
+			return false;
+		} else {
+			return true;
+		}    	
+    	
+    }
     
     public UserDPA() {
         usr = [select dpa_agreement__c from User where id=:UserInfo.getUserId()];

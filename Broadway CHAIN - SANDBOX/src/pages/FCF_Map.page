@@ -53,7 +53,7 @@ console.log('postcode ' + responses[0]);
             latLng.lat(),
             latLng.lng()
           ].join(', ');
-        
+
         }
 
         function updateMarkerAddress(str) {
@@ -105,11 +105,11 @@ console.log(addr.types[0]);
             //findLocation(setLocation);
             setLocation();
             
-google.maps.event.addDomListener(window, "resize", function() {
- var center = map.getCenter();
- google.maps.event.trigger(map, "resize");
- map.setCenter(center); 
-});          
+			google.maps.event.addDomListener(window, "resize", function() {
+			 var center = map.getCenter();
+			 google.maps.event.trigger(map, "resize");
+			 map.setCenter(center); 
+			});          
         }
         
        
@@ -136,7 +136,15 @@ google.maps.event.addDomListener(window, "resize", function() {
             google.maps.event.addDomListener(input, 'keydown', function(e) { 
                 if (e.keyCode == 13) {
                     //alert('Please select from list'); 
-                    e.preventDefault(); 
+                    var searchText = document.getElementById('searchTextField').value;
+                    console.log(searchText);
+                    if (searchText != null){
+						google.maps.event.trigger(autocomplete, 'place_changed');
+    					
+    					e.preventDefault();
+    					return false;                    
+                    	
+                    } 
                 }
               }); 
         
@@ -247,9 +255,9 @@ google.maps.event.addDomListener(window, "resize", function() {
                 geocodePosition(marker.getPosition());
                 updateMarkerPosition(marker.getPosition());
                 
-                infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
+                //infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
             
-                infowindow.open(map, marker);
+                //infowindow.open(map, marker);
                 getLocalAuthority();
                
         
@@ -266,7 +274,7 @@ google.maps.event.addDomListener(window, "resize", function() {
                 var sWard = document.getElementById('ward').innerHTML;
                 var sBorough = document.getElementById('borough').innerHTML;
                  
-                var href = "https://mapit.mysociety.org/point/4326/" + sLng + ',' + sLat;
+                var href = "https://mapit.mysociety.org/point/4326/" + sLng + ',' + sLat + "?api_key=AbMIQhPkw3iBjmVYxxjtEpzWwLKnnmTEqG4gdObE";
 
                 
                 Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.StreetContactMapUtility.getMapPoint}', href, sAddress, 
@@ -301,12 +309,20 @@ google.maps.event.addDomListener(window, "resize", function() {
     <style> 
         
           #mapCanvas {
-            width: 70%;
+            width: 100%;
             height: 450px;
             
             float: left;
           }
-         
+
+          #searchArea {
+            width: 100%;                        
+            
+          }
+          input#searchTextField.searchText{
+          	width: 100%
+          }
+                   
           #infoPanel {
             float: left;
             margin-left: 10px;
@@ -350,7 +366,7 @@ google.maps.event.addDomListener(window, "resize", function() {
                     <div class="slds-grid ">
                         <div class="slds-col slds-has-flexi-truncate slds-size--1-of-2 slds-col--padded-small">
                             <!-- <button class="slds-button--brand slds-button--small" onclick="sforce.one.back();">Cancel</button> -->
-                            <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" styleClass="slds-button--brand slds-button--small" html-formnovalidate="formnovalidate" /> 
+                            <apex:commandButton value="Cancel" action="{!mobileCancel}" immediate="true" styleClass="slds-button--brand slds-button--small" html-formnovalidate="formnovalidate" /> 
                         </div>
                         <!--
                         <div class="slds-col slds-has-flexi-truncate slds-size--1-of-3 slds-col--padded-small">   
@@ -367,10 +383,13 @@ google.maps.event.addDomListener(window, "resize", function() {
                 
                 </div>
                 
-                <form class="slds-form--inline">
+                <form >
                 <input type="hidden" id="msg"/>
                 
-                <input id="searchTextField" type="text" size="70"/>
+                <div id="searchArea">
+                	<input class="searchText" id="searchTextField" type="text"  />
+                </div>
+                
                 <p></p><br/> 
                 
                 <div id="mapCanvas"></div>

@@ -16,7 +16,11 @@
             input[type="text"] {
                 min-width: 120px;
             
-            }        
+            }
+                    
+            .fldLabel {
+                font-weight: bold
+            }  
         
         </style>    
         
@@ -26,94 +30,86 @@
             
                 <div class="slds-page-header" role="banner">                            
                     <h1 class="slds-text-heading--small slds-m-bottom--small slds-align-middle">
-                        First Contact - Flow Information
+                        <center><b>First Contact - Flow Information</b></center>
                         <br/>
                         <center><strong>{!selectedClientName}</strong></center>
                     </h1>
 
                     <div class="slds-grid ">
-                        <div class="slds-col slds-has-flexi-truncate slds-size--1-of-3 slds-col--padded-small">
-                            <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" styleClass="slds-button slds-button--brand slds-button--small" html-formnovalidate="formnovalidate" />  
+                        <div class="slds-col slds-has-flexi-truncate slds-size--1-of-3 slds-col--padded-large">
+                            <apex:commandButton value="Cancel" action="{!mobileCancel}" immediate="true" styleClass="slds-button slds-button--brand slds-button--small" html-formnovalidate="formnovalidate" />  
                         </div>
                         <div class="slds-col slds-has-flexi-truncate slds-size--1-of-3 slds-col--padded-small">
                             <!-- <button class="slds-button--brand slds-button--small" onclick="sforce.one.back();">Cancel</button> -->
-                            <center><apex:commandButton value="Save and Add Service Needs" action="{!saveFlowandAddSupportNeeds}"  styleClass="slds-button slds-button--brand slds-button--small"  /></center>  
+                            <center><apex:commandButton value="Save & Add Support Needs" action="{!saveFlowandAddSupportNeeds}"  styleClass="slds-button slds-button--brand slds-button--small"  /></center>  
                         </div>                        
 
                         <div class="slds-col  slds-has-flexi-truncate slds-size--1-of-3  slds-col--padded-small">
-                            <apex:commandButton action="{!saveFlowandExit}" value="Save and Exit" styleClass="slds-button slds-button--brand slds-button--small   slds-float--right" />
+                            <apex:commandButton action="{!saveFlowandExit}" value="Save & Exit" styleClass="slds-button slds-button--brand slds-button--small   slds-float--right" />
                         </div>
                      </div>
                 </div>
                 
-                <b><h1>Enter Flow Information Details</h1></b><br/>
+                <div class="slds-m-left--large slds-col--padded-large"><b><h1>Enter Flow Information Details</h1></b><br/></div>
                 <apex:pageMessages escape="false" />
                 <form class="slds-form--inline">
-                    <!--
-                    <apex:repeat var="f" value="{!$ObjectType.Flow_information__c.FieldSets.MobileFlowInfoEntry}">
-                        <div class="slds-form-element slds-col--padded-small">
-                            <label class="slds-form-element__label" >{!f.label}</label>
-                            <div class="slds-form-element__control">
                     
-                                <apex:inputField value="{!flowInfo[f.fieldPath]}"   styleclass="slds-input--small " rendered="{!f.type = 'boolean'}"/>
-                                <apex:inputField value="{!flowInfo[f.fieldPath]}"   styleclass="slds-input--small slds-size--1-of-1" rendered="{!NOT(f.type = 'boolean')}" />
-                                <!--
-                                <apex:inputField value="{!flowInfo[f.fieldPath]}"   styleclass="slds-input--small slds-size--1-of-1" rendered="{!NOT(f.type = 'boolean' || f.type='multipicklist')}"/>
-                                <apex:inputField value="{!flowInfo[f.fieldPath]}"   styleclass="slds-input--small " rendered="{!f.type = 'multipicklist'}"/>
-                                <apex:selectList value="{!countries}" multiselect="true">
-                                    <apex:selectOptions value="{!items}"/>
-                                </apex:selectList><p/>
-                                -->
-                      <!--          
-                            </div>
-                        </div>                      
-                
-                
-                    </apex:repeat> 
-                    -->
-                    
-                    <div class="slds-grid slds-wrap">
+                    <div class="slds-grid slds-wrap slds-m-left--x-large">
                         <apex:repeat value="{!flowFields }" var="key">
 
                                     <div class="{!flowFieldFormat[key][0]}">
-                                        <span class="slds-form-element__label  {!flowFieldFormat[key][0]}">{!flowFields[key][0].label}</span>
-                                        <div class="slds-form-element__control "  >
-                                                                                       
+                                        <span class="fldLabel slds-form-element__label  {!flowFieldFormat[key][0]}">{!flowFields[key][0].label}</span>
+                                        <div class="slds-form-element__control "  >                                                       
                                             <apex:inputField value="{!flowInfo[flowFields[key][0].fieldPath]}"   styleclass="slds-input--small "  />
-
-
-
                                         </div>
-
                                      </div>
-
-                                                                      
-                                 <!-- <apex:outputPanel rendered="{!flowFields[key][0].fieldPath != flowFields[key][1].fieldPath}"> -->
+                                                                     
                                      <div class="{!flowFieldFormat[key][1]}">
-    
-                                        <span class="slds-form-element__label {!flowFieldFormat[key][1]}">{!flowFields[key][1].label}</span>
-                                        
+                                        <span class="fldLabel slds-form-element__label {!flowFieldFormat[key][1]}">{!flowFields[key][1].label}</span>                                        
                                         <div class="slds-form-element__control">
                                             <apex:inputField value="{!flowInfo[flowFields[key][1].fieldPath]}"   styleclass="slds-input--small "  />
                                         </div>
                                     </div>
-                                <!-- </apex:outputPanel> -->
+
                             
                         </apex:repeat>                    
                     </div>                     
-                    
+
+
+                    <h3 class="slds-section-title--divider" align="center">Places Stayed</h3> 
+                    <div class="slds-grid slds-wrap slds-m-left--x-large">
+                        <apex:repeat value="{!flowPlacesStayedFields }" var="key">
+                                    <div class="{!flowPlacesStayedFieldFormat[key][0]} ">
+                                        <span class="fldLabel slds-form-element__label  {!flowPlacesStayedFieldFormat[key][0]}">{!flowPlacesStayedFields [key][0].label}</span>
+                                        <div class="slds-form-element__control "  >                                                                                       
+                                            <apex:inputField value="{!flowInfo[flowPlacesStayedFields [key][0].fieldPath]}"   styleclass="slds-input--small "   />                                     
+                                        </div>
+                                     </div>
+
+
+                                     <div class="{!flowPlacesStayedFieldFormat[key][1]}">    
+                                        <span class="fldLabel slds-form-element__label {!flowPlacesStayedFieldFormat[key][1]}">{!flowPlacesStayedFields [key][1].label}</span>
+                                        <div class="slds-form-element__control">
+                                        <apex:inputField value="{!flowInfo[flowPlacesStayedFields [key][1].fieldPath]}"   styleclass="slds-input--small "  />
+                                        </div>
+                                    </div>
+
+                            
+                        </apex:repeat>                    
+                    </div>   
+                                            
                     
                     <div class="slds-page-header" role="banner">
                         <div class="slds-grid ">
-                            <div class="slds-col slds-has-flexi-truncate slds-size--1-of-3 slds-col--padded-small">
-                                <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" styleClass="slds-button slds-button--brand slds-button--small" html-formnovalidate="formnovalidate" />  
+                            <div class="slds-col slds-has-flexi-truncate slds-size--1-of-3 slds-col--padded-large">
+                                <apex:commandButton value="Cancel" action="{!mobileCancel}" immediate="true" styleClass="slds-button slds-button--brand slds-button--small" html-formnovalidate="formnovalidate" />  
                             </div>
                             <div class="slds-col slds-has-flexi-truncate slds-size--1-of-3 slds-col--padded-small">
-                                <center><apex:commandButton value="Save and Add Service Needs" action="{!saveFlowandAddSupportNeeds}"  styleClass="slds-button slds-button--brand slds-button--small"  /></center>  
+                                <center><apex:commandButton value="Save & Add Support Needs" action="{!saveFlowandAddSupportNeeds}"  styleClass="slds-button slds-button--brand slds-button--small"  /></center>  
                             </div>                        
         
                             <div class="slds-col  slds-has-flexi-truncate slds-size--1-of-3  slds-col--padded-small">
-                                <apex:commandButton action="{!saveFlowandExit}" value="Save and Exit" styleClass="slds-button slds-button--brand slds-button--small   slds-float--right" />
+                                <apex:commandButton action="{!saveFlowandExit}" value="Save & Exit" styleClass="slds-button slds-button--brand slds-button--small   slds-float--right" />
                             </div>
                          </div> 
                    </div>

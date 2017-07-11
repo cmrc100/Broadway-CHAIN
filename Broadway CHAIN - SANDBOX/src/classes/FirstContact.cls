@@ -23,13 +23,17 @@ public without sharing class FirstContact {
     public string borough{get; set;}
     public string LSOACode {get; set;}
     public string LSOAName {get; set;}    
-  public string MSOACode {get; set;}
-  public string MSOAName {get; set;}
-  public string wardCode {get; set;}
+    public string MSOACode {get; set;}
+    public string MSOAName {get; set;}
+    public string wardCode {get; set;}
 
     private boolean finished = true;
     private boolean success = false;
     private User user = null;
+    
+    private static map<string, Schema.sobjectField> serviceNeedFieldsDescribe = Schema.getGlobalDescribe().get('Support_Needs_Lifestyle__c').getDescribe().fields.getMap();
+    private static map<string, Schema.sobjectField> flowFieldsDescribe = Schema.getGlobalDescribe().get('Flow_information__c').getDescribe().fields.getMap();
+    private static map<string, Schema.sobjectField> timelineEventFieldsDescribe = Schema.getGlobalDescribe().get('Timeline_Event__c').getDescribe().fields.getMap();
         
     //Initialize all the variables on startup
     public FirstContact() 
@@ -75,6 +79,7 @@ public without sharing class FirstContact {
         useSelectedContact();
         
         contactFields = getcontactFields();
+        
     }
 
     public FirstContact(ApexPages.StandardController controller) {
@@ -432,7 +437,8 @@ system.debug('@@@@@@@@@@@@   calling save ..... ');
         } else {
             try {
                 //as all other values are set on the page, set the record type id of timeline event record and insert
-                insert this.te;
+                //insert this.te;
+                database.upsert(this.te);
                 success = true;
             } catch (System.DmlException e) {//show any error on page
                 for (Integer i =0; i<e.getNumDml(); ++i) {
@@ -729,8 +735,33 @@ system.debug('@@@  User Project/team .... ' + user.Default_Project_Id__c);
             
             
             if (success) {
+            	
+            	if (this.c.Date_First_Seen_Rough_Sleeping__c == null){
+            	//	ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, 'You cannot record a Flow information record for a client who has not been seen sleeping rough'));	
+            	//	return null;
+            	}
+                if (this.c.Count_of_new_rs_flow_forms__c > 0){
+                	ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, 'You cannot create more than one flow record per client'));
+                	return null;
+                }
+            	
                 flowFields = getflowFields();
                 this.flowInfo = new Flow_information__c();
+				for (integer key :flowFields.keySet()){
+					list<Schema.FieldSetMember> fList = flowFields.get(key);
+					for (Schema.FieldSetMember f :fList){
+		                string dataType = '';
+		                string fieldName = '';
+						dataType = string.valueOf(f.getType());                
+						if (dataType == 'PICKLIST'){
+							fieldName = string.valueOf(f.getFieldPath());
+							string defaultValue = getDefaultPicklistValue(flowFieldsDescribe, fieldName);
+							this.flowInfo.put(fieldName, defaultValue);
+						}
+						                
+					}
+				}
+                
     system.debug('@@@ this.te ... ' + this.te);
     system.debug('@@@ this.contact ... ' + this.c);            
                 flowInfo.client__c = this.te.client__c;
@@ -830,6 +861,22 @@ system.debug('@@@  User Project/team .... ' + user.Default_Project_Id__c);
                 serviceNeedFields = getserviceNeedFields();
                 sna = new Support_Needs_Lifestyle__c();
                 this.sna.Client__c = this.te.Client__c;
+                
+				for (integer key :serviceNeedFields.keySet()){
+					list<Schema.FieldSetMember> fList = serviceNeedFields.get(key);
+					for (Schema.FieldSetMember f :fList){
+		                string dataType = '';
+		                string fieldName = '';
+						dataType = string.valueOf(f.getType());                
+						if (dataType == 'PICKLIST'){
+							fieldName = string.valueOf(f.getFieldPath());
+							string defaultValue = getDefaultPicklistValue(serviceNeedFieldsDescribe, fieldName);
+							this.sna.put(fieldName, defaultValue);
+						}
+						                
+					}
+				}                
+                
                 pg = new PageReference('/apex/FCF_Service_Needs');
                 pg.setRedirect(false);
             }
@@ -871,11 +918,17 @@ system.debug('@@@  User Project/team .... ' + user.Default_Project_Id__c);
     public string selectedAccount{get;set;}
     public string selectedClientName {get; set;}
     public map<integer, list<Schema.FieldSetMember>> contactFields {get; set;}
+    public map<integer, list<Schema.FieldSetMember>> contactDemographicFields {get; set;}
+    public map<integer, list<Schema.FieldSetMember>> contactInstitutionalHistoryFields {get; set;}
     public map<integer, list<string>> contactFieldFormat {get; set;}
+    public map<integer, list<string>> contactDemographicFieldFormat {get; set;}
+    public map<integer, list<string>> contactInstitutionalHistoryFieldFormat {get; set;}
     public map<integer, list<Schema.FieldSetMember>> timelineEventFields {get; set;}
     public map<integer, list<string>> timelineEventFieldFormat {get; set;}
     public map<integer, list<Schema.FieldSetMember>> flowFields {get; set;}
+    public map<integer, list<Schema.FieldSetMember>> flowPlacesStayedFields {get; set;}
     public map<integer, list<string>> flowFieldFormat {get; set;}
+    public map<integer, list<string>> flowPlacesStayedFieldFormat {get; set;}
     public map<integer, list<Schema.FieldSetMember>> serviceNeedFields {get; set;}
     public map<integer, list<string>> serviceNeedFieldFormat {get; set;}
     private map<string, string> exclusionFields = new map<string, string>();
@@ -886,6 +939,17 @@ system.debug('@@@  User Project/team .... ' + user.Default_Project_Id__c);
         map<integer, list<Schema.FieldSetMember>> returnMap = new map<integer, list<Schema.FieldSetMember>>();
         contactFieldFormat  = new map<integer, list<string>>();
         returnMap =  getObjectFields(fldList, contactFieldFormat, null );       
+
+        fldList = readFieldSet('Demographics', 'Contact');
+        contactDemographicFieldFormat = new map<integer, list<string>>();
+        contactDemographicFields = getObjectFields(fldList, contactDemographicFieldFormat, null );
+        
+        
+
+        fldList = readFieldSet('Institutional_history', 'Contact');
+        contactInstitutionalHistoryFieldFormat = new map<integer, list<string>>();
+        contactInstitutionalHistoryFields = getObjectFields(fldList, contactInstitutionalHistoryFieldFormat, null );         
+        
         
         return returnMap;
     
@@ -914,7 +978,12 @@ system.debug('@@@  User Project/team .... ' + user.Default_Project_Id__c);
         map<integer, list<Schema.FieldSetMember>> returnMap = new map<integer, list<Schema.FieldSetMember>>();
         flowFieldFormat = new map<integer, list<string>>();
         returnMap =  getObjectFields(fldList, flowFieldFormat, null);       
-
+        
+        
+        fldList =  readFieldSet('Flow_Places_Stayed', 'Flow_information__c');
+        flowPlacesStayedFieldFormat = new map<integer, list<string>>();
+        flowPlacesStayedFields = getObjectFields(fldList, flowPlacesStayedFieldFormat, null);        
+        
         return returnMap;
     
     }
@@ -972,18 +1041,23 @@ system.debug(' @@@@ exclusionFields ..  ' + exclusionFields);
             counter = 0;
             for (Schema.FieldSetMember f :fList){
                 string format = '';
+                string dataType = '';
+                
                 boolean exclude = false;
+system.debug(' @@@  1 ' + f.fieldPath + ' - ' + f.getType());
+				dataType = string.valueOf(f.getType());
+               
                 if (exclusionFields != null){
 
-system.debug(' @@@ ' + f.fieldPath + ' - ' + exclusionFields.containsKey(f.fieldPath)); 
+system.debug(' @@@  2 ' + f.fieldPath + ' - ' + exclusionFields.containsKey(f.fieldPath)); 
                     if (exclusionFields.containsKey(f.fieldPath)){
                         exclude = true;
                     }
                 }                
                 if ((f.required || f.DBRequired) && !exclude){
-                    format = 'slds-form-element  slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-2 slds-col--padded-medium slds-is-required req';
+                    format += ' slds-form-element  slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-2 slds-col--padded-medium slds-is-required req';
                 } else {
-                    format = 'slds-form-element  slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-2 slds-col--padded-medium  ';                   
+                    format += ' slds-form-element  slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-2 slds-col--padded-medium  ';                   
                 }
                 if (counter == 1){
                     if (fList[0] == fList[1]){
@@ -993,6 +1067,7 @@ system.debug(' @@@ ' + f.fieldPath + ' - ' + exclusionFields.containsKey(f.field
                 }
                 counter++;
                 formatList.add(format);
+                formatList.add(dataType);
             }
             fldFormat.put(k, formatList);
         }
@@ -1011,7 +1086,8 @@ system.debug(' @@@ ' + f.fieldPath + ' - ' + exclusionFields.containsKey(f.field
         if (string.isnotBlank(selectedContact)){
             this.c = [select Gender__c, Name, Nationality__c, FirstName, LastName, BirthDate, Other_Names__c, Ethnic_Origin__c, 
                                 Nickname__c, DOB_Estimated__c, Country_Region__c, Last_longer_term_place_settled_base__c,
-                                Reason_for_leaving_settled_base__c, Places_stayed_1__c
+                                Reason_for_leaving_settled_base__c, Places_stayed_1__c, Date_First_Seen_Rough_Sleeping__c,
+                      			Count_of_new_rs_flow_forms__c
                       from contact where Id = :selectedContact];
             selectedClientName = this.c.Name;
             exclusionFields.put('NSNO_Action__c', 'Timeline_Event__c');
@@ -1022,5 +1098,30 @@ system.debug(' @@@ ' + f.fieldPath + ' - ' + exclusionFields.containsKey(f.field
         }
                 
                     
-    }    
+    }
+
+	private static string getDefaultPicklistValue(map<string, Schema.sobjectField> objectFields, string fieldName){
+
+		string returnValue = '';
+		
+    	Schema.SObjectField sfield = objectFields.get(fieldName);
+        schema.describeFieldResult dfield = sfield.getDescribe();
+
+        List<Schema.PicklistEntry> listValues = dfield.getPicklistValues();
+        for (Schema.PicklistEntry ps :listValues){
+			if (ps.isDefaultValue()) {
+				returnValue = ps.getValue();
+				break;
+			}
+        }		
+		return returnValue;		
+	}
+    
+    public PageReference mobileCancel(){
+        
+        PageReference  pg = new PageReference('/apex/ClientSearch');
+        return pg;
+                    
+    }
+        
 }

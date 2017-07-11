@@ -10,7 +10,7 @@
 
     <style>
        #wrapper {
-            width: 700px ;
+            width: 100% ;
             margin-left: auto ;
             margin-right: auto ;
         }
@@ -22,7 +22,7 @@
             padding: 8px;
             border: 1px solid #DDDDDD;
             border-radius: 4px;
-            width: 600px;
+            width: 76%;
             
         }    
             
@@ -68,9 +68,9 @@
         
         <div>
             <div id="wrapper">
-                <input type="text" id="searchText" class="searchKey"  placeholder="Search ..." />
-                <button class="btn btn-link" onclick="$j('#searchText').val('');">X</button> <br/> <br/>
-                <button id="searchBtn" class="slds-button slds-button--brand slds-button--small" onclick="$j('#searching').show(); searchClients();">Search Clients</button>
+                <center><input type="text" id="searchText" class="searchKey"  placeholder="Search ..." />
+                <button class="btn btn-link" onclick="$j('#searchText').val('');">X</button><br/> <br/></center>
+                <center><button id="searchBtn" class="slds-button slds-button--brand slds-button--small" onclick="$j('#searching').show(); searchClients();">Search Clients</button></center>
             </div>
             
         </div>
