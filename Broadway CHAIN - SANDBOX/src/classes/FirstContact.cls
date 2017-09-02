@@ -735,32 +735,32 @@ system.debug('@@@  User Project/team .... ' + user.Default_Project_Id__c);
             
             
             if (success) {
-            	
-            	if (this.c.Date_First_Seen_Rough_Sleeping__c == null){
-            	//	ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, 'You cannot record a Flow information record for a client who has not been seen sleeping rough'));	
-            	//	return null;
-            	}
+              
+              if (this.c.Date_First_Seen_Rough_Sleeping__c == null){
+              //  ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, 'You cannot record a Flow information record for a client who has not been seen sleeping rough'));  
+              //  return null;
+              }
                 if (this.c.Count_of_new_rs_flow_forms__c > 0){
-                	ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, 'You cannot create more than one flow record per client'));
-                	return null;
+                  ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, 'You cannot create more than one flow record per client'));
+                  return null;
                 }
-            	
+              
                 flowFields = getflowFields();
                 this.flowInfo = new Flow_information__c();
-				for (integer key :flowFields.keySet()){
-					list<Schema.FieldSetMember> fList = flowFields.get(key);
-					for (Schema.FieldSetMember f :fList){
-		                string dataType = '';
-		                string fieldName = '';
-						dataType = string.valueOf(f.getType());                
-						if (dataType == 'PICKLIST'){
-							fieldName = string.valueOf(f.getFieldPath());
-							string defaultValue = getDefaultPicklistValue(flowFieldsDescribe, fieldName);
-							this.flowInfo.put(fieldName, defaultValue);
-						}
-						                
-					}
-				}
+        for (integer key :flowFields.keySet()){
+          list<Schema.FieldSetMember> fList = flowFields.get(key);
+          for (Schema.FieldSetMember f :fList){
+                    string dataType = '';
+                    string fieldName = '';
+            dataType = string.valueOf(f.getType());                
+            if (dataType == 'PICKLIST'){
+              fieldName = string.valueOf(f.getFieldPath());
+              string defaultValue = getDefaultPicklistValue(flowFieldsDescribe, fieldName);
+              this.flowInfo.put(fieldName, defaultValue);
+            }
+                            
+          }
+        }
                 
     system.debug('@@@ this.te ... ' + this.te);
     system.debug('@@@ this.contact ... ' + this.c);            
@@ -862,20 +862,20 @@ system.debug('@@@  User Project/team .... ' + user.Default_Project_Id__c);
                 sna = new Support_Needs_Lifestyle__c();
                 this.sna.Client__c = this.te.Client__c;
                 
-				for (integer key :serviceNeedFields.keySet()){
-					list<Schema.FieldSetMember> fList = serviceNeedFields.get(key);
-					for (Schema.FieldSetMember f :fList){
-		                string dataType = '';
-		                string fieldName = '';
-						dataType = string.valueOf(f.getType());                
-						if (dataType == 'PICKLIST'){
-							fieldName = string.valueOf(f.getFieldPath());
-							string defaultValue = getDefaultPicklistValue(serviceNeedFieldsDescribe, fieldName);
-							this.sna.put(fieldName, defaultValue);
-						}
-						                
-					}
-				}                
+        for (integer key :serviceNeedFields.keySet()){
+          list<Schema.FieldSetMember> fList = serviceNeedFields.get(key);
+          for (Schema.FieldSetMember f :fList){
+                    string dataType = '';
+                    string fieldName = '';
+            dataType = string.valueOf(f.getType());                
+            if (dataType == 'PICKLIST'){
+              fieldName = string.valueOf(f.getFieldPath());
+              string defaultValue = getDefaultPicklistValue(serviceNeedFieldsDescribe, fieldName);
+              this.sna.put(fieldName, defaultValue);
+            }
+                            
+          }
+        }                
                 
                 pg = new PageReference('/apex/FCF_Service_Needs');
                 pg.setRedirect(false);
@@ -926,9 +926,21 @@ system.debug('@@@  User Project/team .... ' + user.Default_Project_Id__c);
     public map<integer, list<Schema.FieldSetMember>> timelineEventFields {get; set;}
     public map<integer, list<string>> timelineEventFieldFormat {get; set;}
     public map<integer, list<Schema.FieldSetMember>> flowFields {get; set;}
-    public map<integer, list<Schema.FieldSetMember>> flowPlacesStayedFields {get; set;}
+    public map<integer, list<Schema.FieldSetMember>> flowPlacesStayedFields1 {get; set;}
+    public map<integer, list<Schema.FieldSetMember>> flowPlacesStayedFields2 {get; set;}
+    public map<integer, list<Schema.FieldSetMember>> flowPlacesStayedFields3 {get; set;}
+    public map<integer, list<Schema.FieldSetMember>> flowAdviceFields1 {get; set;}
+    public map<integer, list<Schema.FieldSetMember>> flowAdviceFields2 {get; set;}
+    public map<integer, list<Schema.FieldSetMember>> flowAdviceFields3 {get; set;}
+    public map<integer, list<Schema.FieldSetMember>> flowAdviceFields4 {get; set;}
     public map<integer, list<string>> flowFieldFormat {get; set;}
-    public map<integer, list<string>> flowPlacesStayedFieldFormat {get; set;}
+    public map<integer, list<string>> flowPlacesStayedFieldFormat1 {get; set;}
+    public map<integer, list<string>> flowPlacesStayedFieldFormat2 {get; set;}
+    public map<integer, list<string>> flowPlacesStayedFieldFormat3 {get; set;}
+    public map<integer, list<string>> flowAdviceFormat1 {get; set;}
+    public map<integer, list<string>> flowAdviceFormat2 {get; set;}
+    public map<integer, list<string>> flowAdviceFormat3 {get; set;}
+    public map<integer, list<string>> flowAdviceFormat4 {get; set;}
     public map<integer, list<Schema.FieldSetMember>> serviceNeedFields {get; set;}
     public map<integer, list<string>> serviceNeedFieldFormat {get; set;}
     private map<string, string> exclusionFields = new map<string, string>();
@@ -943,9 +955,7 @@ system.debug('@@@  User Project/team .... ' + user.Default_Project_Id__c);
         fldList = readFieldSet('Demographics', 'Contact');
         contactDemographicFieldFormat = new map<integer, list<string>>();
         contactDemographicFields = getObjectFields(fldList, contactDemographicFieldFormat, null );
-        
-        
-
+           
         fldList = readFieldSet('Institutional_history', 'Contact');
         contactInstitutionalHistoryFieldFormat = new map<integer, list<string>>();
         contactInstitutionalHistoryFields = getObjectFields(fldList, contactInstitutionalHistoryFieldFormat, null );         
@@ -979,11 +989,37 @@ system.debug('@@@  User Project/team .... ' + user.Default_Project_Id__c);
         flowFieldFormat = new map<integer, list<string>>();
         returnMap =  getObjectFields(fldList, flowFieldFormat, null);       
         
-        
-        fldList =  readFieldSet('Flow_Places_Stayed', 'Flow_information__c');
-        flowPlacesStayedFieldFormat = new map<integer, list<string>>();
-        flowPlacesStayedFields = getObjectFields(fldList, flowPlacesStayedFieldFormat, null);        
-        
+        fldList =  readFieldSet('FlowPlacesStayed1', 'Flow_information__c');
+        flowPlacesStayedFieldFormat1 = new map<integer, list<string>>();
+        flowPlacesStayedFields1 = getObjectFields(fldList, flowPlacesStayedFieldFormat1, null); 
+
+        fldList =  readFieldSet('FlowPlacesStayed2', 'Flow_information__c');
+        flowPlacesStayedFieldFormat2 = new map<integer, list<string>>();
+        flowPlacesStayedFields2 = getObjectFields(fldList, flowPlacesStayedFieldFormat2, null); 
+
+        fldList =  readFieldSet('FlowPlacesStayed3', 'Flow_information__c');
+        flowPlacesStayedFieldFormat3 = new map<integer, list<string>>();
+        flowPlacesStayedFields3 = getObjectFields(fldList, flowPlacesStayedFieldFormat3, null);     
+
+		fldList =  readFieldSet('FlowPlacesStayed1', 'Flow_information__c');
+        flowPlacesStayedFieldFormat1 = new map<integer, list<string>>();
+        flowPlacesStayedFields1 = getObjectFields(fldList, flowPlacesStayedFieldFormat1, null); 
+
+		fldList =  readFieldSet('AdviceAgency1', 'Flow_information__c');
+        flowAdviceFormat1 = new map<integer, list<string>>();
+        flowAdviceFields1 = getObjectFields(fldList, flowAdviceFormat1, null); 
+
+		fldList =  readFieldSet('AdviceAgency2', 'Flow_information__c');
+        flowAdviceFormat2 = new map<integer, list<string>>();
+        flowAdviceFields2 = getObjectFields(fldList, flowAdviceFormat2, null); 
+
+		fldList =  readFieldSet('AdviceAgency3', 'Flow_information__c');
+        flowAdviceFormat3 = new map<integer, list<string>>();
+        flowAdviceFields3 = getObjectFields(fldList, flowAdviceFormat3, null); 
+
+		fldList =  readFieldSet('AdviceAgency4', 'Flow_information__c');
+        flowAdviceFormat4 = new map<integer, list<string>>();
+        flowAdviceFields4 = getObjectFields(fldList, flowAdviceFormat4, null);         
         return returnMap;
     
     }
@@ -1045,7 +1081,7 @@ system.debug(' @@@@ exclusionFields ..  ' + exclusionFields);
                 
                 boolean exclude = false;
 system.debug(' @@@  1 ' + f.fieldPath + ' - ' + f.getType());
-				dataType = string.valueOf(f.getType());
+        dataType = string.valueOf(f.getType());
                
                 if (exclusionFields != null){
 
@@ -1087,7 +1123,7 @@ system.debug(' @@@  2 ' + f.fieldPath + ' - ' + exclusionFields.containsKey(f.fi
             this.c = [select Gender__c, Name, Nationality__c, FirstName, LastName, BirthDate, Other_Names__c, Ethnic_Origin__c, 
                                 Nickname__c, DOB_Estimated__c, Country_Region__c, Last_longer_term_place_settled_base__c,
                                 Reason_for_leaving_settled_base__c, Places_stayed_1__c, Date_First_Seen_Rough_Sleeping__c,
-                      			Count_of_new_rs_flow_forms__c
+                            Count_of_new_rs_flow_forms__c
                       from contact where Id = :selectedContact];
             selectedClientName = this.c.Name;
             exclusionFields.put('NSNO_Action__c', 'Timeline_Event__c');
@@ -1100,22 +1136,22 @@ system.debug(' @@@  2 ' + f.fieldPath + ' - ' + exclusionFields.containsKey(f.fi
                     
     }
 
-	private static string getDefaultPicklistValue(map<string, Schema.sobjectField> objectFields, string fieldName){
+  private static string getDefaultPicklistValue(map<string, Schema.sobjectField> objectFields, string fieldName){
 
-		string returnValue = '';
-		
-    	Schema.SObjectField sfield = objectFields.get(fieldName);
+    string returnValue = '';
+    
+      Schema.SObjectField sfield = objectFields.get(fieldName);
         schema.describeFieldResult dfield = sfield.getDescribe();
 
         List<Schema.PicklistEntry> listValues = dfield.getPicklistValues();
         for (Schema.PicklistEntry ps :listValues){
-			if (ps.isDefaultValue()) {
-				returnValue = ps.getValue();
-				break;
-			}
-        }		
-		return returnValue;		
-	}
+      if (ps.isDefaultValue()) {
+        returnValue = ps.getValue();
+        break;
+      }
+        }    
+    return returnValue;    
+  }
     
     public PageReference mobileCancel(){
         

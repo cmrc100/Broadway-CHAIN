@@ -8,11 +8,21 @@
                             font-weight: bold }
         
     
-            input[type="text"] {
-                min-width: 120px;
+            .STRING {
+                min-width: 60%;
             
             }
+
+            .PICKLIST {
+                width: 60%;
             
+            }
+       
+            input[type="text"] {
+                min-width: 60%;
+            
+            }
+                             
             .fldLabel {
                 font-weight: bold
             }    
@@ -57,18 +67,6 @@
                     <apex:pageMessages escape="false"/>
                     
                     <form class="slds-form--inline">
-                        <!--
-                        <apex:repeat var="f" value="{!$ObjectType.Contact.FieldSets.MobileClientEntry}">
-                                    <div class="slds-form-element slds-col--padded-small " >
-                                        <label class="slds-form-element__label " >{!f.label}</label>
-                                        <div class="slds-form-element__control ">                                         
-                                            <apex:inputField value="{!contact[f.fieldPath]}"   styleclass="slds-input--small " rendered="{!f.type = 'boolean'}" required="{!f.required}"/>
-                                            <apex:inputField value="{!contact[f.fieldPath]}"   styleclass="slds-input--small slds-size--1-of-1" rendered="{!NOT(f.type = 'boolean')}" required="{!f.required}"/>
-                                        </div>
-                                    </div>
-
-                        </apex:repeat>                                                                                                       
-                        -->
                         
                         <!-- ?? slds-is-required -->
                                 
@@ -78,14 +76,14 @@
                                         <div class="{!contactFieldFormat[key][0]} ">
                                             <span class="fldLabel slds-form-element__label  {!contactFieldFormat[key][0]}">{!contactFields[key][0].label}</span>
                                             <div class="slds-form-element__control "  >                                                                                          
-                                                <apex:inputField value="{!contact[contactFields[key][0].fieldPath]}"   styleclass="slds-input--small "   /> 
+                                                <apex:inputField value="{!contact[contactFields[key][0].fieldPath]}"   styleclass="slds-input--small {!contactFieldFormat[key][1]}"    /> 
                                             </div>
                                          </div>
 
-                                         <div class="{!contactFieldFormat[key][1]}">        
-                                            <span class="fldLabel slds-form-element__label {!contactFieldFormat[key][1]}">{!contactFields[key][1].label}</span>
+                                         <div class="{!contactFieldFormat[key][2]}">        
+                                            <span class="fldLabel slds-form-element__label {!contactFieldFormat[key][2]}">{!contactFields[key][1].label}</span>
                                             <div class="slds-form-element__control">
-                                            <apex:inputField value="{!contact[contactFields[key][1].fieldPath]}"   styleclass="slds-input--small "  />
+                                            <apex:inputField value="{!contact[contactFields[key][1].fieldPath]}"   styleclass="slds-input--small {!contactFieldFormat[key][3]}"  />
                                             </div>
                                         </div>
                                    
@@ -100,15 +98,15 @@
                                         <div class="{!contactDemographicFieldFormat[key][0]} ">
                                             <span class="fldLabel slds-form-element__label  {!contactDemographicFieldFormat[key][0]}">{!contactDemographicFields [key][0].label}</span>
                                             <div class="slds-form-element__control "  >                                                                                           
-                                                <apex:inputField value="{!contact[contactDemographicFields [key][0].fieldPath]}"   styleclass="slds-input--small "   /> 
+                                                <apex:inputField value="{!contact[contactDemographicFields [key][0].fieldPath]}"   styleclass="slds-input--small {!contactDemographicFieldFormat[key][1]}"   /> 
                                             </div>
                                          </div>
 
                                                                                                               
-                                         <div class="{!contactDemographicFieldFormat[key][1]}">        
-                                            <span class="fldLabel slds-form-element__label {!contactDemographicFieldFormat[key][1]}">{!contactDemographicFields [key][1].label}</span>
+                                         <div class="{!contactDemographicFieldFormat[key][2]}">        
+                                            <span class="fldLabel slds-form-element__label {!contactDemographicFieldFormat[key][2]}">{!contactDemographicFields [key][1].label}</span>
                                             <div class="slds-form-element__control">
-                                            	<apex:inputField value="{!contact[contactDemographicFields [key][1].fieldPath]}"   styleclass="slds-input--small "  />
+                                                <apex:inputField value="{!contact[contactDemographicFields [key][1].fieldPath]}"   styleclass="slds-input--small {!contactDemographicFieldFormat[key][3]}"  />
                                             </div>
                                         </div>
 
@@ -124,15 +122,15 @@
                                         <div class="{!contactInstitutionalHistoryFieldFormat[key][0]} ">
                                             <span class="fldLabel slds-form-element__label  {!contactInstitutionalHistoryFieldFormat[key][0]}">{!contactInstitutionalHistoryFields [key][0].label}</span>
                                             <div class="slds-form-element__control "  >                                                                                           
-                                                <apex:inputField value="{!contact[contactInstitutionalHistoryFields [key][0].fieldPath]}"   styleclass="slds-input--small "   /> 
+                                                <apex:inputField value="{!contact[contactInstitutionalHistoryFields [key][0].fieldPath]}"   styleclass="slds-input--small {!contactInstitutionalHistoryFieldFormat[key][1]}"   /> 
                                             </div>
                                          </div>
 
                                                                           
-                                         <div class="{!contactInstitutionalHistoryFieldFormat[key][1]}">       
-                                            <span class="fldLabel slds-form-element__label {!contactInstitutionalHistoryFieldFormat[key][1]}">{!contactInstitutionalHistoryFields [key][1].label}</span>
+                                         <div class="{!contactInstitutionalHistoryFieldFormat[key][2]}">       
+                                            <span class="fldLabel slds-form-element__label {!contactInstitutionalHistoryFieldFormat[key][2]}">{!contactInstitutionalHistoryFields [key][1].label}</span>
                                             <div class="slds-form-element__control">
-                                            <apex:inputField value="{!contact[contactInstitutionalHistoryFields [key][1].fieldPath]}"   styleclass="slds-input--small "  />
+                                            <apex:inputField value="{!contact[contactInstitutionalHistoryFields [key][1].fieldPath]}"   styleclass="slds-input--small {!contactInstitutionalHistoryFieldFormat[key][3]}"  />
                                             </div>
                                         </div>
 

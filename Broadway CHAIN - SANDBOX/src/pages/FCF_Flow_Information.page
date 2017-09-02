@@ -13,8 +13,18 @@
                             font-size: 1.6em;
                             font-weight: bold }
 
+            .STRING {
+                min-width: 60%;
+            
+            }
+
+            .PICKLIST {
+                width: 60%;
+            
+            }
+       
             input[type="text"] {
-                min-width: 120px;
+                min-width: 60%;
             
             }
                     
@@ -60,14 +70,14 @@
                                     <div class="{!flowFieldFormat[key][0]}">
                                         <span class="fldLabel slds-form-element__label  {!flowFieldFormat[key][0]}">{!flowFields[key][0].label}</span>
                                         <div class="slds-form-element__control "  >                                                       
-                                            <apex:inputField value="{!flowInfo[flowFields[key][0].fieldPath]}"   styleclass="slds-input--small "  />
+                                            <apex:inputField value="{!flowInfo[flowFields[key][0].fieldPath]}"   styleclass="slds-input--small {!flowFieldFormat[key][1]}"  />
                                         </div>
                                      </div>
                                                                      
-                                     <div class="{!flowFieldFormat[key][1]}">
-                                        <span class="fldLabel slds-form-element__label {!flowFieldFormat[key][1]}">{!flowFields[key][1].label}</span>                                        
+                                     <div class="{!flowFieldFormat[key][2]}">
+                                        <span class="fldLabel slds-form-element__label {!flowFieldFormat[key][2]}">{!flowFields[key][1].label}</span>                                        
                                         <div class="slds-form-element__control">
-                                            <apex:inputField value="{!flowInfo[flowFields[key][1].fieldPath]}"   styleclass="slds-input--small "  />
+                                            <apex:inputField value="{!flowInfo[flowFields[key][1].fieldPath]}"   styleclass="slds-input--small {!flowFieldFormat[key][3]}"  />
                                         </div>
                                     </div>
 
@@ -76,21 +86,158 @@
                     </div>                     
 
 
-                    <h3 class="slds-section-title--divider" align="center">Places Stayed</h3> 
+
+
+                    <h3 class="slds-section-title--divider" align="center">Most Recent Advice 1</h3> 
                     <div class="slds-grid slds-wrap slds-m-left--x-large">
-                        <apex:repeat value="{!flowPlacesStayedFields }" var="key">
-                                    <div class="{!flowPlacesStayedFieldFormat[key][0]} ">
-                                        <span class="fldLabel slds-form-element__label  {!flowPlacesStayedFieldFormat[key][0]}">{!flowPlacesStayedFields [key][0].label}</span>
+                        <apex:repeat value="{!flowAdviceFields1 }" var="key">
+                                    <div class="{!flowAdviceFormat1[key][0]} ">
+                                        <span class="fldLabel slds-form-element__label  {!flowAdviceFormat1[key][0]}">{!flowAdviceFields1 [key][0].label}</span>
                                         <div class="slds-form-element__control "  >                                                                                       
-                                            <apex:inputField value="{!flowInfo[flowPlacesStayedFields [key][0].fieldPath]}"   styleclass="slds-input--small "   />                                     
+                                            <apex:inputField value="{!flowInfo[flowAdviceFields1 [key][0].fieldPath]}"   styleclass="slds-input--small {!flowAdviceFormat1[key][1]} "   />                                     
                                         </div>
                                      </div>
 
 
-                                     <div class="{!flowPlacesStayedFieldFormat[key][1]}">    
-                                        <span class="fldLabel slds-form-element__label {!flowPlacesStayedFieldFormat[key][1]}">{!flowPlacesStayedFields [key][1].label}</span>
+                                     <div class="{!flowAdviceFormat1[key][2]}">    
+                                        <span class="fldLabel slds-form-element__label {!flowAdviceFormat1[key][2]}">{!flowAdviceFields1 [key][1].label}</span>
                                         <div class="slds-form-element__control">
-                                        <apex:inputField value="{!flowInfo[flowPlacesStayedFields [key][1].fieldPath]}"   styleclass="slds-input--small "  />
+                                        <apex:inputField value="{!flowInfo[flowAdviceFields1 [key][1].fieldPath]}"   styleclass="slds-input--small {!flowAdviceFormat1[key][3]} "  />
+                                        </div>
+                                    </div>
+
+                            
+                        </apex:repeat>                    
+                    </div> 
+
+
+ 		    <h3 class="slds-section-title--divider" align="center">Most Recent Advice 2</h3> 
+                    <div class="slds-grid slds-wrap slds-m-left--x-large">
+                        <apex:repeat value="{!flowAdviceFields2 }" var="key">
+                                    <div class="{!flowAdviceFormat2[key][0]} ">
+                                        <span class="fldLabel slds-form-element__label  {!flowAdviceFormat2[key][0]}">{!flowAdviceFields2 [key][0].label}</span>
+                                        <div class="slds-form-element__control "  >                                                                                       
+                                            <apex:inputField value="{!flowInfo[flowAdviceFields2 [key][0].fieldPath]}"   styleclass="slds-input--small {!flowAdviceFormat2[key][1]} "   />                                     
+                                        </div>
+                                     </div>
+
+
+                                     <div class="{!flowAdviceFormat2[key][2]}">    
+                                        <span class="fldLabel slds-form-element__label {!flowAdviceFormat2[key][2]}">{!flowAdviceFields2 [key][1].label}</span>
+                                        <div class="slds-form-element__control">
+                                        <apex:inputField value="{!flowInfo[flowAdviceFields2 [key][1].fieldPath]}"   styleclass="slds-input--small {!flowAdviceFormat2[key][3]} "  />
+                                        </div>
+                                    </div>
+
+                            
+                        </apex:repeat>                    
+                    </div> 
+
+		    <h3 class="slds-section-title--divider" align="center">Most Recent Advice 3</h3> 
+                    <div class="slds-grid slds-wrap slds-m-left--x-large">
+                        <apex:repeat value="{!flowAdviceFields3 }" var="key">
+                                    <div class="{!flowAdviceFormat3[key][0]} ">
+                                        <span class="fldLabel slds-form-element__label  {!flowAdviceFormat3[key][0]}">{!flowAdviceFields3 [key][0].label}</span>
+                                        <div class="slds-form-element__control "  >                                                                                       
+                                            <apex:inputField value="{!flowInfo[flowAdviceFields3 [key][0].fieldPath]}"   styleclass="slds-input--small {!flowAdviceFormat3[key][1]} "   />                                     
+                                        </div>
+                                     </div>
+
+
+                                     <div class="{!flowAdviceFormat3[key][2]}">    
+                                        <span class="fldLabel slds-form-element__label {!flowAdviceFormat3[key][2]}">{!flowAdviceFields3 [key][1].label}</span>
+                                        <div class="slds-form-element__control">
+                                        <apex:inputField value="{!flowInfo[flowAdviceFields3 [key][1].fieldPath]}"   styleclass="slds-input--small {!flowAdviceFormat3[key][3]} "  />
+                                        </div>
+                                    </div>
+
+                            
+                        </apex:repeat>                    
+                    </div> 
+
+		    <h3 class="slds-section-title--divider" align="center">Most Recent Advice 4</h3> 
+                    <div class="slds-grid slds-wrap slds-m-left--x-large">
+                        <apex:repeat value="{!flowAdviceFields4 }" var="key">
+                                    <div class="{!flowAdviceFormat4[key][0]} ">
+                                        <span class="fldLabel slds-form-element__label  {!flowAdviceFormat4[key][0]}">{!flowAdviceFields4 [key][0].label}</span>
+                                        <div class="slds-form-element__control "  >                                                                                       
+                                            <apex:inputField value="{!flowInfo[flowAdviceFields4 [key][0].fieldPath]}"   styleclass="slds-input--small {!flowAdviceFormat4[key][1]} "   />                                     
+                                        </div>
+                                     </div>
+
+
+                                     <div class="{!flowAdviceFormat4[key][2]}">    
+                                        <span class="fldLabel slds-form-element__label {!flowAdviceFormat4[key][2]}">{!flowAdviceFields4 [key][1].label}</span>
+                                        <div class="slds-form-element__control">
+                                        <apex:inputField value="{!flowInfo[flowAdviceFields4 [key][1].fieldPath]}"   styleclass="slds-input--small {!flowAdviceFormat4[key][3]} "  />
+                                        </div>
+                                    </div>
+
+                            
+                        </apex:repeat>                    
+                    </div> 
+
+
+
+                    <h3 class="slds-section-title--divider" align="center">Places Stayed 1</h3> 
+                    <div class="slds-grid slds-wrap slds-m-left--x-large">
+                        <apex:repeat value="{!flowPlacesStayedFields1 }" var="key">
+                                    <div class="{!flowPlacesStayedFieldFormat1[key][0]} ">
+                                        <span class="fldLabel slds-form-element__label  {!flowPlacesStayedFieldFormat1[key][0]}">{!flowPlacesStayedFields1 [key][0].label}</span>
+                                        <div class="slds-form-element__control "  >                                                                                       
+                                            <apex:inputField value="{!flowInfo[flowPlacesStayedFields1 [key][0].fieldPath]}"   styleclass="slds-input--small {!flowPlacesStayedFieldFormat1[key][1]} "   />                                     
+                                        </div>
+                                     </div>
+
+
+                                     <div class="{!flowPlacesStayedFieldFormat1[key][2]}">    
+                                        <span class="fldLabel slds-form-element__label {!flowPlacesStayedFieldFormat1[key][2]}">{!flowPlacesStayedFields1 [key][1].label}</span>
+                                        <div class="slds-form-element__control">
+                                        <apex:inputField value="{!flowInfo[flowPlacesStayedFields1 [key][1].fieldPath]}"   styleclass="slds-input--small {!flowPlacesStayedFieldFormat1[key][3]} "  />
+                                        </div>
+                                    </div>
+
+                            
+                        </apex:repeat>                    
+                    </div>   
+
+                    <h3 class="slds-section-title--divider" align="center">Places Stayed 2</h3> 
+                    <div class="slds-grid slds-wrap slds-m-left--x-large">
+                        <apex:repeat value="{!flowPlacesStayedFields2 }" var="key">
+                                    <div class="{!flowPlacesStayedFieldFormat2[key][0]} ">
+                                        <span class="fldLabel slds-form-element__label  {!flowPlacesStayedFieldFormat2[key][0]}">{!flowPlacesStayedFields2 [key][0].label}</span>
+                                        <div class="slds-form-element__control "  >                                                                                       
+                                            <apex:inputField value="{!flowInfo[flowPlacesStayedFields2 [key][0].fieldPath]}"   styleclass="slds-input--small {!flowPlacesStayedFieldFormat2[key][1]} "   />                                     
+                                        </div>
+                                     </div>
+
+
+                                     <div class="{!flowPlacesStayedFieldFormat2[key][2]}">    
+                                        <span class="fldLabel slds-form-element__label {!flowPlacesStayedFieldFormat2[key][2]}">{!flowPlacesStayedFields2 [key][1].label}</span>
+                                        <div class="slds-form-element__control">
+                                        <apex:inputField value="{!flowInfo[flowPlacesStayedFields2 [key][1].fieldPath]}"   styleclass="slds-input--small {!flowPlacesStayedFieldFormat2[key][3]} "  />
+                                        </div>
+                                    </div>
+
+                            
+                        </apex:repeat>                    
+                    </div>   
+
+                    <h3 class="slds-section-title--divider" align="center">Places Stayed 3</h3> 
+                    <div class="slds-grid slds-wrap slds-m-left--x-large">
+                        <apex:repeat value="{!flowPlacesStayedFields3 }" var="key">
+                                    <div class="{!flowPlacesStayedFieldFormat3[key][0]} ">
+                                        <span class="fldLabel slds-form-element__label  {!flowPlacesStayedFieldFormat3[key][0]}">{!flowPlacesStayedFields3 [key][0].label}</span>
+                                        <div class="slds-form-element__control "  >                                                                                       
+                                            <apex:inputField value="{!flowInfo[flowPlacesStayedFields3 [key][0].fieldPath]}"   styleclass="slds-input--small {!flowPlacesStayedFieldFormat3[key][1]} "   />                                     
+                                        </div>
+                                     </div>
+
+
+                                     <div class="{!flowPlacesStayedFieldFormat3[key][2]}">    
+                                        <span class="fldLabel slds-form-element__label {!flowPlacesStayedFieldFormat3[key][2]}">{!flowPlacesStayedFields3 [key][1].label}</span>
+                                        <div class="slds-form-element__control">
+                                        <apex:inputField value="{!flowInfo[flowPlacesStayedFields3 [key][1].fieldPath]}"   styleclass="slds-input--small {!flowPlacesStayedFieldFormat3[key][3]} "  />
                                         </div>
                                     </div>
 

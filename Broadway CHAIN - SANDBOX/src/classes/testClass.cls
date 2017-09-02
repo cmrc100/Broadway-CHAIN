@@ -39,11 +39,7 @@ public without sharing class testClass {
     Contact[] c = [Select Id from Contact where AccountId=:a.Id];
     
     
-    // Following two lines added to test BeforeSNA trigger:
-    Support_Needs_Assessment__c sna = new Support_Needs_Assessment__c (Name='Fred', Client__c=c[0].id, Assessment_Date__c=Date.today());
-    insert sna;
-    // Okay, that's done...
-      if(c!=null && c.size()>0)
+       if(c!=null && c.size()>0)
       {
         
         List<Timeline_Event__c> teList = new List<Timeline_Event__c>();
@@ -111,6 +107,8 @@ public without sharing class testClass {
             
             //First COntact Test
             ApexPages.currentPage().getParameters().put('aid',a.Id);
+            ApexPages.currentPage().getParameters().put('selectedContact',c[0].Id);
+            ApexPages.currentPage().getParameters().put('selectedAccount',a.Id);
             FirstContact fc = new FirstContact();
             fc.getContact();
             fc.getTimeLineEvent();
@@ -118,10 +116,14 @@ public without sharing class testClass {
             fc.checkSourcePage();
             //fc.getIsNotesRequired();
             fc.Save();
+            fc.saveAndAddFlow();
             fc.SaveSNA();
             fc.AddSupportNeeds();
+
             fc.Cancel(); 
-          
+
+
+            
     //        delete teList;
             
     //      CampaignController cc = new CampaignController();
@@ -136,5 +138,83 @@ public without sharing class testClass {
     }
 
   }
+  
+
+    public static testMethod void testFCF(){  
+
+
+            PageReference pg = new PageReference('/apex/FCF1');
+            Test.setCurrentPage(pg);
+            
+            FirstContact fc = new FirstContact();
+            
+            fc.c = new Contact(FirstName = 'Jed',
+                                LastName = 'Test',
+                                BirthDate = system.today().addYears(-30),
+                                Gender__c = 'Male',
+                                Ethnic_Origin__c = 'White - British',
+                                Nationality__c = 'UK',
+                                Country_Region__c = 'England');
+                                
+            PageReference pg1 = fc.quickSaveClient();                    
+                                
+            
+
+            fc.address = '1 High Street';
+            fc.localAuthority = 'Test Authority';
+            fc.lngLat = '50000,50000';
+            fc.lng = '50000';
+            fc.lat = '50000';    
+            fc.postcode = 'SW1A 1AA';
+            fc.ward = 'Test Ward';
+            fc.borough = 'Test Borough';
+            fc.LSOACode = 'AAA';
+            fc.LSOAName = 'AAA';    
+            fc.MSOACode = 'AAA';
+            fc.MSOAName = 'AAA';
+            fc.wardCode = 'AAA';
+            
+			fc.saveLocationFC();
+        	fc.createTimelineEvent();
+        
+            PageReference pg2 = pg = fc.saveLocationFCMobile();
+    		
+        	fc.te.Date__C = system.today();
+        	fc.te.Event__c = 'Street Contact - Not Bedded Down';
+        	fc.te.Borough_Street_Site__c = 'Wandsworth - Battersea';
+        	fc.te.Encounter_Type__c = 'Street Contact';
+        	fc.te.Street_site_borough__c = 'Wandsworth';
+        	fc.te.Time_of_contact__c = '00:00';
+        	fc.te.NSNO_Action__c = 'Declined to engage';
+        	
+        	PageReference pg3 = fc.saveAndAddFlowMobile();
+        
+        	fc.flowInfo.Date__c = system.today();
+        	fc.flowInfo.Primary_reason_for_leaving__c = 'Asked to leave';
+        	fc.flowInfo.Last_longer_term_place_settled_base__c = 'Hostel';
+        	fc.flowInfo.HPU_Housing_Options_in_last_12_months__c = 'Not known';
+        	fc.flowInfo.Places_stayed_1__c = 'Hostel';
+        	fc.flowInfo.Country_1__c = 'UK';
+        	fc.flowInfo.Local_authority_UK_1__c = 'Angus Council';        	
+        
+        	PageReference pg4 = fc.saveFlowAndAddSupportNeeds();
+
+        	fc.useSelectedContact();	
+        
+			fc.sna.Assessment_date__c = system.today();
+
+			PageReference pg5 = fc.saveSupportNeedsandExit();        
+        
+        	
+        	PageReference pg6 = fc.saveAndAddSupportNeedsfromTLE();
+        	PageReference pg7 = fc.saveAndAddSupportNeeds();
+        	PageReference pg8 = fc.saveFlowandExit();
+        	PageReference pg9 = fc.saveFlow();
+        	PageReference pg10 = fc.mobileCancel();
+        
+        
+      
+    }
+
   
 }
